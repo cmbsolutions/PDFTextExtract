@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32516.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "PDFTextExtract", "PDFTextExtract\PDFTextExtract.vbproj", "{70D34945-765F-4433-A4BA-9F8D2BBB9A21}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "PDFTextExtractTests", "PDFTextExtractTests\PDFTextExtractTests.vbproj", "{A131FCCE-C370-4907-9831-6AEBA4BD8387}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70D34945-765F-4433-A4BA-9F8D2BBB9A21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70D34945-765F-4433-A4BA-9F8D2BBB9A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70D34945-765F-4433-A4BA-9F8D2BBB9A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70D34945-765F-4433-A4BA-9F8D2BBB9A21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A131FCCE-C370-4907-9831-6AEBA4BD8387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A131FCCE-C370-4907-9831-6AEBA4BD8387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A131FCCE-C370-4907-9831-6AEBA4BD8387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A131FCCE-C370-4907-9831-6AEBA4BD8387}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8124CAEC-2F06-4E09-8749-7914A163E67C}
+	EndGlobalSection
+EndGlobal
