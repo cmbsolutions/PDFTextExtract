@@ -37,11 +37,16 @@ Partial Class Form1
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
+        Me.CanvasX = New System.Windows.Forms.Panel()
+        Me.CanvasShadow = New System.Windows.Forms.Panel()
+        Me.Canvas = New System.Windows.Forms.PictureBox()
         CType(Me.pPdf, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
         Me.SplitContainer1.SuspendLayout()
+        Me.CanvasX.SuspendLayout()
+        CType(Me.Canvas, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'pPdf
@@ -69,11 +74,7 @@ Partial Class Form1
         '
         'SplitContainer1
         '
-        Me.SplitContainer1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
-        Me.SplitContainer1.Location = New System.Drawing.Point(3, 31)
+        Me.SplitContainer1.Location = New System.Drawing.Point(644, 146)
         Me.SplitContainer1.Name = "SplitContainer1"
         '
         'SplitContainer1.Panel1
@@ -92,8 +93,8 @@ Partial Class Form1
         Me.SplitContainer1.Panel2.Controls.Add(Me.Label2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tW)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tY)
-        Me.SplitContainer1.Size = New System.Drawing.Size(555, 532)
-        Me.SplitContainer1.SplitterDistance = 375
+        Me.SplitContainer1.Size = New System.Drawing.Size(275, 219)
+        Me.SplitContainer1.SplitterDistance = 185
         Me.SplitContainer1.TabIndex = 2
         '
         'Label4
@@ -191,11 +192,46 @@ Partial Class Form1
         Me.Button3.Text = "Zoom reset"
         Me.Button3.UseVisualStyleBackColor = True
         '
+        'CanvasX
+        '
+        Me.CanvasX.AutoScroll = True
+        Me.CanvasX.AutoScrollMargin = New System.Drawing.Size(10, 10)
+        Me.CanvasX.BackColor = System.Drawing.SystemColors.AppWorkspace
+        Me.CanvasX.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.CanvasX.CausesValidation = False
+        Me.CanvasX.Controls.Add(Me.Canvas)
+        Me.CanvasX.Controls.Add(Me.CanvasShadow)
+        Me.CanvasX.Location = New System.Drawing.Point(9, 28)
+        Me.CanvasX.Margin = New System.Windows.Forms.Padding(0)
+        Me.CanvasX.Name = "CanvasX"
+        Me.CanvasX.Size = New System.Drawing.Size(362, 528)
+        Me.CanvasX.TabIndex = 4
+        '
+        'CanvasShadow
+        '
+        Me.CanvasShadow.BackColor = System.Drawing.SystemColors.WindowFrame
+        Me.CanvasShadow.CausesValidation = False
+        Me.CanvasShadow.Enabled = False
+        Me.CanvasShadow.Location = New System.Drawing.Point(35, 56)
+        Me.CanvasShadow.Name = "CanvasShadow"
+        Me.CanvasShadow.Size = New System.Drawing.Size(292, 410)
+        Me.CanvasShadow.TabIndex = 0
+        '
+        'Canvas
+        '
+        Me.Canvas.BackColor = System.Drawing.Color.White
+        Me.Canvas.Location = New System.Drawing.Point(26, 49)
+        Me.Canvas.Name = "Canvas"
+        Me.Canvas.Size = New System.Drawing.Size(292, 410)
+        Me.Canvas.TabIndex = 1
+        Me.Canvas.TabStop = False
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(561, 565)
+        Me.ClientSize = New System.Drawing.Size(990, 565)
+        Me.Controls.Add(Me.CanvasX)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Button3)
@@ -209,6 +245,8 @@ Partial Class Form1
         Me.SplitContainer1.Panel2.PerformLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer1.ResumeLayout(False)
+        Me.CanvasX.ResumeLayout(False)
+        CType(Me.Canvas, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -228,4 +266,7 @@ Partial Class Form1
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button
+    Friend WithEvents CanvasX As Panel
+    Friend WithEvents Canvas As PictureBox
+    Friend WithEvents CanvasShadow As Panel
 End Class

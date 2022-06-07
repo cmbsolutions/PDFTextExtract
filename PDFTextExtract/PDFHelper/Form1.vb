@@ -81,32 +81,36 @@ Public Class Form1
             Dim b As New Bitmap(bm.AsBmpStream(300, 300))
 
             _localImg = b
-            g.DrawImage(b, pPdf.ClientRectangle, New Rectangle(0, 0, width, height), GraphicsUnit.Pixel)
+            Dim zbmp As New Bitmap(_localImg, Convert.ToInt32(_localImg.Width * _currentZoomFactor), Convert.ToInt32(_localImg.Height * _currentZoomFactor))
+            g = Graphics.FromImage(zbmp)
+            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+            Canvas.Image = zbmp
+
         End Using
     End Sub
 
     Private Sub ResizeAndCenterCanvas()
         Try
             If _localImg Is Nothing Then Exit Sub
-            Dim cx As Integer = Convert.ToInt32(SplitContainer1.Panel1.Width / 2)
-            Dim cy As Integer = Convert.ToInt32(SplitContainer1.Panel1.Height / 2)
+            Dim cx As Integer = Convert.ToInt32(CanvasX.Width / 2)
+            Dim cy As Integer = Convert.ToInt32(CanvasX.Height / 2)
 
-            pPdf.Width = Convert.ToInt32(_localImg.Width * _currentZoomFactor)
-            pPdf.Height = Convert.ToInt32(_localImg.Height * _currentZoomFactor)
+            Canvas.Width = Convert.ToInt32(_localImg.Width * _currentZoomFactor)
+            Canvas.Height = Convert.ToInt32(_localImg.Height * _currentZoomFactor)
 
-            Dim px As Integer = Convert.ToInt32(pPdf.Width / 2)
-            Dim py As Integer = Convert.ToInt32(pPdf.Height / 2)
+            Dim px As Integer = Convert.ToInt32(Canvas.Width / 2)
+            Dim py As Integer = Convert.ToInt32(Canvas.Height / 2)
 
-            pPdf.Left = cx - px
-            pPdf.Top = cy - py
+            Canvas.Left = cx - px
+            Canvas.Top = cy - py
 
-            'canvasShadow.Width = canvas.Width
-            'canvasShadow.Height = canvas.Height
-            'canvasShadow.Left = canvas.Left + 5
-            'canvasShadow.Top = canvas.Top + 5
+            CanvasShadow.Width = Canvas.Width
+            CanvasShadow.Height = Canvas.Height
+            CanvasShadow.Left = Canvas.Left + 5
+            CanvasShadow.Top = Canvas.Top + 5
 
-            If SplitContainer1.Panel1.HorizontalScroll.Visible Or SplitContainer1.Panel1.VerticalScroll.Visible Then
-                SplitContainer1.Panel1.AutoScrollPosition = New Point(px - cx, py - cy)
+            If CanvasX.HorizontalScroll.Visible Or CanvasX.VerticalScroll.Visible Then
+                CanvasX.AutoScrollPosition = New Point(px - cx, py - cy)
             End If
 
             'txtZoom.Text = String.Format("{0}%", Convert.ToInt32(100 * _currentZoomFactor))

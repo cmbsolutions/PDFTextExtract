@@ -1,12 +1,13 @@
 Imports PDFiumSharp
 Imports PDFiumSharp.Types
 Imports ImageMagick
+Imports PDFiumCore
 
 Public Class Imager
     Implements IDisposable
 
     Private disposedValue As Boolean
-    Private scale As Integer = 2
+    Private scale As Integer = 3
 
     Public ReadOnly Property outputImage As TesseractOCR.Pix.Image
     Public ReadOnly Property pageIndex As Integer
