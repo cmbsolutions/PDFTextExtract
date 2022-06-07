@@ -14,9 +14,16 @@ Public Class Imager
 
     Public Property pageSize As FS_SIZEF
 
+    Public Property clippingPath As MagickGeometry = Nothing
+
     Public Function SetPageSize(document As PdfDocument, pageIdx As Integer) As Imager
         _pageIndex = pageIdx
         pageSize = New FS_SIZEF(CSng(document.Pages(pageIndex).Width), CSng(document.Pages(pageIndex).Height))
+        Return Me
+    End Function
+
+    Public Function SetClippingPath(x As Integer, y As Integer, w As Integer, h As Integer) As Imager
+        clippingPath = New MagickGeometry(x, y, w, h)
         Return Me
     End Function
 
@@ -29,16 +36,17 @@ Public Class Imager
 
                 bm.Fill(New Types.FPDF_COLOR(255, 255, 255))
 
-                Dim matrix As New FS_MATRIX(scale, 0, 0, scale, 0, 0)
-                Dim clipping As New FS_RECTF(0, 0, width, height)
-
-                'PDFium.FPDF_RenderPageBitmapWithMatrix(bm.Handle, pdfPage.Handle, matrix, clipping, Enums.RenderingFlags.Annotations)
-                PDFium.FPDF_RenderPageBitmap(bm.Handle, pdfPage.Handle, 0, 0, width, height, Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+                pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
                 Using ms1 As New IO.MemoryStream
                     bm.Save(ms1, 300, 300)
                     ms1.Position = 0
                     Using img As New ImageMagick.MagickImage(ms1)
+
+                        If clippingPath IsNot Nothing Then
+                            img.Crop(clippingPath)
+                            img.RePage()
+                        End If
 
                         Using ms As New IO.MemoryStream
                             img.Write(ms, MagickFormat.Png32)

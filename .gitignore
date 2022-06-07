@@ -349,4 +349,12 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-TestData/
+TestData/addresses.csv
+
+TestData/addresses.txt
+
+TestData/family_names_in_the_netherlands_with_natural_name.txt
+
+TestData/lastnames.csv
+
+TestData/lastnames3.csv
