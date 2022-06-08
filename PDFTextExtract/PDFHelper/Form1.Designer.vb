@@ -39,8 +39,12 @@ Partial Class Form1
         Me.Canvas = New System.Windows.Forms.PictureBox()
         Me.CanvasShadow = New System.Windows.Forms.Panel()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.tConf = New System.Windows.Forms.TextBox()
+        Me.rResult = New System.Windows.Forms.RichTextBox()
         Me.Button4 = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.bExtractAll = New System.Windows.Forms.Button()
         Me.tPages = New System.Windows.Forms.TextBox()
         Me.bLast = New System.Windows.Forms.Button()
         Me.bNext = New System.Windows.Forms.Button()
@@ -48,7 +52,7 @@ Partial Class Form1
         Me.bFirst = New System.Windows.Forms.Button()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.lZoom = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.rResult = New System.Windows.Forms.RichTextBox()
+        Me.sfd = New System.Windows.Forms.SaveFileDialog()
         Me.CanvasX.SuspendLayout()
         CType(Me.Canvas, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
@@ -58,7 +62,7 @@ Partial Class Form1
         '
         'bPdf
         '
-        Me.bPdf.Location = New System.Drawing.Point(3, 3)
+        Me.bPdf.Location = New System.Drawing.Point(3, 4)
         Me.bPdf.Name = "bPdf"
         Me.bPdf.Size = New System.Drawing.Size(75, 23)
         Me.bPdf.TabIndex = 1
@@ -74,7 +78,7 @@ Partial Class Form1
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(34, 93)
+        Me.Label4.Location = New System.Drawing.Point(34, 96)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(46, 15)
         Me.Label4.TabIndex = 10
@@ -141,8 +145,9 @@ Partial Class Form1
         '
         'Button1
         '
+        Me.Button1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Button1.Image = Global.PDFHelper.My.Resources.Resources.zoom_in
-        Me.Button1.Location = New System.Drawing.Point(109, 4)
+        Me.Button1.Location = New System.Drawing.Point(359, 4)
         Me.Button1.Margin = New System.Windows.Forms.Padding(0)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(24, 24)
@@ -151,8 +156,9 @@ Partial Class Form1
         '
         'Button2
         '
+        Me.Button2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Button2.Image = Global.PDFHelper.My.Resources.Resources.zoom_out
-        Me.Button2.Location = New System.Drawing.Point(134, 4)
+        Me.Button2.Location = New System.Drawing.Point(384, 4)
         Me.Button2.Margin = New System.Windows.Forms.Padding(0)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(24, 24)
@@ -161,8 +167,9 @@ Partial Class Form1
         '
         'Button3
         '
+        Me.Button3.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Button3.Image = Global.PDFHelper.My.Resources.Resources.zoom_fit
-        Me.Button3.Location = New System.Drawing.Point(159, 4)
+        Me.Button3.Location = New System.Drawing.Point(409, 4)
         Me.Button3.Margin = New System.Windows.Forms.Padding(0)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(24, 24)
@@ -210,6 +217,8 @@ Partial Class Form1
         '
         'Panel1
         '
+        Me.Panel1.Controls.Add(Me.Label5)
+        Me.Panel1.Controls.Add(Me.tConf)
         Me.Panel1.Controls.Add(Me.rResult)
         Me.Panel1.Controls.Add(Me.Button4)
         Me.Panel1.Controls.Add(Me.tX)
@@ -226,6 +235,33 @@ Partial Class Form1
         Me.Panel1.Size = New System.Drawing.Size(227, 536)
         Me.Panel1.TabIndex = 11
         '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(9, 184)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(71, 15)
+        Me.Label5.TabIndex = 13
+        Me.Label5.Text = "Confidence:"
+        '
+        'tConf
+        '
+        Me.tConf.Location = New System.Drawing.Point(86, 181)
+        Me.tConf.Name = "tConf"
+        Me.tConf.ReadOnly = True
+        Me.tConf.Size = New System.Drawing.Size(100, 23)
+        Me.tConf.TabIndex = 12
+        '
+        'rResult
+        '
+        Me.rResult.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.rResult.Location = New System.Drawing.Point(0, 210)
+        Me.rResult.Name = "rResult"
+        Me.rResult.ReadOnly = True
+        Me.rResult.Size = New System.Drawing.Size(227, 326)
+        Me.rResult.TabIndex = 11
+        Me.rResult.Text = ""
+        '
         'Button4
         '
         Me.Button4.Location = New System.Drawing.Point(47, 122)
@@ -237,6 +273,7 @@ Partial Class Form1
         '
         'Panel2
         '
+        Me.Panel2.Controls.Add(Me.bExtractAll)
         Me.Panel2.Controls.Add(Me.tPages)
         Me.Panel2.Controls.Add(Me.bLast)
         Me.Panel2.Controls.Add(Me.bNext)
@@ -252,9 +289,20 @@ Partial Class Form1
         Me.Panel2.Size = New System.Drawing.Size(636, 32)
         Me.Panel2.TabIndex = 12
         '
+        'bExtractAll
+        '
+        Me.bExtractAll.Enabled = False
+        Me.bExtractAll.Location = New System.Drawing.Point(80, 4)
+        Me.bExtractAll.Name = "bExtractAll"
+        Me.bExtractAll.Size = New System.Drawing.Size(95, 23)
+        Me.bExtractAll.TabIndex = 14
+        Me.bExtractAll.Text = "Extract data"
+        Me.bExtractAll.UseVisualStyleBackColor = True
+        '
         'tPages
         '
-        Me.tPages.Location = New System.Drawing.Point(255, 5)
+        Me.tPages.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.tPages.Location = New System.Drawing.Point(505, 5)
         Me.tPages.Name = "tPages"
         Me.tPages.ReadOnly = True
         Me.tPages.Size = New System.Drawing.Size(74, 23)
@@ -264,8 +312,9 @@ Partial Class Form1
         '
         'bLast
         '
+        Me.bLast.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bLast.Image = Global.PDFHelper.My.Resources.Resources.action_goto_last
-        Me.bLast.Location = New System.Drawing.Point(357, 5)
+        Me.bLast.Location = New System.Drawing.Point(607, 5)
         Me.bLast.Margin = New System.Windows.Forms.Padding(0)
         Me.bLast.Name = "bLast"
         Me.bLast.Size = New System.Drawing.Size(24, 24)
@@ -274,8 +323,9 @@ Partial Class Form1
         '
         'bNext
         '
+        Me.bNext.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bNext.Image = Global.PDFHelper.My.Resources.Resources.action_goto_next
-        Me.bNext.Location = New System.Drawing.Point(332, 5)
+        Me.bNext.Location = New System.Drawing.Point(582, 5)
         Me.bNext.Margin = New System.Windows.Forms.Padding(0)
         Me.bNext.Name = "bNext"
         Me.bNext.Size = New System.Drawing.Size(24, 24)
@@ -284,8 +334,9 @@ Partial Class Form1
         '
         'bPrev
         '
+        Me.bPrev.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bPrev.Image = Global.PDFHelper.My.Resources.Resources.action_goto_previous
-        Me.bPrev.Location = New System.Drawing.Point(228, 4)
+        Me.bPrev.Location = New System.Drawing.Point(478, 4)
         Me.bPrev.Margin = New System.Windows.Forms.Padding(0)
         Me.bPrev.Name = "bPrev"
         Me.bPrev.Size = New System.Drawing.Size(24, 24)
@@ -294,8 +345,9 @@ Partial Class Form1
         '
         'bFirst
         '
+        Me.bFirst.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bFirst.Image = Global.PDFHelper.My.Resources.Resources.action_goto_first
-        Me.bFirst.Location = New System.Drawing.Point(203, 4)
+        Me.bFirst.Location = New System.Drawing.Point(453, 4)
         Me.bFirst.Margin = New System.Windows.Forms.Padding(0)
         Me.bFirst.Name = "bFirst"
         Me.bFirst.Size = New System.Drawing.Size(24, 24)
@@ -319,15 +371,12 @@ Partial Class Form1
         Me.lZoom.Size = New System.Drawing.Size(77, 19)
         Me.lZoom.Text = "Zoom: 100%"
         '
-        'rResult
+        'sfd
         '
-        Me.rResult.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.rResult.Location = New System.Drawing.Point(0, 151)
-        Me.rResult.Name = "rResult"
-        Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(227, 385)
-        Me.rResult.TabIndex = 11
-        Me.rResult.Text = ""
+        Me.sfd.DefaultExt = "csv"
+        Me.sfd.Filter = "CSV Files|*.csv"
+        Me.sfd.SupportMultiDottedExtensions = True
+        Me.sfd.Title = "Save extracted data"
         '
         'Form1
         '
@@ -379,4 +428,8 @@ Partial Class Form1
     Friend WithEvents bFirst As Button
     Friend WithEvents Button4 As Button
     Friend WithEvents rResult As RichTextBox
+    Friend WithEvents bExtractAll As Button
+    Friend WithEvents sfd As SaveFileDialog
+    Friend WithEvents Label5 As Label
+    Friend WithEvents tConf As TextBox
 End Class

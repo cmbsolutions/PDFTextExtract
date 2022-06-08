@@ -14,7 +14,7 @@ Public Class Imager
 
     Public Property pageSize As FS_SIZEF
 
-    Public Property clippingPath As MagickGeometry = Nothing
+    Public ReadOnly Property clippingPath As MagickGeometry = Nothing
 
     Public Function SetPageSize(document As PdfDocument, pageIdx As Integer) As Imager
         _pageIndex = pageIdx
@@ -23,46 +23,54 @@ Public Class Imager
     End Function
 
     Public Function SetClippingPath(x As Integer, y As Integer, w As Integer, h As Integer) As Imager
-        clippingPath = New MagickGeometry(x, y, w, h)
+        _clippingPath = New MagickGeometry(x, y, w, h)
         Return Me
     End Function
 
+    Public Function ResetClippingPath() As Imager
+        _clippingPath = Nothing
+        Return Me
+    End Function
+
+    Public Sub SetScale(s As Integer)
+        scale = s
+    End Sub
+
     Public Function ConvertPage(pdfPage As PDFiumSharp.PdfPage) As Imager
-        Try
-            Dim width = CInt(Math.Round(pageSize.Width * scale))
-            Dim height = CInt(Math.Round(pageSize.Height * scale))
+        Dim width = CInt(Math.Round(pageSize.Width * scale))
+        Dim height = CInt(Math.Round(pageSize.Height * scale))
 
-            Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
+        Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
 
-                bm.Fill(New Types.FPDF_COLOR(255, 255, 255))
+            bm.Fill(New Types.FPDF_COLOR(255, 255, 255))
 
-                pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+            pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
-                Using ms1 As New IO.MemoryStream
-                    bm.Save(ms1, 300, 300)
-                    ms1.Position = 0
-                    Using img As New ImageMagick.MagickImage(ms1)
+            Using ms1 As New IO.MemoryStream
+                bm.Save(ms1, 300, 300)
+                ms1.Position = 0
+                Using img As New ImageMagick.MagickImage(ms1)
 
-                        If clippingPath IsNot Nothing Then
-                            img.Crop(clippingPath)
-                            img.RePage()
-                        End If
+                    If clippingPath IsNot Nothing Then
+                        img.Crop(clippingPath)
+                        img.RePage()
+                    End If
 
-                        Using ms As New IO.MemoryStream
-                            img.Write(ms, MagickFormat.Png32)
+                    Using ms As New IO.MemoryStream
+                        img.Write(ms, MagickFormat.Png32)
 
-                            _outputImage = TesseractOCR.Pix.Image.LoadFromMemory(ms)
-                        End Using
+                        _outputImage = TesseractOCR.Pix.Image.LoadFromMemory(ms)
                     End Using
                 End Using
             End Using
-        Catch ex As Exception
-            Trace.WriteLine(ex.Message)
-        End Try
+        End Using
 
         Return Me
     End Function
 
+    Public Function ConvertPageBulk(pdfPage As PDFiumSharp.PdfPage) As TesseractOCR.Pix.Image
+        Return ConvertPage(pdfPage).outputImage
+    End Function
 #Region "Dispose"
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then

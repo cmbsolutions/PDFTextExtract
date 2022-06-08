@@ -1,4 +1,5 @@
-﻿Imports PDFiumSharp
+﻿Imports System.Text.RegularExpressions
+Imports PDFiumSharp
 Imports PDFiumSharp.Types
 
 Public Class Form1
@@ -191,13 +192,52 @@ Public Class Form1
     End Sub
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
-        Dim data As String = ""
+        Dim data As PDFTextExtract.ExtractedData
 
         Using pe = New PDFTextExtract.PdfHandler(currentPdf)
             data = pe.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)), pageIndex - 1)
         End Using
 
-        rResult.Text = data
+        If data.confidence < 0.5 Then
+            tConf.BackColor = Color.Salmon
+        ElseIf data.confidence >= 0.5 And data.confidence < 0.75 Then
+            tConf.BackColor = Color.Orange
+        ElseIf data.confidence >= 0.75 And data.confidence < 0.85 Then
+            tConf.BackColor = Color.Yellow
+        Else
+            tConf.BackColor = Color.LightGreen
+        End If
+
+        tConf.Text = $"{data.confidence * 100}%"
+        rResult.Text = data.text
+
+        bExtractAll.Enabled = True
+    End Sub
+
+    Private Sub bExtractAll_Click(sender As Object, e As EventArgs) Handles bExtractAll.Click
+        Dim data As New List(Of PDFTextExtract.ExtractedData)
+        Dim startDate = Now
+
+        Using pe = New PDFTextExtract.PdfHandler(currentPdf)
+            data = pe.ExtractAllData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
+        End Using
+
+        Dim endDate = Now
+
+        Dim runningTime = endDate.Subtract(startDate)
+
+        If data.Count > 0 AndAlso sfd.ShowDialog = DialogResult.OK Then
+            Using fs As New IO.FileStream(sfd.FileName, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
+                Using sw As New IO.StreamWriter(fs, System.Text.Encoding.Unicode)
+                    sw.WriteLine("id;confidence;text")
+                    For Each d In data
+                        sw.WriteLine($"{d.pageIndex};{d.confidence};{Regex.Replace(d.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
+                    Next
+                End Using
+            End Using
+        End If
+
+        MessageBox.Show($"Processed {pageCount} pages in {runningTime.TotalMinutes} minutes and {runningTime.Seconds} seconds")
     End Sub
 
     Private Sub handleButtons()
