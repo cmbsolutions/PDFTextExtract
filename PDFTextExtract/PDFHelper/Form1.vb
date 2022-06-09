@@ -4,18 +4,18 @@ Imports PDFiumSharp.Types
 
 Public Class Form1
     Private currentPdf As String
-    Private doc As PdfDocument
-    Private pageIndex As Integer = 0
-    Private pageCount As Integer = 0
-    Private pageSize As FS_SIZEF
+
     Private pdfScale As Integer = 3
     Private RC As Rectangle
     Private screenPtA, screenPtB As Point
     Private boxPta, boxPtb As Point
     Private _localImg As Image
+    Private pdfHandler As PDFTextExtract.PdfHandler
 
     Private _currentZoomFactor As Double = 1.0
 
+
+#Region "selection rectangle"
     Private Sub Canvas_MouseDown(sender As Object, e As MouseEventArgs) Handles Canvas.MouseDown
         If e.Button = Windows.Forms.MouseButtons.Left Then
             Dim pb As PictureBox = CType(sender, PictureBox)
@@ -57,31 +57,22 @@ Public Class Form1
     Public Function NormalizedRC(ByVal ptA As Point, ByVal ptB As Point) As Rectangle
         Return New Rectangle(Math.Min(ptA.X, ptB.X), Math.Min(ptA.Y, ptB.Y), Math.Abs(ptA.X - ptB.X), Math.Abs(ptA.Y - ptB.Y))
     End Function
+#End Region
 
     Private Sub bPdf_Click(sender As Object, e As EventArgs) Handles bPdf.Click
         If ofdPdf.ShowDialog = DialogResult.OK Then
             currentPdf = ofdPdf.FileName
-            doc = New PdfDocument(currentPdf)
 
-            pageCount = doc.Pages.Count
-            pageIndex = 1
-            pageSize = New FS_SIZEF(CSng(doc.Pages(pageIndex - 1).Width), CSng(doc.Pages(pageIndex - 1).Height))
+            If pdfHandler Is Nothing Then pdfHandler = New PDFTextExtract.PdfHandler(pdfScale)
+
+            pdfHandler.LoadDocument(currentPdf)
             handleButtons()
             LoadPage()
         End If
     End Sub
 
     Private Sub LoadPage()
-        Dim width = CInt(pageSize.Width * pdfScale)
-        Dim height = CInt(pageSize.Height * pdfScale)
-
-        Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
-            bm.Fill(New Types.FPDF_COLOR(255, 255, 255))
-
-            doc.Pages(pageIndex - 1).Render(bm, (0, 0, width, height))
-
-            _localImg = Image.FromStream(bm.AsBmpStream(300, 300))
-        End Using
+        _localImg = Image.FromStream(pdfHandler.GetRenderedPage)
 
         If _localImg IsNot Nothing Then
             Dim lw = _localImg.Width
@@ -164,25 +155,25 @@ Public Class Form1
     End Sub
 
     Private Sub bFirst_Click(sender As Object, e As EventArgs) Handles bFirst.Click
-        pageIndex = 1
+        pdfHandler.FirstPage()
         handleButtons()
         LoadPage()
     End Sub
 
     Private Sub bPrev_Click(sender As Object, e As EventArgs) Handles bPrev.Click
-        pageIndex -= 1
+        pdfHandler.PreviousPage()
         handleButtons()
         LoadPage()
     End Sub
 
     Private Sub bNext_Click(sender As Object, e As EventArgs) Handles bNext.Click
-        pageIndex += 1
+        pdfHandler.NextPage()
         handleButtons()
         LoadPage()
     End Sub
 
     Private Sub bLast_Click(sender As Object, e As EventArgs) Handles bLast.Click
-        pageIndex = pageCount
+        pdfHandler.LastPage()
         handleButtons()
         LoadPage()
     End Sub
@@ -195,9 +186,7 @@ Public Class Form1
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         Dim data As PDFTextExtract.ExtractedData
 
-        Using pe = New PDFTextExtract.PdfHandler(currentPdf, pdfScale)
-            data = pe.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)), pageIndex - 1)
-        End Using
+        data = pdfHandler.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
 
         If data.confidence < 0.5 Then
             tConf.BackColor = Color.Salmon
@@ -219,9 +208,7 @@ Public Class Form1
         Dim data As New List(Of PDFTextExtract.ExtractedData)
         Dim startDate = Now
 
-        Using pe = New PDFTextExtract.PdfHandler(currentPdf, pdfScale)
-            data = pe.ExtractAllData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
-        End Using
+        data = pdfHandler.ExtractAllData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
 
         Dim endDate = Now
 
@@ -238,15 +225,19 @@ Public Class Form1
             End Using
         End If
 
-        MessageBox.Show($"Processed {pageCount} pages in {runningTime.TotalMinutes} minutes and {runningTime.Seconds} seconds")
+        MessageBox.Show($"Processed {pdfHandler.GetPageCount} pages in {runningTime.Minutes} minutes and {runningTime.Seconds} seconds")
     End Sub
 
     Private Sub tScale_Scroll(sender As Object, e As EventArgs) Handles tScale.Scroll
         pdfScale = tScale.Value
+        pdfHandler.SetScale(pdfScale)
+        lScale.Text = pdfScale.ToString
     End Sub
 
     Private Sub handleButtons()
-        If pageIndex <= 1 Then
+        If pdfHandler Is Nothing Then Exit Sub
+
+        If pdfHandler.currentPageIdx <= 1 Then
             bFirst.Enabled = False
             bFirst.Image = My.Resources.dis_action_goto_first
             bPrev.Enabled = False
@@ -258,7 +249,7 @@ Public Class Form1
             bPrev.Image = My.Resources.action_goto_previous
         End If
 
-        If pageIndex >= pageCount Then
+        If pdfHandler.currentPageIdx >= pdfHandler.GetPageCount Then
             bLast.Enabled = False
             bLast.Image = My.Resources.dis_action_goto_last
             bNext.Enabled = False
@@ -270,7 +261,7 @@ Public Class Form1
             bNext.Image = My.Resources.action_goto_next
         End If
 
-        tPages.Text = $"{pageIndex}/{pageCount}"
+        tPages.Text = $"{pdfHandler.currentPageIdx + 1}/{pdfHandler.GetPageCount}"
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles Me.Load

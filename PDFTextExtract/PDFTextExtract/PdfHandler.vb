@@ -5,31 +5,85 @@ Public Class PdfHandler
     Implements IDisposable
 
     Private imageHandler As Imager = Nothing
-    Private currentDocument As PdfDocument = Nothing
-    Private currentPageIdx As Integer = 0
-    Private _engine As TesseractOCR.Engine = Nothing
+    Public ReadOnly Property currentDocument As PdfDocument = Nothing
+    Public ReadOnly Property currentPageIdx As Integer = 0
+    Public ReadOnly Property pageSize As FS_SIZEF
+    Private engine As TesseractOCR.Engine = Nothing
     Private disposedValue As Boolean
 
-    Sub New(file As String, s As Integer)
+    Sub New(initialScale As Integer)
+        imageHandler = New Imager
+        imageHandler.SetScale(initialScale)
+
+        engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
+    End Sub
+
+    Public Sub LoadDocument(file As String)
         If IO.File.Exists(file) Then
-            currentDocument = New PdfDocument(file)
-
-            imageHandler = New Imager
-            imageHandler.SetPageSize(currentDocument, 0).SetScale(s)
-
-            _engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.TesseractAndLstm)
+            If currentDocument IsNot Nothing Then currentDocument.Close()
+            _currentDocument = New PdfDocument(file)
+            _pageSize = New FS_SIZEF(CSng(currentDocument.Pages(currentPageIdx).Width), CSng(currentDocument.Pages(currentPageIdx).Height))
+            imageHandler.SetPageSize(pageSize)
         End If
     End Sub
 
-    Public Function extractData(pageIdx As Integer) As ExtractedData
-        Using page = _engine.Process(imageHandler.ResetClippingPath.ConvertPage(currentDocument.Pages(pageIdx)).outputImage)
-            Return New ExtractedData(page.MeanConfidence, page.Text, pageIdx)
+    Public Function GetPageCount() As Integer
+        If currentDocument IsNot Nothing Then
+            Return currentDocument.Pages.Count
+        Else
+            Return 0
+        End If
+    End Function
+
+    Public Function GetRenderedPage() As IO.Stream
+        imageHandler.ResetClippingPath()
+        If currentDocument IsNot Nothing Then
+            Return imageHandler.RenderCurrentPage(currentDocument.Pages(currentPageIdx))
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Sub SetScale(scale As Integer)
+        imageHandler.SetScale(scale)
+    End Sub
+
+#Region "Navigation"
+    Public Sub FirstPage()
+        _currentPageIdx = 1
+    End Sub
+
+    Public Sub PreviousPage()
+        If currentPageIdx > 1 Then _currentPageIdx -= 1
+    End Sub
+
+    Public Sub NextPage()
+        If currentDocument IsNot Nothing AndAlso currentPageIdx <= currentDocument.Pages.Count Then _currentPageIdx += 1
+    End Sub
+
+    Public Sub LastPage()
+        If currentDocument IsNot Nothing Then _currentPageIdx = currentDocument.Pages.Count - 1
+    End Sub
+
+    Public Sub GotoPage(pageNumber As Integer)
+        If currentDocument IsNot Nothing AndAlso pageNumber > 0 AndAlso pageNumber <= currentDocument.Pages.Count Then _currentPageIdx = pageNumber
+    End Sub
+#End Region
+
+
+    Public Function extractData() As ExtractedData
+        imageHandler.ResetClippingPath()
+
+        Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
+            Return New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx)
         End Using
     End Function
 
-    Public Function extractData(regio As FS_RECTF, pageIdx As Integer) As ExtractedData
-        Using page = _engine.Process(imageHandler.SetClippingPath(CInt(regio.Left), CInt(regio.Top), CInt(regio.Right), CInt(regio.Bottom)).ConvertPage(currentDocument.Pages(pageIdx)).outputImage)
-            Return New ExtractedData(page.MeanConfidence, page.Text, pageIdx)
+    Public Function extractData(regio As FS_RECTF) As ExtractedData
+        imageHandler.SetClippingPath(CInt(regio.Left), CInt(regio.Top), CInt(regio.Right), CInt(regio.Bottom))
+
+        Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
+            Return New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx)
         End Using
     End Function
 
@@ -38,7 +92,7 @@ Public Class PdfHandler
         imageHandler.SetClippingPath(CInt(regio.Left), CInt(regio.Top), CInt(regio.Right), CInt(regio.Bottom))
 
         For Each page In currentDocument.Pages
-            Using p = _engine.Process(imageHandler.ConvertPageBulk(page))
+            Using p = engine.Process(imageHandler.ConvertPage(page))
                 data.Add(New ExtractedData(p.MeanConfidence, p.Text, page.Index))
             End Using
         Next
@@ -49,7 +103,7 @@ Public Class PdfHandler
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
             If disposing Then
-                If _engine IsNot Nothing Then _engine.Dispose()
+                If engine IsNot Nothing Then engine.Dispose()
                 If currentDocument IsNot Nothing Then currentDocument.Close()
                 If imageHandler IsNot Nothing Then imageHandler.Dispose()
             End If
