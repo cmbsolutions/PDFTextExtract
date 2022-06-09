@@ -152,6 +152,7 @@ Public Class Form1
 
     Private Sub tsbZoomOut_Click(sender As Object, e As EventArgs) Handles Button2.Click
         _currentZoomFactor -= 0.1
+        If _currentZoomFactor < 0.1 Then _currentZoomFactor = 0.1
         ResizeAndCenterCanvas()
         RedrawCanvas()
     End Sub
@@ -194,7 +195,7 @@ Public Class Form1
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         Dim data As PDFTextExtract.ExtractedData
 
-        Using pe = New PDFTextExtract.PdfHandler(currentPdf)
+        Using pe = New PDFTextExtract.PdfHandler(currentPdf, pdfScale)
             data = pe.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)), pageIndex - 1)
         End Using
 
@@ -218,7 +219,7 @@ Public Class Form1
         Dim data As New List(Of PDFTextExtract.ExtractedData)
         Dim startDate = Now
 
-        Using pe = New PDFTextExtract.PdfHandler(currentPdf)
+        Using pe = New PDFTextExtract.PdfHandler(currentPdf, pdfScale)
             data = pe.ExtractAllData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
         End Using
 
@@ -238,6 +239,10 @@ Public Class Form1
         End If
 
         MessageBox.Show($"Processed {pageCount} pages in {runningTime.TotalMinutes} minutes and {runningTime.Seconds} seconds")
+    End Sub
+
+    Private Sub tScale_Scroll(sender As Object, e As EventArgs) Handles tScale.Scroll
+        pdfScale = tScale.Value
     End Sub
 
     Private Sub handleButtons()

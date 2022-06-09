@@ -53,11 +53,14 @@ Partial Class Form1
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.lZoom = New System.Windows.Forms.ToolStripStatusLabel()
         Me.sfd = New System.Windows.Forms.SaveFileDialog()
+        Me.tScale = New System.Windows.Forms.TrackBar()
+        Me.Label6 = New System.Windows.Forms.Label()
         Me.CanvasX.SuspendLayout()
         CType(Me.Canvas, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        CType(Me.tScale, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'bPdf
@@ -217,6 +220,8 @@ Partial Class Form1
         '
         'Panel1
         '
+        Me.Panel1.Controls.Add(Me.Label6)
+        Me.Panel1.Controls.Add(Me.tScale)
         Me.Panel1.Controls.Add(Me.Label5)
         Me.Panel1.Controls.Add(Me.tConf)
         Me.Panel1.Controls.Add(Me.rResult)
@@ -378,6 +383,27 @@ Partial Class Form1
         Me.sfd.SupportMultiDottedExtensions = True
         Me.sfd.Title = "Save extracted data"
         '
+        'tScale
+        '
+        Me.tScale.AutoSize = False
+        Me.tScale.LargeChange = 1
+        Me.tScale.Location = New System.Drawing.Point(86, 153)
+        Me.tScale.Minimum = 1
+        Me.tScale.Name = "tScale"
+        Me.tScale.Size = New System.Drawing.Size(100, 22)
+        Me.tScale.TabIndex = 14
+        Me.tScale.TickStyle = System.Windows.Forms.TickStyle.None
+        Me.tScale.Value = 3
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Location = New System.Drawing.Point(43, 160)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(37, 15)
+        Me.Label6.TabIndex = 15
+        Me.Label6.Text = "Scale:"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
@@ -397,6 +423,7 @@ Partial Class Form1
         Me.Panel2.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        CType(Me.tScale, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -432,4 +459,6 @@ Partial Class Form1
     Friend WithEvents sfd As SaveFileDialog
     Friend WithEvents Label5 As Label
     Friend WithEvents tConf As TextBox
+    Friend WithEvents Label6 As Label
+    Friend WithEvents tScale As TrackBar
 End Class

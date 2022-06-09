@@ -10,12 +10,12 @@ Public Class PdfHandler
     Private _engine As TesseractOCR.Engine = Nothing
     Private disposedValue As Boolean
 
-    Sub New(file As String)
+    Sub New(file As String, s As Integer)
         If IO.File.Exists(file) Then
             currentDocument = New PdfDocument(file)
 
             imageHandler = New Imager
-            imageHandler.SetPageSize(currentDocument, 0)
+            imageHandler.SetPageSize(currentDocument, 0).SetScale(s)
 
             _engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.TesseractAndLstm)
         End If
