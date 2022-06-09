@@ -65,7 +65,7 @@ Public Class Form1
 
             pageCount = doc.Pages.Count
             pageIndex = 1
-            pageSize = New FS_SIZEF(CSng(doc.Pages(pageIndex).Width), CSng(doc.Pages(pageIndex).Height))
+            pageSize = New FS_SIZEF(CSng(doc.Pages(pageIndex - 1).Width), CSng(doc.Pages(pageIndex - 1).Height))
             handleButtons()
             LoadPage()
         End If
