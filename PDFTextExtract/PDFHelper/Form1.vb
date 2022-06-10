@@ -1,4 +1,5 @@
-﻿Imports System.Text.RegularExpressions
+﻿Imports System.ComponentModel
+Imports System.Text.RegularExpressions
 Imports PDFiumSharp
 Imports PDFiumSharp.Types
 
@@ -10,7 +11,10 @@ Public Class Form1
     Private screenPtA, screenPtB As Point
     Private boxPta, boxPtb As Point
     Private _localImg As Image
-    Private pdfHandler As PDFTextExtract.PdfHandler
+    Private WithEvents pdfHandler As PDFTextExtract.PdfHandler
+    Private Delegate Sub pdfHandler_WorkerProgressChangedDelegate(sender As Object, e As ProgressChangedEventArgs)
+
+    Private exportData As List(Of PDFTextExtract.ExtractedData)
 
     Private _currentZoomFactor As Double = 1.0
 
@@ -63,18 +67,20 @@ Public Class Form1
         If ofdPdf.ShowDialog = DialogResult.OK Then
             currentPdf = ofdPdf.FileName
 
-            If pdfHandler Is Nothing Then pdfHandler = New PDFTextExtract.PdfHandler(pdfScale)
+            If pdfHandler Is Nothing Then pdfHandler = New PDFTextExtract.PdfHandler
+
+            pdfHandler.SetScale(pdfScale)
 
             pdfHandler.LoadDocument(currentPdf)
             handleButtons()
-            LoadPage()
+            LoadPage(True)
         End If
     End Sub
 
-    Private Sub LoadPage()
+    Private Sub LoadPage(calculateZoom As Boolean)
         _localImg = Image.FromStream(pdfHandler.GetRenderedPage)
 
-        If _localImg IsNot Nothing Then
+        If _localImg IsNot Nothing AndAlso calculateZoom Then
             Dim lw = _localImg.Width
             Dim lh = _localImg.Height
 
@@ -94,17 +100,21 @@ Public Class Form1
             Else
                 _currentZoomFactor = 1.0
             End If
+
+            RedrawCanvas()
+            ResizeAndCenterCanvas()
+        Else
+            RedrawCanvas()
         End If
 
-        RedrawCanvas()
-        ResizeAndCenterCanvas()
+
     End Sub
 
     Private Sub RedrawCanvas()
         If _localImg Is Nothing Then Exit Sub
         Dim zbmp As New Bitmap(_localImg, Convert.ToInt32(_localImg.Width * _currentZoomFactor), Convert.ToInt32(_localImg.Height * _currentZoomFactor))
         Dim g = Graphics.FromImage(zbmp)
-        g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+
         Canvas.Image = zbmp
     End Sub
 
@@ -157,25 +167,25 @@ Public Class Form1
     Private Sub bFirst_Click(sender As Object, e As EventArgs) Handles bFirst.Click
         pdfHandler.FirstPage()
         handleButtons()
-        LoadPage()
+        LoadPage(False)
     End Sub
 
     Private Sub bPrev_Click(sender As Object, e As EventArgs) Handles bPrev.Click
         pdfHandler.PreviousPage()
         handleButtons()
-        LoadPage()
+        LoadPage(False)
     End Sub
 
     Private Sub bNext_Click(sender As Object, e As EventArgs) Handles bNext.Click
         pdfHandler.NextPage()
         handleButtons()
-        LoadPage()
+        LoadPage(False)
     End Sub
 
     Private Sub bLast_Click(sender As Object, e As EventArgs) Handles bLast.Click
         pdfHandler.LastPage()
         handleButtons()
-        LoadPage()
+        LoadPage(False)
     End Sub
 
     Private Sub Form1_Resize(sender As Object, e As EventArgs) Handles Me.Resize
@@ -183,10 +193,15 @@ Public Class Form1
         RedrawCanvas()
     End Sub
 
-    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+    Private Async Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         Dim data As PDFTextExtract.ExtractedData
 
-        data = pdfHandler.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
+        Dim renderTask = Task.Run(Function()
+                                      Return pdfHandler.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
+                                  End Function)
+        data = Await renderTask.ConfigureAwait(True)
+
+        'data = pdfHandler.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
 
         If data.confidence < 0.5 Then
             tConf.BackColor = Color.Salmon
@@ -205,39 +220,28 @@ Public Class Form1
     End Sub
 
     Private Sub bExtractAll_Click(sender As Object, e As EventArgs) Handles bExtractAll.Click
-        Dim data As New List(Of PDFTextExtract.ExtractedData)
-        Dim startDate = Now
+        ManageWorkers()
 
-        data = pdfHandler.ExtractAllData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
-
-        Dim endDate = Now
-
-        Dim runningTime = endDate.Subtract(startDate)
-
-        If data.Count > 0 AndAlso sfd.ShowDialog = DialogResult.OK Then
-            Using fs As New IO.FileStream(sfd.FileName, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
-                Using sw As New IO.StreamWriter(fs, System.Text.Encoding.Unicode)
-                    sw.WriteLine("id;confidence;text")
-                    For Each d In data
-                        sw.WriteLine($"{d.pageIndex};{d.confidence};{Regex.Replace(d.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
-                    Next
-                End Using
-            End Using
-        End If
-
-        MessageBox.Show($"Processed {pdfHandler.GetPageCount} pages in {runningTime.Minutes} minutes and {runningTime.Seconds} seconds")
+        pdfHandler.BeginExtractAllData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)), CInt(nWorkers.Value))
     End Sub
 
     Private Sub tScale_Scroll(sender As Object, e As EventArgs) Handles tScale.Scroll
         pdfScale = tScale.Value
         pdfHandler.SetScale(pdfScale)
         lScale.Text = pdfScale.ToString
+
+        LoadPage(True)
+
+        tX.Text = "0"
+        tY.Text = "0"
+        tW.Text = "0"
+        tH.Text = "0"
     End Sub
 
     Private Sub handleButtons()
         If pdfHandler Is Nothing Then Exit Sub
 
-        If pdfHandler.currentPageIdx <= 1 Then
+        If pdfHandler.currentPageIdx = 0 Then
             bFirst.Enabled = False
             bFirst.Image = My.Resources.dis_action_goto_first
             bPrev.Enabled = False
@@ -249,7 +253,7 @@ Public Class Form1
             bPrev.Image = My.Resources.action_goto_previous
         End If
 
-        If pdfHandler.currentPageIdx >= pdfHandler.GetPageCount Then
+        If pdfHandler.currentPageIdx >= pdfHandler.GetPageCount - 1 Then
             bLast.Enabled = False
             bLast.Image = My.Resources.dis_action_goto_last
             bNext.Enabled = False
@@ -266,5 +270,93 @@ Public Class Form1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles Me.Load
         handleButtons()
+
+    End Sub
+
+    Private Sub ManageWorkers()
+        pWorkers.Controls.Clear()
+
+        For i As Integer = 0 To CInt(nWorkers.Value) - 1
+            Dim l As New Label With {
+                .ForeColor = System.Drawing.Color.Yellow,
+                .Location = New System.Drawing.Point(3, 0),
+                .Name = $"wLabel{i}",
+                .Size = New System.Drawing.Size(250, 15),
+                .TabIndex = 1,
+                .Text = $"Worker {i}",
+                .TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                .Visible = True,
+                .Tag = i
+            }
+
+            Dim p As New ProgressBar With {
+                .Location = New System.Drawing.Point(1, 16),
+                .Margin = New System.Windows.Forms.Padding(1),
+                .Name = $"pbWorker{i}",
+                .Size = New System.Drawing.Size(250, 15),
+                .Step = 1,
+                .Style = System.Windows.Forms.ProgressBarStyle.Continuous,
+                .TabIndex = 0,
+                .Value = 0,
+                .Visible = True,
+                .Tag = i
+            }
+
+            pWorkers.Controls.AddRange({l, p})
+        Next
+
+        Dim b As New Button With {
+            .Name = "bCancelWorkers",
+            .ForeColor = Color.Red,
+            .Location = New System.Drawing.Point(3, 0),
+            .Size = New System.Drawing.Size(250, 32),
+            .Text = "!!Cancel all workers!!",
+            .TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+            .Visible = True
+        }
+
+        AddHandler b.Click, AddressOf bCancel_Click
+
+        pWorkers.Controls.Add(b)
+    End Sub
+
+    Private Sub bCancel_Click(sender As Object, e As EventArgs)
+        pdfHandler.CancelWorkers()
+        Dim b As Button = DirectCast(sender, Button)
+
+        b.Enabled = False
+    End Sub
+
+    Private Sub bExport_Click(sender As Object, e As EventArgs) Handles bExport.Click
+        If exportData.Count > 0 AndAlso sfd.ShowDialog = DialogResult.OK Then
+            Using fs As New IO.FileStream(sfd.FileName, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
+                Using sw As New IO.StreamWriter(fs, System.Text.Encoding.Unicode)
+                    sw.WriteLine("id;confidence;text")
+                    For Each d In exportData
+                        sw.WriteLine($"{d.pageIndex};{d.confidence};{Regex.Replace(d.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
+                    Next
+                End Using
+            End Using
+        End If
+
+        MessageBox.Show($"Captured data exported!")
+    End Sub
+
+    Private Sub pdfHandler_WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles pdfHandler.WorkerProgressChanged
+        If InvokeRequired Then
+            Dim d As pdfHandler_WorkerProgressChangedDelegate = AddressOf pdfHandler_WorkerProgressChanged
+
+            Invoke(d)
+        Else
+            Dim ctrl As ProgressBar = DirectCast(pWorkers.Controls.Find($"pbWorker{e.UserState}", True).First, ProgressBar)
+            ctrl.Value = e.ProgressPercentage
+        End If
+    End Sub
+
+    Private Sub pdfHandler_WorkersCompleted(sender As Object, data As List(Of PDFTextExtract.ExtractedData), workingTime As TimeSpan) Handles pdfHandler.WorkersCompleted
+        exportData = data
+        bExport.Enabled = True
+
+        MessageBox.Show($"All {pdfHandler.GetPageCount} pages are processed with {nWorkers.Value} workers in {workingTime.Hours} hours, {workingTime.Minutes} minutes and {workingTime.Seconds} seconds. You can now export the results.")
     End Sub
 End Class

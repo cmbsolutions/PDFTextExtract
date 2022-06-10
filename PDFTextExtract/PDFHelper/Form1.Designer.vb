@@ -39,6 +39,7 @@ Partial Class Form1
         Me.Canvas = New System.Windows.Forms.PictureBox()
         Me.CanvasShadow = New System.Windows.Forms.Panel()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.lScale = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.tScale = New System.Windows.Forms.TrackBar()
         Me.Label5 = New System.Windows.Forms.Label()
@@ -55,13 +56,21 @@ Partial Class Form1
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.lZoom = New System.Windows.Forms.ToolStripStatusLabel()
         Me.sfd = New System.Windows.Forms.SaveFileDialog()
-        Me.lScale = New System.Windows.Forms.Label()
+        Me.Panel3 = New System.Windows.Forms.Panel()
+        Me.Panel4 = New System.Windows.Forms.Panel()
+        Me.pWorkers = New System.Windows.Forms.FlowLayoutPanel()
+        Me.nWorkers = New System.Windows.Forms.NumericUpDown()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.bExport = New System.Windows.Forms.Button()
         Me.CanvasX.SuspendLayout()
         CType(Me.Canvas, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
         CType(Me.tScale, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel2.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        Me.Panel3.SuspendLayout()
+        Me.Panel4.SuspendLayout()
+        CType(Me.nWorkers, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'bPdf
@@ -82,7 +91,7 @@ Partial Class Form1
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(34, 96)
+        Me.Label4.Location = New System.Drawing.Point(35, 97)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(46, 15)
         Me.Label4.TabIndex = 10
@@ -90,7 +99,7 @@ Partial Class Form1
         '
         'tX
         '
-        Me.tX.Location = New System.Drawing.Point(86, 6)
+        Me.tX.Location = New System.Drawing.Point(87, 7)
         Me.tX.Name = "tX"
         Me.tX.ReadOnly = True
         Me.tX.Size = New System.Drawing.Size(100, 23)
@@ -99,7 +108,7 @@ Partial Class Form1
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(38, 67)
+        Me.Label3.Location = New System.Drawing.Point(39, 68)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(42, 15)
         Me.Label3.TabIndex = 9
@@ -108,7 +117,7 @@ Partial Class Form1
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(63, 9)
+        Me.Label1.Location = New System.Drawing.Point(64, 10)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(17, 15)
         Me.Label1.TabIndex = 7
@@ -116,7 +125,7 @@ Partial Class Form1
         '
         'tH
         '
-        Me.tH.Location = New System.Drawing.Point(86, 93)
+        Me.tH.Location = New System.Drawing.Point(87, 94)
         Me.tH.Name = "tH"
         Me.tH.ReadOnly = True
         Me.tH.Size = New System.Drawing.Size(100, 23)
@@ -125,7 +134,7 @@ Partial Class Form1
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(63, 38)
+        Me.Label2.Location = New System.Drawing.Point(64, 39)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(17, 15)
         Me.Label2.TabIndex = 8
@@ -133,7 +142,7 @@ Partial Class Form1
         '
         'tW
         '
-        Me.tW.Location = New System.Drawing.Point(86, 64)
+        Me.tW.Location = New System.Drawing.Point(87, 65)
         Me.tW.Name = "tW"
         Me.tW.ReadOnly = True
         Me.tW.Size = New System.Drawing.Size(100, 23)
@@ -141,7 +150,7 @@ Partial Class Form1
         '
         'tY
         '
-        Me.tY.Location = New System.Drawing.Point(86, 35)
+        Me.tY.Location = New System.Drawing.Point(87, 36)
         Me.tY.Name = "tY"
         Me.tY.ReadOnly = True
         Me.tY.Size = New System.Drawing.Size(100, 23)
@@ -151,7 +160,7 @@ Partial Class Form1
         '
         Me.Button1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Button1.Image = Global.PDFHelper.My.Resources.Resources.zoom_in
-        Me.Button1.Location = New System.Drawing.Point(359, 4)
+        Me.Button1.Location = New System.Drawing.Point(447, 4)
         Me.Button1.Margin = New System.Windows.Forms.Padding(0)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(24, 24)
@@ -162,7 +171,7 @@ Partial Class Form1
         '
         Me.Button2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Button2.Image = Global.PDFHelper.My.Resources.Resources.zoom_out
-        Me.Button2.Location = New System.Drawing.Point(384, 4)
+        Me.Button2.Location = New System.Drawing.Point(472, 4)
         Me.Button2.Margin = New System.Windows.Forms.Padding(0)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(24, 24)
@@ -173,7 +182,7 @@ Partial Class Form1
         '
         Me.Button3.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Button3.Image = Global.PDFHelper.My.Resources.Resources.zoom_fit
-        Me.Button3.Location = New System.Drawing.Point(409, 4)
+        Me.Button3.Location = New System.Drawing.Point(497, 4)
         Me.Button3.Margin = New System.Windows.Forms.Padding(0)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(24, 24)
@@ -196,7 +205,7 @@ Partial Class Form1
         Me.CanvasX.Location = New System.Drawing.Point(0, 32)
         Me.CanvasX.Margin = New System.Windows.Forms.Padding(0)
         Me.CanvasX.Name = "CanvasX"
-        Me.CanvasX.Size = New System.Drawing.Size(409, 536)
+        Me.CanvasX.Size = New System.Drawing.Size(472, 536)
         Me.CanvasX.TabIndex = 4
         '
         'Canvas
@@ -221,31 +230,28 @@ Partial Class Form1
         '
         'Panel1
         '
-        Me.Panel1.Controls.Add(Me.lScale)
-        Me.Panel1.Controls.Add(Me.Label6)
-        Me.Panel1.Controls.Add(Me.tScale)
-        Me.Panel1.Controls.Add(Me.Label5)
-        Me.Panel1.Controls.Add(Me.tConf)
-        Me.Panel1.Controls.Add(Me.rResult)
-        Me.Panel1.Controls.Add(Me.Button4)
-        Me.Panel1.Controls.Add(Me.tX)
-        Me.Panel1.Controls.Add(Me.Label4)
-        Me.Panel1.Controls.Add(Me.tY)
-        Me.Panel1.Controls.Add(Me.tW)
-        Me.Panel1.Controls.Add(Me.Label2)
-        Me.Panel1.Controls.Add(Me.tH)
-        Me.Panel1.Controls.Add(Me.Label3)
-        Me.Panel1.Controls.Add(Me.Label1)
+        Me.Panel1.Controls.Add(Me.pWorkers)
+        Me.Panel1.Controls.Add(Me.Panel4)
+        Me.Panel1.Controls.Add(Me.Panel3)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Right
-        Me.Panel1.Location = New System.Drawing.Point(409, 32)
+        Me.Panel1.Location = New System.Drawing.Point(472, 32)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(227, 536)
+        Me.Panel1.Size = New System.Drawing.Size(252, 536)
         Me.Panel1.TabIndex = 11
+        '
+        'lScale
+        '
+        Me.lScale.AutoSize = True
+        Me.lScale.Location = New System.Drawing.Point(186, 10)
+        Me.lScale.Name = "lScale"
+        Me.lScale.Size = New System.Drawing.Size(13, 15)
+        Me.lScale.TabIndex = 16
+        Me.lScale.Text = "4"
         '
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(43, 160)
+        Me.Label6.Location = New System.Drawing.Point(38, 10)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(37, 15)
         Me.Label6.TabIndex = 15
@@ -255,17 +261,17 @@ Partial Class Form1
         '
         Me.tScale.AutoSize = False
         Me.tScale.LargeChange = 1
-        Me.tScale.Location = New System.Drawing.Point(86, 153)
+        Me.tScale.Location = New System.Drawing.Point(80, 3)
         Me.tScale.Minimum = 1
         Me.tScale.Name = "tScale"
         Me.tScale.Size = New System.Drawing.Size(100, 22)
         Me.tScale.TabIndex = 14
-        Me.tScale.Value = 3
+        Me.tScale.Value = 4
         '
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(9, 184)
+        Me.Label5.Location = New System.Drawing.Point(4, 39)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(71, 15)
         Me.Label5.TabIndex = 13
@@ -273,7 +279,7 @@ Partial Class Form1
         '
         'tConf
         '
-        Me.tConf.Location = New System.Drawing.Point(86, 181)
+        Me.tConf.Location = New System.Drawing.Point(80, 31)
         Me.tConf.Name = "tConf"
         Me.tConf.ReadOnly = True
         Me.tConf.Size = New System.Drawing.Size(100, 23)
@@ -282,24 +288,27 @@ Partial Class Form1
         'rResult
         '
         Me.rResult.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.rResult.Location = New System.Drawing.Point(0, 210)
+        Me.rResult.Location = New System.Drawing.Point(0, 59)
         Me.rResult.Name = "rResult"
         Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(227, 326)
+        Me.rResult.Size = New System.Drawing.Size(252, 161)
         Me.rResult.TabIndex = 11
         Me.rResult.Text = ""
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(47, 122)
+        Me.Button4.Location = New System.Drawing.Point(64, 123)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(148, 23)
         Me.Button4.TabIndex = 9
-        Me.Button4.Text = "Test"
+        Me.Button4.Text = "Test region"
         Me.Button4.UseVisualStyleBackColor = True
         '
         'Panel2
         '
+        Me.Panel2.Controls.Add(Me.bExport)
+        Me.Panel2.Controls.Add(Me.Label8)
+        Me.Panel2.Controls.Add(Me.nWorkers)
         Me.Panel2.Controls.Add(Me.bExtractAll)
         Me.Panel2.Controls.Add(Me.tPages)
         Me.Panel2.Controls.Add(Me.bLast)
@@ -313,7 +322,7 @@ Partial Class Form1
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel2.Location = New System.Drawing.Point(0, 0)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(636, 32)
+        Me.Panel2.Size = New System.Drawing.Size(724, 32)
         Me.Panel2.TabIndex = 12
         '
         'bExtractAll
@@ -329,7 +338,7 @@ Partial Class Form1
         'tPages
         '
         Me.tPages.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.tPages.Location = New System.Drawing.Point(505, 5)
+        Me.tPages.Location = New System.Drawing.Point(593, 5)
         Me.tPages.Name = "tPages"
         Me.tPages.ReadOnly = True
         Me.tPages.Size = New System.Drawing.Size(74, 23)
@@ -341,7 +350,7 @@ Partial Class Form1
         '
         Me.bLast.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bLast.Image = Global.PDFHelper.My.Resources.Resources.action_goto_last
-        Me.bLast.Location = New System.Drawing.Point(607, 5)
+        Me.bLast.Location = New System.Drawing.Point(695, 5)
         Me.bLast.Margin = New System.Windows.Forms.Padding(0)
         Me.bLast.Name = "bLast"
         Me.bLast.Size = New System.Drawing.Size(24, 24)
@@ -352,7 +361,7 @@ Partial Class Form1
         '
         Me.bNext.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bNext.Image = Global.PDFHelper.My.Resources.Resources.action_goto_next
-        Me.bNext.Location = New System.Drawing.Point(582, 5)
+        Me.bNext.Location = New System.Drawing.Point(670, 5)
         Me.bNext.Margin = New System.Windows.Forms.Padding(0)
         Me.bNext.Name = "bNext"
         Me.bNext.Size = New System.Drawing.Size(24, 24)
@@ -363,7 +372,7 @@ Partial Class Form1
         '
         Me.bPrev.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bPrev.Image = Global.PDFHelper.My.Resources.Resources.action_goto_previous
-        Me.bPrev.Location = New System.Drawing.Point(478, 4)
+        Me.bPrev.Location = New System.Drawing.Point(566, 4)
         Me.bPrev.Margin = New System.Windows.Forms.Padding(0)
         Me.bPrev.Name = "bPrev"
         Me.bPrev.Size = New System.Drawing.Size(24, 24)
@@ -374,7 +383,7 @@ Partial Class Form1
         '
         Me.bFirst.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bFirst.Image = Global.PDFHelper.My.Resources.Resources.action_goto_first
-        Me.bFirst.Location = New System.Drawing.Point(453, 4)
+        Me.bFirst.Location = New System.Drawing.Point(541, 4)
         Me.bFirst.Margin = New System.Windows.Forms.Padding(0)
         Me.bFirst.Name = "bFirst"
         Me.bFirst.Size = New System.Drawing.Size(24, 24)
@@ -386,7 +395,7 @@ Partial Class Form1
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lZoom})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 568)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(636, 24)
+        Me.StatusStrip1.Size = New System.Drawing.Size(724, 24)
         Me.StatusStrip1.TabIndex = 13
         Me.StatusStrip1.Text = "StatusStrip1"
         '
@@ -405,20 +414,81 @@ Partial Class Form1
         Me.sfd.SupportMultiDottedExtensions = True
         Me.sfd.Title = "Save extracted data"
         '
-        'lScale
+        'Panel3
         '
-        Me.lScale.AutoSize = True
-        Me.lScale.Location = New System.Drawing.Point(185, 160)
-        Me.lScale.Name = "lScale"
-        Me.lScale.Size = New System.Drawing.Size(13, 15)
-        Me.lScale.TabIndex = 16
-        Me.lScale.Text = "3"
+        Me.Panel3.Controls.Add(Me.rResult)
+        Me.Panel3.Controls.Add(Me.lScale)
+        Me.Panel3.Controls.Add(Me.Label5)
+        Me.Panel3.Controls.Add(Me.tScale)
+        Me.Panel3.Controls.Add(Me.Label6)
+        Me.Panel3.Controls.Add(Me.tConf)
+        Me.Panel3.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.Panel3.Location = New System.Drawing.Point(0, 316)
+        Me.Panel3.Name = "Panel3"
+        Me.Panel3.Size = New System.Drawing.Size(252, 220)
+        Me.Panel3.TabIndex = 17
+        '
+        'Panel4
+        '
+        Me.Panel4.Controls.Add(Me.tW)
+        Me.Panel4.Controls.Add(Me.Label1)
+        Me.Panel4.Controls.Add(Me.Button4)
+        Me.Panel4.Controls.Add(Me.Label3)
+        Me.Panel4.Controls.Add(Me.tX)
+        Me.Panel4.Controls.Add(Me.tH)
+        Me.Panel4.Controls.Add(Me.Label4)
+        Me.Panel4.Controls.Add(Me.Label2)
+        Me.Panel4.Controls.Add(Me.tY)
+        Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Panel4.Location = New System.Drawing.Point(0, 0)
+        Me.Panel4.Name = "Panel4"
+        Me.Panel4.Size = New System.Drawing.Size(252, 147)
+        Me.Panel4.TabIndex = 18
+        '
+        'pWorkers
+        '
+        Me.pWorkers.BackColor = System.Drawing.SystemColors.WindowFrame
+        Me.pWorkers.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.pWorkers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.pWorkers.Location = New System.Drawing.Point(0, 147)
+        Me.pWorkers.Name = "pWorkers"
+        Me.pWorkers.Size = New System.Drawing.Size(252, 169)
+        Me.pWorkers.TabIndex = 11
+        '
+        'nWorkers
+        '
+        Me.nWorkers.Location = New System.Drawing.Point(240, 6)
+        Me.nWorkers.Maximum = New Decimal(New Integer() {8, 0, 0, 0})
+        Me.nWorkers.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.nWorkers.Name = "nWorkers"
+        Me.nWorkers.Size = New System.Drawing.Size(48, 23)
+        Me.nWorkers.TabIndex = 15
+        Me.nWorkers.Value = New Decimal(New Integer() {4, 0, 0, 0})
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(181, 8)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(53, 15)
+        Me.Label8.TabIndex = 16
+        Me.Label8.Text = "Workers:"
+        '
+        'bExport
+        '
+        Me.bExport.Enabled = False
+        Me.bExport.Location = New System.Drawing.Point(306, 5)
+        Me.bExport.Name = "bExport"
+        Me.bExport.Size = New System.Drawing.Size(96, 23)
+        Me.bExport.TabIndex = 17
+        Me.bExport.Text = "Export"
+        Me.bExport.UseVisualStyleBackColor = True
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(636, 592)
+        Me.ClientSize = New System.Drawing.Size(724, 592)
         Me.Controls.Add(Me.CanvasX)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.Panel2)
@@ -428,12 +498,16 @@ Partial Class Form1
         Me.CanvasX.ResumeLayout(False)
         CType(Me.Canvas, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel1.ResumeLayout(False)
-        Me.Panel1.PerformLayout()
         CType(Me.tScale, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel2.ResumeLayout(False)
         Me.Panel2.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.Panel3.ResumeLayout(False)
+        Me.Panel3.PerformLayout()
+        Me.Panel4.ResumeLayout(False)
+        Me.Panel4.PerformLayout()
+        CType(Me.nWorkers, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -472,4 +546,10 @@ Partial Class Form1
     Friend WithEvents Label6 As Label
     Friend WithEvents tScale As TrackBar
     Friend WithEvents lScale As Label
+    Friend WithEvents pWorkers As FlowLayoutPanel
+    Friend WithEvents Panel4 As Panel
+    Friend WithEvents Panel3 As Panel
+    Friend WithEvents Label8 As Label
+    Friend WithEvents nWorkers As NumericUpDown
+    Friend WithEvents bExport As Button
 End Class

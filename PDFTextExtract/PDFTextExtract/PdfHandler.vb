@@ -1,4 +1,5 @@
-﻿Imports PDFiumSharp
+﻿Imports System.ComponentModel
+Imports PDFiumSharp
 Imports PDFiumSharp.Types
 
 Public Class PdfHandler
@@ -11,9 +12,19 @@ Public Class PdfHandler
     Private engine As TesseractOCR.Engine = Nothing
     Private disposedValue As Boolean
 
-    Sub New(initialScale As Integer)
+    Private bgWorkers As List(Of BackgroundWorker)
+    Private CapturedData As List(Of ExtractedData)
+
+    Private startTime As Date
+    Private stopTime As Date
+
+    Public ReadOnly Property runningTime As TimeSpan
+
+    Public Event WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs)
+    Public Event WorkersCompleted(sender As Object, data As List(Of ExtractedData), workingTime As TimeSpan)
+
+    Sub New()
         imageHandler = New Imager
-        imageHandler.SetScale(initialScale)
 
         engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
     End Sub
@@ -87,18 +98,100 @@ Public Class PdfHandler
         End Using
     End Function
 
-    Public Function ExtractAllData(regio As FS_RECTF) As List(Of ExtractedData)
-        Dim data As New List(Of ExtractedData)
+    Public Sub BeginExtractAllData(regio As FS_RECTF, workers As Integer)
         imageHandler.SetClippingPath(CInt(regio.Left), CInt(regio.Top), CInt(regio.Right), CInt(regio.Bottom))
 
-        For Each page In currentDocument.Pages
-            Using p = engine.Process(imageHandler.ConvertPage(page))
-                data.Add(New ExtractedData(p.MeanConfidence, p.Text, page.Index))
-            End Using
-        Next
+        CapturedData = New List(Of ExtractedData)
 
-        Return data
-    End Function
+        startTime = Now
+        StartWorkers(workers)
+    End Sub
+
+    Public Sub StartWorkers(workers As Integer)
+        bgWorkers = New List(Of BackgroundWorker)
+
+        For i As Integer = 0 To workers - 1
+            Dim worker As New BackgroundWorker With {
+                .WorkerReportsProgress = True,
+                .WorkerSupportsCancellation = True
+            }
+
+            AddHandler worker.ProgressChanged, AddressOf bgWorkerProgressChangedEventHandler
+            AddHandler worker.RunWorkerCompleted, AddressOf bgWorkerRunWorkerCompletedEventHandler
+            AddHandler worker.DoWork, AddressOf bgWorkerDoWorkHandler
+
+            worker.RunWorkerAsync(New workerInfo With {.start = i, .skip = workers, .ref = worker})
+            bgWorkers.Add(worker)
+        Next
+    End Sub
+
+    Public Sub CancelWorkers()
+        If bgWorkers Is Nothing Then Exit Sub
+
+        For Each worker In bgWorkers
+            If Not worker.CancellationPending Then worker.CancelAsync()
+        Next
+    End Sub
+
+    Private Sub bgWorkerDoWorkHandler(sender As Object, e As DoWorkEventArgs)
+        Dim worker = DirectCast(e.Argument, workerInfo).ref
+        Dim startPage As Integer = DirectCast(e.Argument, workerInfo).start
+        Dim skip As Integer = DirectCast(e.Argument, workerInfo).skip
+        Dim LocalCapturedData As New List(Of ExtractedData)
+        Dim proc As Double = 0.0
+
+        Dim pagesToProcess = Math.Ceiling(GetPageCount() / skip)
+
+        Using eng = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
+            For i As Integer = startPage To GetPageCount() - 1 Step skip
+                If worker.CancellationPending Then
+                    LocalCapturedData = Nothing
+                    worker.ReportProgress(100, startPage)
+                    e.Cancel = True
+                    Exit Sub
+                End If
+
+                Using p = eng.Process(imageHandler.ConvertPage(currentDocument.Pages(i)))
+                    LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text, i))
+                End Using
+
+                proc += 100 / pagesToProcess
+                worker.ReportProgress(CInt(proc), startPage)
+            Next
+        End Using
+        worker.ReportProgress(100, startPage)
+
+        e.Result = LocalCapturedData
+    End Sub
+
+    Private Sub bgWorkerRunWorkerCompletedEventHandler(sender As Object, e As RunWorkerCompletedEventArgs)
+        If Not e.Cancelled And e.Error Is Nothing Then
+
+            CapturedData.AddRange(DirectCast(e.Result, List(Of ExtractedData)))
+
+            If CapturedData.Count = GetPageCount() Then
+                stopTime = Now
+
+                _runningTime = stopTime.Subtract(startTime)
+
+                RaiseEvent WorkersCompleted(Me, CapturedData, runningTime)
+
+                For Each worker In bgWorkers
+                    worker.Dispose()
+                Next
+            End If
+        End If
+    End Sub
+
+    Private Sub bgWorkerProgressChangedEventHandler(sender As Object, e As ProgressChangedEventArgs)
+        RaiseEvent WorkerProgressChanged(sender, e)
+    End Sub
+
+    Private Class workerInfo
+        Property start As Integer
+        Property skip As Integer
+        Property ref As BackgroundWorker
+    End Class
 #Region "Dispose"
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
