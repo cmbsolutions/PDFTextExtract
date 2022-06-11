@@ -41,7 +41,6 @@ Partial Class Form1
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Panel3 = New System.Windows.Forms.Panel()
         Me.rResult = New System.Windows.Forms.RichTextBox()
-        Me.pWorkers = New System.Windows.Forms.FlowLayoutPanel()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.bReset = New System.Windows.Forms.Button()
         Me.lScale = New System.Windows.Forms.Label()
@@ -51,6 +50,7 @@ Partial Class Form1
         Me.Label6 = New System.Windows.Forms.Label()
         Me.tConf = New System.Windows.Forms.TextBox()
         Me.bTest = New System.Windows.Forms.Button()
+        Me.pWorkers = New System.Windows.Forms.FlowLayoutPanel()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.bExport = New System.Windows.Forms.Button()
         Me.Label8 = New System.Windows.Forms.Label()
@@ -248,7 +248,7 @@ Partial Class Form1
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel3.Location = New System.Drawing.Point(0, 147)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(252, 220)
+        Me.Panel3.Size = New System.Drawing.Size(252, 143)
         Me.Panel3.TabIndex = 17
         '
         'rResult
@@ -257,20 +257,9 @@ Partial Class Form1
         Me.rResult.Location = New System.Drawing.Point(0, 0)
         Me.rResult.Name = "rResult"
         Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(252, 220)
+        Me.rResult.Size = New System.Drawing.Size(252, 143)
         Me.rResult.TabIndex = 11
         Me.rResult.Text = ""
-        '
-        'pWorkers
-        '
-        Me.pWorkers.BackColor = System.Drawing.SystemColors.WindowFrame
-        Me.pWorkers.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.pWorkers.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pWorkers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.pWorkers.Location = New System.Drawing.Point(0, 367)
-        Me.pWorkers.Name = "pWorkers"
-        Me.pWorkers.Size = New System.Drawing.Size(252, 169)
-        Me.pWorkers.TabIndex = 11
         '
         'Panel4
         '
@@ -369,6 +358,18 @@ Partial Class Form1
         Me.bTest.TabIndex = 9
         Me.bTest.Text = "Test region"
         Me.bTest.UseVisualStyleBackColor = True
+        '
+        'pWorkers
+        '
+        Me.pWorkers.AutoScroll = True
+        Me.pWorkers.BackColor = System.Drawing.SystemColors.WindowFrame
+        Me.pWorkers.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.pWorkers.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.pWorkers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.pWorkers.Location = New System.Drawing.Point(0, 290)
+        Me.pWorkers.Name = "pWorkers"
+        Me.pWorkers.Size = New System.Drawing.Size(252, 246)
+        Me.pWorkers.TabIndex = 11
         '
         'Panel2
         '

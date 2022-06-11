@@ -8,6 +8,7 @@ Public Class Form1
     Private RC As Rectangle
     Private screenPtA, screenPtB As Point
     Private boxPta, boxPtb As Point
+    Private dragging As Boolean = False
     Private _localImg As Image
     Private WithEvents pdfHandler As PDFTextExtract.PdfHandler
     Private Delegate Sub pdfHandler_WorkerProgressChangedDelegate(sender As Object, e As ProgressChangedEventArgs)
@@ -16,6 +17,8 @@ Public Class Form1
 
     Private _currentZoomFactor As Double = 1.0
 
+    Dim lt As New Point(0, 0)
+    Dim rb As New Point(0, 0)
 
 #Region "selection rectangle"
     Private Sub Canvas_MouseDown(sender As Object, e As MouseEventArgs) Handles Canvas.MouseDown
@@ -26,11 +29,12 @@ Public Class Form1
             screenPtB = screenPtA
             RC = NormalizedRC(screenPtA, screenPtB)
             ControlPaint.DrawReversibleFrame(RC, Color.Black, FrameStyle.Dashed)
+            dragging = True
         End If
     End Sub
 
     Private Sub Canvas_MouseMove(sender As Object, e As MouseEventArgs) Handles Canvas.MouseMove
-        If e.Button = Windows.Forms.MouseButtons.Left Then
+        If e.Button = Windows.Forms.MouseButtons.Left And dragging Then
             ControlPaint.DrawReversibleFrame(RC, Color.Black, FrameStyle.Dashed)
             screenPtB = Cursor.Position
             RC = NormalizedRC(screenPtA, screenPtB)
@@ -39,7 +43,7 @@ Public Class Form1
     End Sub
 
     Private Sub Canvas_MouseUp(sender As Object, e As MouseEventArgs) Handles Canvas.MouseUp
-        If e.Button = Windows.Forms.MouseButtons.Left Then
+        If e.Button = Windows.Forms.MouseButtons.Left And dragging Then
             Cursor.Clip = Nothing
             Dim pb As PictureBox = CType(sender, PictureBox)
             RC = pb.RectangleToClient(RC)
@@ -50,11 +54,21 @@ Public Class Form1
             rect.Width = Convert.ToInt32(RC.Width / _currentZoomFactor)
             rect.Height = Convert.ToInt32(RC.Height / _currentZoomFactor)
 
+            lt.X = rect.X
+            lt.Y = rect.Y
+            rb.X = rect.Width
+            rb.Y = rect.Height
+
             tX.Text = rect.X.ToString
             tY.Text = rect.Y.ToString
             tW.Text = rect.Width.ToString
             tH.Text = rect.Height.ToString
+
+            RedrawCanvas()
         End If
+
+
+        dragging = False
     End Sub
     Public Function NormalizedRC(ByVal ptA As Point, ByVal ptB As Point) As Rectangle
         Return New Rectangle(Math.Min(ptA.X, ptB.X), Math.Min(ptA.Y, ptB.Y), Math.Abs(ptA.X - ptB.X), Math.Abs(ptA.Y - ptB.Y))
@@ -111,8 +125,9 @@ Public Class Form1
     Private Sub RedrawCanvas()
         If _localImg Is Nothing Then Exit Sub
         Dim zbmp As New Bitmap(_localImg, Convert.ToInt32(_localImg.Width * _currentZoomFactor), Convert.ToInt32(_localImg.Height * _currentZoomFactor))
-        Dim g = Graphics.FromImage(zbmp)
-
+        Using g = Graphics.FromImage(zbmp)
+            g.DrawRectangle(New Pen(Color.Red, 2), CInt(lt.X * _currentZoomFactor), CInt(lt.Y * _currentZoomFactor), CInt(rb.X * _currentZoomFactor), CInt(rb.Y * _currentZoomFactor))
+        End Using
         Canvas.Image = zbmp
     End Sub
 
@@ -195,7 +210,7 @@ Public Class Form1
         Dim data As PDFTextExtract.ExtractedData
 
         Dim renderTask = Task.Run(Function()
-                                      Return pdfHandler.extractData(CInt(tX.Text), CInt(tY.Text), CInt(tW.Text), CInt(tH.Text))
+                                      Return pdfHandler.extractData(lt.X, lt.Y, rb.X, rb.Y)
                                   End Function)
         data = Await renderTask.ConfigureAwait(True)
 
@@ -218,7 +233,7 @@ Public Class Form1
     Private Sub bExtractAll_Click(sender As Object, e As EventArgs) Handles bExtractAll.Click
         ManageWorkers()
 
-        pdfHandler.BeginExtractAllData(CInt(tX.Text), CInt(tY.Text), CInt(tW.Text), CInt(tH.Text), CInt(nWorkers.Value))
+        pdfHandler.BeginExtractAllData(lt.X, lt.Y, rb.X, rb.Y, CInt(nWorkers.Value))
     End Sub
 
     Private Sub tScale_Scroll(sender As Object, e As EventArgs) Handles tScale.Scroll
