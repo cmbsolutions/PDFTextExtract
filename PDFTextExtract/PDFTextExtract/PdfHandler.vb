@@ -81,6 +81,18 @@ Public Class PdfHandler
     End Sub
 #End Region
 
+    Public Sub ExtractDataWithImage(imageLocation As String)
+        Dim image = imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx))
+        Dim filename As String = $"{Now:yyyyMMddhhmmss}.png"
+
+        image.Save(IO.Path.Combine(imageLocation, filename), TesseractOCR.Enums.ImageFormat.Png)
+
+        Using page = engine.Process(image)
+            Dim d As New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx)
+
+            IO.File.WriteAllText(IO.Path.Combine(imageLocation, $"{filename}.txt"), $"{currentPageIdx};{page.MeanConfidence};{page.Text}")
+        End Using
+    End Sub
 
     Public Function extractData() As ExtractedData
         imageHandler.ResetClippingPath()
@@ -90,16 +102,16 @@ Public Class PdfHandler
         End Using
     End Function
 
-    Public Function extractData(regio As FS_RECTF) As ExtractedData
-        imageHandler.SetClippingPath(CInt(regio.Left), CInt(regio.Top), CInt(regio.Right), CInt(regio.Bottom))
+    Public Function extractData(x As Integer, y As Integer, w As Integer, h As Integer) As ExtractedData
+        imageHandler.SetClippingPath(x, y, w, h)
 
         Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
             Return New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx)
         End Using
     End Function
 
-    Public Sub BeginExtractAllData(regio As FS_RECTF, workers As Integer)
-        imageHandler.SetClippingPath(CInt(regio.Left), CInt(regio.Top), CInt(regio.Right), CInt(regio.Bottom))
+    Public Sub BeginExtractAllData(x As Integer, y As Integer, w As Integer, h As Integer, workers As Integer)
+        imageHandler.SetClippingPath(x, y, w, h)
 
         CapturedData = New List(Of ExtractedData)
 
@@ -107,6 +119,7 @@ Public Class PdfHandler
         StartWorkers(workers)
     End Sub
 
+#Region "Workers"
     Public Sub StartWorkers(workers As Integer)
         bgWorkers = New List(Of BackgroundWorker)
 
@@ -175,12 +188,14 @@ Public Class PdfHandler
                 _runningTime = stopTime.Subtract(startTime)
 
                 RaiseEvent WorkersCompleted(Me, CapturedData, runningTime)
-
-                For Each worker In bgWorkers
-                    worker.Dispose()
-                Next
             End If
+        Else
+            CapturedData = Nothing
         End If
+
+        For Each worker In bgWorkers
+            worker.Dispose()
+        Next
     End Sub
 
     Private Sub bgWorkerProgressChangedEventHandler(sender As Object, e As ProgressChangedEventArgs)
@@ -192,6 +207,8 @@ Public Class PdfHandler
         Property skip As Integer
         Property ref As BackgroundWorker
     End Class
+
+#End Region
 #Region "Dispose"
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then

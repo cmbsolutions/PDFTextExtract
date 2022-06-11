@@ -1,7 +1,6 @@
 Imports PDFiumSharp
 Imports PDFiumSharp.Types
 Imports ImageMagick
-Imports PDFiumCore
 
 Public Class Imager
     Implements IDisposable
@@ -41,7 +40,7 @@ Public Class Imager
             pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
             Dim renderedPage As New IO.MemoryStream
-            bm.Save(renderedPage, 600, 600)
+            bm.Save(renderedPage, 72, 72)
             renderedPage.Position = 0
             Return renderedPage
         End Using
@@ -58,7 +57,7 @@ Public Class Imager
             pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
             Using ms1 As New IO.MemoryStream
-                bm.Save(ms1, 600, 600)
+                bm.Save(ms1, 72, 72)
                 ms1.Position = 0
                 Using img As New ImageMagick.MagickImage(ms1)
 

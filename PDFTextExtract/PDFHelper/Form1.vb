@@ -1,7 +1,5 @@
 ﻿Imports System.ComponentModel
 Imports System.Text.RegularExpressions
-Imports PDFiumSharp
-Imports PDFiumSharp.Types
 
 Public Class Form1
     Private currentPdf As String
@@ -193,15 +191,13 @@ Public Class Form1
         RedrawCanvas()
     End Sub
 
-    Private Async Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+    Private Async Sub Button4_Click(sender As Object, e As EventArgs) Handles bTest.Click
         Dim data As PDFTextExtract.ExtractedData
 
         Dim renderTask = Task.Run(Function()
-                                      Return pdfHandler.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
+                                      Return pdfHandler.extractData(CInt(tX.Text), CInt(tY.Text), CInt(tW.Text), CInt(tH.Text))
                                   End Function)
         data = Await renderTask.ConfigureAwait(True)
-
-        'data = pdfHandler.extractData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)))
 
         If data.confidence < 0.5 Then
             tConf.BackColor = Color.Salmon
@@ -222,7 +218,7 @@ Public Class Form1
     Private Sub bExtractAll_Click(sender As Object, e As EventArgs) Handles bExtractAll.Click
         ManageWorkers()
 
-        pdfHandler.BeginExtractAllData(New FS_RECTF(CSng(tX.Text), CSng(tY.Text), CSng(tW.Text), CSng(tH.Text)), CInt(nWorkers.Value))
+        pdfHandler.BeginExtractAllData(CInt(tX.Text), CInt(tY.Text), CInt(tW.Text), CInt(tH.Text), CInt(nWorkers.Value))
     End Sub
 
     Private Sub tScale_Scroll(sender As Object, e As EventArgs) Handles tScale.Scroll
@@ -278,24 +274,24 @@ Public Class Form1
 
         For i As Integer = 0 To CInt(nWorkers.Value) - 1
             Dim l As New Label With {
-                .ForeColor = System.Drawing.Color.Yellow,
-                .Location = New System.Drawing.Point(3, 0),
+                .ForeColor = Color.Yellow,
+                .Location = New Point(3, 0),
                 .Name = $"wLabel{i}",
-                .Size = New System.Drawing.Size(250, 15),
+                .Size = New Size(250, 15),
                 .TabIndex = 1,
                 .Text = $"Worker {i}",
-                .TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                .TextAlign = ContentAlignment.MiddleCenter,
                 .Visible = True,
                 .Tag = i
             }
 
             Dim p As New ProgressBar With {
-                .Location = New System.Drawing.Point(1, 16),
-                .Margin = New System.Windows.Forms.Padding(1),
+                .Location = New Point(1, 16),
+                .Margin = New Padding(1),
                 .Name = $"pbWorker{i}",
-                .Size = New System.Drawing.Size(250, 15),
+                .Size = New Size(250, 15),
                 .Step = 1,
-                .Style = System.Windows.Forms.ProgressBarStyle.Continuous,
+                .Style = ProgressBarStyle.Continuous,
                 .TabIndex = 0,
                 .Value = 0,
                 .Visible = True,
@@ -308,10 +304,10 @@ Public Class Form1
         Dim b As New Button With {
             .Name = "bCancelWorkers",
             .ForeColor = Color.Red,
-            .Location = New System.Drawing.Point(3, 0),
-            .Size = New System.Drawing.Size(250, 32),
+            .Location = New Point(3, 0),
+            .Size = New Size(250, 32),
             .Text = "!!Cancel all workers!!",
-            .TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+            .TextAlign = ContentAlignment.MiddleCenter,
             .Visible = True
         }
 
@@ -339,7 +335,17 @@ Public Class Form1
             End Using
         End If
 
+        bExport.Enabled = False
+        exportData = Nothing
         MessageBox.Show($"Captured data exported!")
+    End Sub
+
+    Private Sub bSaveTest_Click(sender As Object, e As EventArgs) Handles bSaveTest.Click
+        If fbd.ShowDialog() = DialogResult.OK Then
+            pdfHandler.ExtractDataWithImage(fbd.SelectedPath)
+
+            MessageBox.Show("Done")
+        End If
     End Sub
 
     Private Sub pdfHandler_WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles pdfHandler.WorkerProgressChanged
@@ -357,6 +363,8 @@ Public Class Form1
         exportData = data
         bExport.Enabled = True
 
-        MessageBox.Show($"All {pdfHandler.GetPageCount} pages are processed with {nWorkers.Value} workers in {workingTime.Hours} hours, {workingTime.Minutes} minutes and {workingTime.Seconds} seconds. You can now export the results.")
+        Dim accuracy = exportData.Average(Function(c) c.confidence)
+
+        MessageBox.Show($"All {pdfHandler.GetPageCount} pages are processed with {nWorkers.Value} workers with an accuracy of {accuracy}% in {workingTime.Hours} hours, {workingTime.Minutes} minutes and {workingTime.Seconds} seconds. You can now export the results.")
     End Sub
 End Class
