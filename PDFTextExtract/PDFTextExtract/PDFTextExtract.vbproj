@@ -35,8 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-x64" Version="11.1.2" />
-    <PackageReference Include="Magick.NET.Core" Version="11.1.2" />
+    <PackageReference Include="Magick.NET-Q16-x64" Version="11.2.0" />
+    <PackageReference Include="Magick.NET.Core" Version="11.2.0" />
     <PackageReference Include="PDFium.Linux.x64" Version="1.0.0" />
     <PackageReference Include="PDFium.Windows" Version="1.0.0" />
     <PackageReference Include="PDFiumSharpV2" Version="1.0.1" />
@@ -53,6 +53,9 @@
     <None Update="C:\Users\Maurice\.nuget\packages\tesseractocr\5.1.9\build\\..\x86\tesseract51.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Update="tessdata\address.traineddata">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="tessdata\eng.traineddata">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -60,7 +63,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="tessdata\nld.traineddata">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="tessdata\osd.traineddata">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -77,6 +80,14 @@
     <None Update="C:\Users\Maurice\.nuget\packages\pdfium.windows\1.0.0\build\pdfium_x86.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\Maurice\.nuget\packages\pdfium.windows\1.0.0\build\pdfium_x86.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\Maurice\.nuget\packages\pdfium.windows\1.0.0\build\pdfium_x86.dll" />
   </ItemGroup>
 
 </Project>
