@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.Text.RegularExpressions
+Imports PDFTextExtract
 
 Public Class Form1
     Private currentPdf As String
@@ -59,10 +60,15 @@ Public Class Form1
             rb.X = rect.Width
             rb.Y = rect.Height
 
-            tX.Text = rect.X.ToString
-            tY.Text = rect.Y.ToString
-            tW.Text = rect.Width.ToString
-            tH.Text = rect.Height.ToString
+            Dim idx = pdfHandler.AddClippingPath(lt.X, lt.Y, rb.X, rb.Y)
+            Dim itm As New ListViewItem
+            itm.SubItems(0).Text = idx.ToString
+            itm.SubItems.Add(lt.X.ToString)
+            itm.SubItems.Add(lt.Y.ToString)
+            itm.SubItems.Add(rb.X.ToString)
+            itm.SubItems.Add(rb.Y.ToString)
+
+            lRegions.Items.Add(itm)
 
             RedrawCanvas()
         End If
@@ -126,10 +132,23 @@ Public Class Form1
         If _localImg Is Nothing Then Exit Sub
         Dim zbmp As New Bitmap(_localImg, Convert.ToInt32(_localImg.Width * _currentZoomFactor), Convert.ToInt32(_localImg.Height * _currentZoomFactor))
         Using g = Graphics.FromImage(zbmp)
-            g.DrawRectangle(New Pen(Color.Red, 2), CInt(lt.X * _currentZoomFactor), CInt(lt.Y * _currentZoomFactor), CInt(rb.X * _currentZoomFactor), CInt(rb.Y * _currentZoomFactor))
+
+            For Each itm As ListViewItem In lRegions.Items
+                Dim x = CInt(itm.SubItems.Item(1).Text)
+                Dim y = CInt(itm.SubItems.Item(2).Text)
+                Dim w = CInt(itm.SubItems.Item(3).Text)
+                Dim h = CInt(itm.SubItems.Item(4).Text)
+
+                g.DrawRectangle(New Pen(RandomColor, 2), CInt(x * _currentZoomFactor), CInt(y * _currentZoomFactor), CInt(w * _currentZoomFactor), CInt(h * _currentZoomFactor))
+            Next
         End Using
         Canvas.Image = zbmp
     End Sub
+
+    Private rnd As New Random
+    Private Function RandomColor() As Color
+        Return Color.FromArgb(255, rnd.Next(0, 255), rnd.Next(0, 255), rnd.Next(0, 255))
+    End Function
 
     Private Sub ResizeAndCenterCanvas()
         If _localImg Is Nothing Then Exit Sub
@@ -206,13 +225,15 @@ Public Class Form1
         RedrawCanvas()
     End Sub
 
-    Private Async Sub Button4_Click(sender As Object, e As EventArgs) Handles bTest.Click
-        Dim data As PDFTextExtract.ExtractedData
+    Private Async Sub bTest_Click(sender As Object, e As EventArgs) Handles bTest.Click
+        Dim datas As List(Of ExtractedData)
 
         Dim renderTask = Task.Run(Function()
-                                      Return pdfHandler.extractData(lt.X, lt.Y, rb.X, rb.Y)
+                                      Return pdfHandler.extractData()
                                   End Function)
-        data = Await renderTask.ConfigureAwait(True)
+        datas = Await renderTask.ConfigureAwait(True)
+
+        Dim data As New ExtractedData(datas.Average(Function(c) c.confidence), Strings.Join(datas.Select(Of String)(Function(c) c.text).ToArray), datas.First.pageIndex, 0)
 
         If data.confidence < 0.5 Then
             tConf.BackColor = Color.Salmon
@@ -233,7 +254,7 @@ Public Class Form1
     Private Sub bExtractAll_Click(sender As Object, e As EventArgs) Handles bExtractAll.Click
         ManageWorkers()
 
-        pdfHandler.BeginExtractAllData(lt.X, lt.Y, rb.X, rb.Y, CInt(nWorkers.Value))
+        pdfHandler.BeginExtractAllData(CInt(nWorkers.Value))
     End Sub
 
     Private Sub tScale_Scroll(sender As Object, e As EventArgs) Handles tScale.Scroll
@@ -243,10 +264,8 @@ Public Class Form1
 
         LoadPage(True)
 
-        tX.Text = "0"
-        tY.Text = "0"
-        tW.Text = "0"
-        tH.Text = "0"
+        pdfHandler.ResetClippingPaths()
+        lRegions.Items.Clear()
     End Sub
 
     Private Sub handleButtons()
@@ -342,9 +361,9 @@ Public Class Form1
         If exportData.Count > 0 AndAlso sfd.ShowDialog = DialogResult.OK Then
             Using fs As New IO.FileStream(sfd.FileName, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
                 Using sw As New IO.StreamWriter(fs, System.Text.Encoding.Unicode)
-                    sw.WriteLine("id;confidence;text")
+                    sw.WriteLine("PageIndex;RegionIndex;Region;Accuracy;CapturedText")
                     For Each d In exportData
-                        sw.WriteLine($"{d.pageIndex};{d.confidence};{Regex.Replace(d.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
+                        sw.WriteLine($"{d.pageIndex};{d.clipIdx};{pdfHandler.clippingPaths.First(Function(c) c.idx = d.clipIdx).region};{d.confidence};{Regex.Replace(d.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
                     Next
                 End Using
             End Using
@@ -360,6 +379,36 @@ Public Class Form1
             pdfHandler.ExtractDataWithImage(fbd.SelectedPath)
 
             MessageBox.Show("Done")
+        End If
+    End Sub
+
+    Private Sub bAdd_Click(sender As Object, e As EventArgs) Handles bAdd.Click
+        Dim idx = pdfHandler.AddClippingPath(lt.X, lt.Y, rb.X, rb.Y)
+        Dim itm As New ListViewItem
+        itm.SubItems(0).Text = idx.ToString
+        itm.SubItems.Add(lt.X.ToString)
+        itm.SubItems.Add(lt.Y.ToString)
+        itm.SubItems.Add(rb.X.ToString)
+        itm.SubItems.Add(rb.Y.ToString)
+
+        lRegions.Items.Add(itm)
+    End Sub
+
+    Private Sub bClear_Click(sender As Object, e As EventArgs) Handles bClear.Click
+        If MessageBox.Show("Weet je zeker dat je alle regio's wilt verwijderen?", "Verwijderen", MessageBoxButtons.YesNo) = DialogResult.Yes Then
+            pdfHandler.ResetClippingPaths()
+            lRegions.Items.Clear()
+        End If
+    End Sub
+
+    Private Sub bDel_Click(sender As Object, e As EventArgs) Handles bDel.Click
+        If lRegions.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim idx As Integer = CInt(lRegions.SelectedItems(0).Text)
+        Dim itm = pdfHandler.clippingPaths.FirstOrDefault(Function(c) c.idx = idx)
+
+        If itm IsNot Nothing Then
+            pdfHandler.RemoveClippingPath(itm)
         End If
     End Sub
 

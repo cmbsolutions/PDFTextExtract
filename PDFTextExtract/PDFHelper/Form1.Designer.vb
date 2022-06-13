@@ -24,14 +24,6 @@ Partial Class Form1
     Private Sub InitializeComponent()
         Me.bPdf = New System.Windows.Forms.Button()
         Me.ofdPdf = New System.Windows.Forms.OpenFileDialog()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.tX = New System.Windows.Forms.TextBox()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.tH = New System.Windows.Forms.TextBox()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.tW = New System.Windows.Forms.TextBox()
-        Me.tY = New System.Windows.Forms.TextBox()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
@@ -42,6 +34,15 @@ Partial Class Form1
         Me.Panel3 = New System.Windows.Forms.Panel()
         Me.rResult = New System.Windows.Forms.RichTextBox()
         Me.Panel4 = New System.Windows.Forms.Panel()
+        Me.lRegions = New System.Windows.Forms.ListView()
+        Me.cIdx = New System.Windows.Forms.ColumnHeader()
+        Me.cLeft = New System.Windows.Forms.ColumnHeader()
+        Me.ctop = New System.Windows.Forms.ColumnHeader()
+        Me.cright = New System.Windows.Forms.ColumnHeader()
+        Me.cBottom = New System.Windows.Forms.ColumnHeader()
+        Me.bClear = New System.Windows.Forms.Button()
+        Me.bDel = New System.Windows.Forms.Button()
+        Me.bAdd = New System.Windows.Forms.Button()
         Me.bReset = New System.Windows.Forms.Button()
         Me.lScale = New System.Windows.Forms.Label()
         Me.bSaveTest = New System.Windows.Forms.Button()
@@ -90,74 +91,6 @@ Partial Class Form1
         Me.ofdPdf.DefaultExt = "pdf"
         Me.ofdPdf.Filter = "PDF files|*.pdf"
         Me.ofdPdf.Title = "Select PDF file"
-        '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(120, 35)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(46, 15)
-        Me.Label4.TabIndex = 10
-        Me.Label4.Text = "Height:"
-        '
-        'tX
-        '
-        Me.tX.Location = New System.Drawing.Point(32, 7)
-        Me.tX.Name = "tX"
-        Me.tX.ReadOnly = True
-        Me.tX.Size = New System.Drawing.Size(68, 23)
-        Me.tX.TabIndex = 3
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(124, 10)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(42, 15)
-        Me.Label3.TabIndex = 9
-        Me.Label3.Text = "Width:"
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(9, 10)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(17, 15)
-        Me.Label1.TabIndex = 7
-        Me.Label1.Text = "X:"
-        '
-        'tH
-        '
-        Me.tH.Location = New System.Drawing.Point(172, 32)
-        Me.tH.Name = "tH"
-        Me.tH.ReadOnly = True
-        Me.tH.Size = New System.Drawing.Size(68, 23)
-        Me.tH.TabIndex = 6
-        '
-        'Label2
-        '
-        Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(9, 35)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(17, 15)
-        Me.Label2.TabIndex = 8
-        Me.Label2.Text = "Y:"
-        '
-        'tW
-        '
-        Me.tW.Location = New System.Drawing.Point(172, 7)
-        Me.tW.Name = "tW"
-        Me.tW.ReadOnly = True
-        Me.tW.Size = New System.Drawing.Size(68, 23)
-        Me.tW.TabIndex = 5
-        '
-        'tY
-        '
-        Me.tY.Location = New System.Drawing.Point(32, 32)
-        Me.tY.Name = "tY"
-        Me.tY.ReadOnly = True
-        Me.tY.Size = New System.Drawing.Size(68, 23)
-        Me.tY.TabIndex = 4
         '
         'Button1
         '
@@ -246,9 +179,9 @@ Partial Class Form1
         '
         Me.Panel3.Controls.Add(Me.rResult)
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel3.Location = New System.Drawing.Point(0, 147)
+        Me.Panel3.Location = New System.Drawing.Point(0, 202)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(252, 143)
+        Me.Panel3.Size = New System.Drawing.Size(252, 136)
         Me.Panel3.TabIndex = 17
         '
         'rResult
@@ -257,38 +190,113 @@ Partial Class Form1
         Me.rResult.Location = New System.Drawing.Point(0, 0)
         Me.rResult.Name = "rResult"
         Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(252, 143)
+        Me.rResult.Size = New System.Drawing.Size(252, 136)
         Me.rResult.TabIndex = 11
         Me.rResult.Text = ""
         '
         'Panel4
         '
         Me.Panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Panel4.Controls.Add(Me.lRegions)
+        Me.Panel4.Controls.Add(Me.bClear)
+        Me.Panel4.Controls.Add(Me.bDel)
+        Me.Panel4.Controls.Add(Me.bAdd)
         Me.Panel4.Controls.Add(Me.bReset)
         Me.Panel4.Controls.Add(Me.lScale)
         Me.Panel4.Controls.Add(Me.bSaveTest)
         Me.Panel4.Controls.Add(Me.Label5)
-        Me.Panel4.Controls.Add(Me.tW)
         Me.Panel4.Controls.Add(Me.tScale)
         Me.Panel4.Controls.Add(Me.Label6)
-        Me.Panel4.Controls.Add(Me.Label1)
         Me.Panel4.Controls.Add(Me.tConf)
         Me.Panel4.Controls.Add(Me.bTest)
-        Me.Panel4.Controls.Add(Me.Label3)
-        Me.Panel4.Controls.Add(Me.tX)
-        Me.Panel4.Controls.Add(Me.tH)
-        Me.Panel4.Controls.Add(Me.Label4)
-        Me.Panel4.Controls.Add(Me.Label2)
-        Me.Panel4.Controls.Add(Me.tY)
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel4.Location = New System.Drawing.Point(0, 0)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(252, 147)
+        Me.Panel4.Size = New System.Drawing.Size(252, 202)
         Me.Panel4.TabIndex = 18
+        '
+        'lRegions
+        '
+        Me.lRegions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.lRegions.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.cIdx, Me.cLeft, Me.ctop, Me.cright, Me.cBottom})
+        Me.lRegions.Dock = System.Windows.Forms.DockStyle.Top
+        Me.lRegions.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.lRegions.FullRowSelect = True
+        Me.lRegions.GridLines = True
+        Me.lRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable
+        Me.lRegions.LabelWrap = False
+        Me.lRegions.Location = New System.Drawing.Point(0, 0)
+        Me.lRegions.Margin = New System.Windows.Forms.Padding(0)
+        Me.lRegions.MultiSelect = False
+        Me.lRegions.Name = "lRegions"
+        Me.lRegions.ShowGroups = False
+        Me.lRegions.Size = New System.Drawing.Size(248, 94)
+        Me.lRegions.Sorting = System.Windows.Forms.SortOrder.Ascending
+        Me.lRegions.TabIndex = 20
+        Me.lRegions.UseCompatibleStateImageBehavior = False
+        Me.lRegions.View = System.Windows.Forms.View.Details
+        '
+        'cIdx
+        '
+        Me.cIdx.Text = "Id"
+        Me.cIdx.Width = 25
+        '
+        'cLeft
+        '
+        Me.cLeft.Text = "Left"
+        Me.cLeft.Width = 50
+        '
+        'ctop
+        '
+        Me.ctop.Text = "Top"
+        Me.ctop.Width = 50
+        '
+        'cright
+        '
+        Me.cright.Text = "Right"
+        Me.cright.Width = 50
+        '
+        'cBottom
+        '
+        Me.cBottom.Text = "Bottom"
+        Me.cBottom.Width = 50
+        '
+        'bClear
+        '
+        Me.bClear.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.bClear.Image = Global.PDFHelper.My.Resources.Resources.cancel
+        Me.bClear.Location = New System.Drawing.Point(48, 94)
+        Me.bClear.Margin = New System.Windows.Forms.Padding(0)
+        Me.bClear.Name = "bClear"
+        Me.bClear.Size = New System.Drawing.Size(24, 24)
+        Me.bClear.TabIndex = 19
+        Me.bClear.UseVisualStyleBackColor = True
+        '
+        'bDel
+        '
+        Me.bDel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.bDel.Image = Global.PDFHelper.My.Resources.Resources.remove
+        Me.bDel.Location = New System.Drawing.Point(24, 94)
+        Me.bDel.Margin = New System.Windows.Forms.Padding(0)
+        Me.bDel.Name = "bDel"
+        Me.bDel.Size = New System.Drawing.Size(24, 24)
+        Me.bDel.TabIndex = 18
+        Me.bDel.UseVisualStyleBackColor = True
+        '
+        'bAdd
+        '
+        Me.bAdd.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.bAdd.Image = Global.PDFHelper.My.Resources.Resources.add
+        Me.bAdd.Location = New System.Drawing.Point(0, 94)
+        Me.bAdd.Margin = New System.Windows.Forms.Padding(0)
+        Me.bAdd.Name = "bAdd"
+        Me.bAdd.Size = New System.Drawing.Size(24, 24)
+        Me.bAdd.TabIndex = 17
+        Me.bAdd.UseVisualStyleBackColor = True
         '
         'bReset
         '
-        Me.bReset.Location = New System.Drawing.Point(171, 116)
+        Me.bReset.Location = New System.Drawing.Point(169, 171)
         Me.bReset.Name = "bReset"
         Me.bReset.Size = New System.Drawing.Size(73, 23)
         Me.bReset.TabIndex = 12
@@ -298,7 +306,7 @@ Partial Class Form1
         'lScale
         '
         Me.lScale.AutoSize = True
-        Me.lScale.Location = New System.Drawing.Point(192, 67)
+        Me.lScale.Location = New System.Drawing.Point(190, 122)
         Me.lScale.Name = "lScale"
         Me.lScale.Size = New System.Drawing.Size(13, 15)
         Me.lScale.TabIndex = 16
@@ -306,7 +314,7 @@ Partial Class Form1
         '
         'bSaveTest
         '
-        Me.bSaveTest.Location = New System.Drawing.Point(90, 116)
+        Me.bSaveTest.Location = New System.Drawing.Point(88, 171)
         Me.bSaveTest.Name = "bSaveTest"
         Me.bSaveTest.Size = New System.Drawing.Size(73, 23)
         Me.bSaveTest.TabIndex = 11
@@ -316,7 +324,7 @@ Partial Class Form1
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(11, 92)
+        Me.Label5.Location = New System.Drawing.Point(9, 147)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(71, 15)
         Me.Label5.TabIndex = 13
@@ -326,7 +334,7 @@ Partial Class Form1
         '
         Me.tScale.AutoSize = False
         Me.tScale.LargeChange = 1
-        Me.tScale.Location = New System.Drawing.Point(86, 61)
+        Me.tScale.Location = New System.Drawing.Point(84, 116)
         Me.tScale.Minimum = 1
         Me.tScale.Name = "tScale"
         Me.tScale.Size = New System.Drawing.Size(100, 22)
@@ -336,7 +344,7 @@ Partial Class Form1
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(43, 67)
+        Me.Label6.Location = New System.Drawing.Point(41, 122)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(37, 15)
         Me.Label6.TabIndex = 15
@@ -344,7 +352,7 @@ Partial Class Form1
         '
         'tConf
         '
-        Me.tConf.Location = New System.Drawing.Point(90, 89)
+        Me.tConf.Location = New System.Drawing.Point(88, 144)
         Me.tConf.Name = "tConf"
         Me.tConf.ReadOnly = True
         Me.tConf.Size = New System.Drawing.Size(73, 23)
@@ -352,7 +360,7 @@ Partial Class Form1
         '
         'bTest
         '
-        Me.bTest.Location = New System.Drawing.Point(9, 116)
+        Me.bTest.Location = New System.Drawing.Point(7, 171)
         Me.bTest.Name = "bTest"
         Me.bTest.Size = New System.Drawing.Size(73, 23)
         Me.bTest.TabIndex = 9
@@ -366,9 +374,9 @@ Partial Class Form1
         Me.pWorkers.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.pWorkers.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.pWorkers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.pWorkers.Location = New System.Drawing.Point(0, 290)
+        Me.pWorkers.Location = New System.Drawing.Point(0, 338)
         Me.pWorkers.Name = "pWorkers"
-        Me.pWorkers.Size = New System.Drawing.Size(252, 246)
+        Me.pWorkers.Size = New System.Drawing.Size(252, 198)
         Me.pWorkers.TabIndex = 11
         '
         'Panel2
@@ -545,14 +553,6 @@ Partial Class Form1
     End Sub
     Friend WithEvents bPdf As Button
     Friend WithEvents ofdPdf As OpenFileDialog
-    Friend WithEvents Label4 As Label
-    Friend WithEvents tX As TextBox
-    Friend WithEvents Label3 As Label
-    Friend WithEvents Label1 As Label
-    Friend WithEvents tH As TextBox
-    Friend WithEvents Label2 As Label
-    Friend WithEvents tW As TextBox
-    Friend WithEvents tY As TextBox
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button
@@ -586,4 +586,13 @@ Partial Class Form1
     Friend WithEvents bReset As Button
     Friend WithEvents bSaveTest As Button
     Friend WithEvents fbd As FolderBrowserDialog
+    Friend WithEvents bClear As Button
+    Friend WithEvents bDel As Button
+    Friend WithEvents bAdd As Button
+    Friend WithEvents lRegions As ListView
+    Friend WithEvents cIdx As ColumnHeader
+    Friend WithEvents cLeft As ColumnHeader
+    Friend WithEvents ctop As ColumnHeader
+    Friend WithEvents cright As ColumnHeader
+    Friend WithEvents cBottom As ColumnHeader
 End Class

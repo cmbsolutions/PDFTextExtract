@@ -1,4 +1,6 @@
 ﻿Imports System.ComponentModel
+Imports System.Text
+Imports System.Text.RegularExpressions
 Imports PDFiumSharp
 Imports PDFiumSharp.Types
 
@@ -20,6 +22,9 @@ Public Class PdfHandler
 
     Public ReadOnly Property runningTime As TimeSpan
 
+    Public ReadOnly Property clippingPaths As New List(Of ClippingPath)
+    Private AutoResetClippingPaths As Boolean = False
+
     Public Event WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs)
     Public Event WorkersCompleted(sender As Object, data As List(Of ExtractedData), workingTime As TimeSpan)
 
@@ -32,8 +37,11 @@ Public Class PdfHandler
         If IO.File.Exists(file) Then
             If currentDocument IsNot Nothing Then currentDocument.Close()
             _currentDocument = New PdfDocument(file)
+            _currentPageIdx = 0
             _pageSize = New FS_SIZEF(CSng(currentDocument.Pages(currentPageIdx).Width), CSng(currentDocument.Pages(currentPageIdx).Height))
             imageHandler.SetPageSize(pageSize)
+            imageHandler.ResetClippingPath()
+            ResetClippingPaths()
         End If
     End Sub
 
@@ -46,7 +54,6 @@ Public Class PdfHandler
     End Function
 
     Public Function GetRenderedPage() As IO.Stream
-        imageHandler.ResetClippingPath()
         If currentDocument IsNot Nothing Then
             Return imageHandler.RenderCurrentPage(currentDocument.Pages(currentPageIdx))
         Else
@@ -60,15 +67,15 @@ Public Class PdfHandler
 
 #Region "Navigation"
     Public Sub FirstPage()
-        _currentPageIdx = 1
+        _currentPageIdx = 0
     End Sub
 
     Public Sub PreviousPage()
-        If currentPageIdx > 1 Then _currentPageIdx -= 1
+        If currentPageIdx > 0 Then _currentPageIdx -= 1
     End Sub
 
     Public Sub NextPage()
-        If currentDocument IsNot Nothing AndAlso currentPageIdx <= currentDocument.Pages.Count Then _currentPageIdx += 1
+        If currentDocument IsNot Nothing AndAlso currentPageIdx <= currentDocument.Pages.Count - 1 Then _currentPageIdx += 1
     End Sub
 
     Public Sub LastPage()
@@ -76,43 +83,57 @@ Public Class PdfHandler
     End Sub
 
     Public Sub GotoPage(pageNumber As Integer)
-        If currentDocument IsNot Nothing AndAlso pageNumber > 0 AndAlso pageNumber <= currentDocument.Pages.Count Then _currentPageIdx = pageNumber
+        ' pages are counted from 0, so when you ask page 10 we need the 9th index
+        If pageNumber > 0 Then pageNumber -= 1
+
+        If currentDocument IsNot Nothing AndAlso pageNumber > 0 AndAlso pageNumber <= currentDocument.Pages.Count - 1 Then _currentPageIdx = pageNumber
     End Sub
 #End Region
 
     Public Sub ExtractDataWithImage(imageLocation As String)
-        Dim image = imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx))
-        Dim filename As String = $"{Now:yyyyMMddhhmmss}.png"
+        Dim data As New StringBuilder
+        Dim filename As String = $"{Now:yyyyMMddhhmmss}"
 
-        image.Save(IO.Path.Combine(imageLocation, filename), TesseractOCR.Enums.ImageFormat.Png)
+        data.AppendLine("PageIndex;RegionIndex;Region;Accuracy;CapturedText")
+        InitClippingPath()
 
-        Using page = engine.Process(image)
-            Dim d As New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx)
+        For Each clippingPath In clippingPaths
+            imageHandler.SetClippingPath(clippingPath)
 
-            IO.File.WriteAllText(IO.Path.Combine(imageLocation, $"{filename}.txt"), $"{currentPageIdx};{page.MeanConfidence};{page.Text}")
-        End Using
+            Dim image = imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx))
+            image.Save(IO.Path.Combine(imageLocation, $"{filename}_{clippingPath.idx}_{clippingPath.region}.png"), TesseractOCR.Enums.ImageFormat.Png)
+
+            Using page = engine.Process(image)
+                data.AppendLine($"{currentPageIdx};{clippingPath.idx};{clippingPath.region};{page.MeanConfidence};{Regex.Replace(page.Text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
+            End Using
+        Next
+        IO.File.WriteAllText(IO.Path.Combine(imageLocation, $"{filename}.txt"), data.ToString)
+        If AutoResetClippingPaths Then ResetClippingPaths()
     End Sub
 
-    Public Function extractData() As ExtractedData
-        imageHandler.ResetClippingPath()
+    Public Function extractData() As List(Of ExtractedData)
+        Dim data As New List(Of ExtractedData)
 
-        Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
-            Return New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx)
-        End Using
+        InitClippingPath()
+
+        For Each clippingPath In clippingPaths
+            imageHandler.SetClippingPath(clippingPath)
+
+            Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
+                data.Add(New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx, clippingPath.idx))
+            End Using
+            imageHandler.ResetClippingPath()
+        Next
+
+        If AutoResetClippingPaths Then ResetClippingPaths()
+
+        Return data
     End Function
 
-    Public Function extractData(x As Integer, y As Integer, w As Integer, h As Integer) As ExtractedData
-        imageHandler.SetClippingPath(x, y, w, h)
-
-        Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
-            Return New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx)
-        End Using
-    End Function
-
-    Public Sub BeginExtractAllData(x As Integer, y As Integer, w As Integer, h As Integer, workers As Integer)
-        imageHandler.SetClippingPath(x, y, w, h)
-
+    Public Sub BeginExtractAllData(workers As Integer)
         CapturedData = New List(Of ExtractedData)
+
+        InitClippingPath()
 
         startTime = Now
         StartWorkers(workers)
@@ -163,9 +184,11 @@ Public Class PdfHandler
                     Exit Sub
                 End If
 
-                Using p = eng.Process(imageHandler.ConvertPage(currentDocument.Pages(i)))
-                    LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text, i))
-                End Using
+                For Each clippingPath In _clippingPaths
+                    Using p = eng.Process(imageHandler.ConvertPage(currentDocument.Pages(i)))
+                        LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text, i, clippingPath.idx))
+                    End Using
+                Next
 
                 proc += 100 / pagesToProcess
                 worker.ReportProgress(CInt(proc), startPage)
@@ -186,6 +209,7 @@ Public Class PdfHandler
 
                 _runningTime = stopTime.Subtract(startTime)
 
+                If AutoResetClippingPaths Then ResetClippingPaths()
                 RaiseEvent WorkersCompleted(Me, CapturedData, runningTime)
             End If
         Else
@@ -208,6 +232,30 @@ Public Class PdfHandler
     End Class
 
 #End Region
+
+#Region "ClippingPaths"
+    Private Sub InitClippingPath()
+        If _clippingPaths.Count = 0 Then
+            AddClippingPath(0, 0, CInt(Math.Ceiling(pageSize.Width)), CInt(Math.Ceiling(pageSize.Height)))
+            AutoResetClippingPaths = True
+        End If
+    End Sub
+    Public Function AddClippingPath(left As Integer, top As Integer, right As Integer, bottom As Integer) As Integer
+        _clippingPaths.Add(New ClippingPath(left, top, right, bottom))
+        Return clippingPaths.Last.idx
+    End Function
+
+    Public Sub RemoveClippingPath(item As ClippingPath)
+        _clippingPaths.Remove(item)
+    End Sub
+
+    Public Sub ResetClippingPaths()
+        _clippingPaths.Clear()
+    End Sub
+#End Region
+
+
+
 #Region "Dispose"
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then

@@ -9,18 +9,17 @@ Public Class Imager
     Private scale As Integer = 3
 
     Public ReadOnly Property outputImage As TesseractOCR.Pix.Image
-    Public ReadOnly Property pageIndex As Integer
 
     Public Property pageSize As FS_SIZEF
 
-    Public ReadOnly Property clippingPath As MagickGeometry = Nothing
+    Public ReadOnly Property clippingPath As ClippingPath
 
     Public Sub SetPageSize(ps As FS_SIZEF)
         pageSize = ps
     End Sub
 
-    Public Sub SetClippingPath(x As Integer, y As Integer, w As Integer, h As Integer)
-        _clippingPath = New MagickGeometry(x, y, w, h)
+    Public Sub SetClippingPath(path As ClippingPath)
+        _clippingPath = path
     End Sub
 
     Public Sub ResetClippingPath()
@@ -62,7 +61,7 @@ Public Class Imager
                 Using img As New ImageMagick.MagickImage(ms1)
 
                     If clippingPath IsNot Nothing Then
-                        img.Crop(clippingPath)
+                        img.Crop(clippingPath.region)
                         img.RePage()
                     End If
 
