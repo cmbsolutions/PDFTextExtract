@@ -51,7 +51,8 @@ Public Class Imager
 
         Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
 
-            If pdfPage.HasTransparency Then bm.Fill(New FPDF_COLOR(255, 255, 255))
+            'If pdfPage.HasTransparency Then
+            bm.Fill(New FPDF_COLOR(255, 255, 255))
 
             pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 

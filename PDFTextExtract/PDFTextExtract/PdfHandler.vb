@@ -30,6 +30,7 @@ Public Class PdfHandler
 
     Sub New()
         imageHandler = New Imager
+        SetScale(4)
         engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
     End Sub
 

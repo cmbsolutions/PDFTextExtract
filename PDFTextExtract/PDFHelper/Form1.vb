@@ -5,7 +5,7 @@ Imports PDFTextExtract
 Public Class Form1
     Private currentPdf As String
 
-    Private pdfScale As Integer = 3
+    Private pdfScale As Integer = 4
     Private RC As Rectangle
     Private screenPtA, screenPtB As Point
     Private boxPta, boxPtb As Point
