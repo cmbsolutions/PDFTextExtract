@@ -13,6 +13,7 @@ Public Class PdfHandler
     Public ReadOnly Property pageSize As FS_SIZEF
     Private engine As TesseractOCR.Engine = Nothing
     Private disposedValue As Boolean
+    Private pdfScale As Integer = 4
 
     Private bgWorkers As List(Of BackgroundWorker)
     Private CapturedData As List(Of ExtractedData)
@@ -31,6 +32,7 @@ Public Class PdfHandler
     Sub New()
         imageHandler = New Imager
         SetScale(4)
+
         engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
     End Sub
 
@@ -64,6 +66,7 @@ Public Class PdfHandler
 
     Public Sub SetScale(scale As Integer)
         imageHandler.SetScale(scale)
+        pdfScale = scale
     End Sub
 
 #Region "Navigation"
@@ -111,6 +114,15 @@ Public Class PdfHandler
         IO.File.WriteAllText(IO.Path.Combine(imageLocation, $"{filename}.txt"), data.ToString)
         If AutoResetClippingPaths Then ResetClippingPaths()
     End Sub
+
+    Public Function extractData(path As ClippingPath) As ExtractedData
+        imageHandler.SetClippingPath(path)
+
+        Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
+            Return New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx, path.idx)
+        End Using
+
+    End Function
 
     Public Function extractData() As List(Of ExtractedData)
         Dim data As New List(Of ExtractedData)
@@ -177,23 +189,32 @@ Public Class PdfHandler
         Dim pagesToProcess = Math.Ceiling(GetPageCount() / skip)
 
         Using eng = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
-            For i As Integer = startPage To GetPageCount() - 1 Step skip
-                If worker.CancellationPending Then
-                    LocalCapturedData = Nothing
-                    worker.ReportProgress(100, startPage)
-                    e.Cancel = True
-                    Exit Sub
-                End If
+            Using imgHandler As New Imager
+                imgHandler.SetPageSize(pageSize)
+                imgHandler.SetScale(pdfScale)
 
-                For Each clippingPath In _clippingPaths
-                    Using p = eng.Process(imageHandler.ConvertPage(currentDocument.Pages(i)))
-                        LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text, i, clippingPath.idx))
-                    End Using
+                For i As Integer = startPage To GetPageCount() - 1 Step skip
+                    If worker.CancellationPending Then
+                        LocalCapturedData = Nothing
+                        worker.ReportProgress(100, startPage)
+                        e.Cancel = True
+                        Exit Sub
+                    End If
+
+                    For Each clippingPath In _clippingPaths
+                        imgHandler.SetClippingPath(clippingPath)
+
+                        Using p = eng.Process(imgHandler.ConvertPage(currentDocument.Pages(i)))
+                            LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text, i, clippingPath.idx))
+                        End Using
+                        imgHandler.ResetClippingPath()
+                    Next
+
+                    proc += 100 / pagesToProcess
+                    worker.ReportProgress(CInt(proc), startPage)
                 Next
 
-                proc += 100 / pagesToProcess
-                worker.ReportProgress(CInt(proc), startPage)
-            Next
+            End Using
         End Using
         worker.ReportProgress(100, startPage)
 
@@ -205,7 +226,7 @@ Public Class PdfHandler
 
             CapturedData.AddRange(DirectCast(e.Result, List(Of ExtractedData)))
 
-            If CapturedData.Count = GetPageCount() Then
+            If CInt(CapturedData.Count / clippingPaths.Count) = GetPageCount() Then
                 stopTime = Now
 
                 _runningTime = stopTime.Subtract(startTime)

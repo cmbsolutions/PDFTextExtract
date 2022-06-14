@@ -42,8 +42,6 @@ Partial Class Form1
         Me.cBottom = New System.Windows.Forms.ColumnHeader()
         Me.bClear = New System.Windows.Forms.Button()
         Me.bDel = New System.Windows.Forms.Button()
-        Me.bAdd = New System.Windows.Forms.Button()
-        Me.bReset = New System.Windows.Forms.Button()
         Me.lScale = New System.Windows.Forms.Label()
         Me.bSaveTest = New System.Windows.Forms.Button()
         Me.Label5 = New System.Windows.Forms.Label()
@@ -179,9 +177,9 @@ Partial Class Form1
         '
         Me.Panel3.Controls.Add(Me.rResult)
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel3.Location = New System.Drawing.Point(0, 202)
+        Me.Panel3.Location = New System.Drawing.Point(0, 154)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(252, 136)
+        Me.Panel3.Size = New System.Drawing.Size(252, 118)
         Me.Panel3.TabIndex = 17
         '
         'rResult
@@ -190,7 +188,7 @@ Partial Class Form1
         Me.rResult.Location = New System.Drawing.Point(0, 0)
         Me.rResult.Name = "rResult"
         Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(252, 136)
+        Me.rResult.Size = New System.Drawing.Size(252, 118)
         Me.rResult.TabIndex = 11
         Me.rResult.Text = ""
         '
@@ -200,8 +198,6 @@ Partial Class Form1
         Me.Panel4.Controls.Add(Me.lRegions)
         Me.Panel4.Controls.Add(Me.bClear)
         Me.Panel4.Controls.Add(Me.bDel)
-        Me.Panel4.Controls.Add(Me.bAdd)
-        Me.Panel4.Controls.Add(Me.bReset)
         Me.Panel4.Controls.Add(Me.lScale)
         Me.Panel4.Controls.Add(Me.bSaveTest)
         Me.Panel4.Controls.Add(Me.Label5)
@@ -212,7 +208,7 @@ Partial Class Form1
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel4.Location = New System.Drawing.Point(0, 0)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(252, 202)
+        Me.Panel4.Size = New System.Drawing.Size(252, 154)
         Me.Panel4.TabIndex = 18
         '
         'lRegions
@@ -243,29 +239,33 @@ Partial Class Form1
         '
         'cLeft
         '
-        Me.cLeft.Text = "Left"
+        Me.cLeft.Text = "X"
+        Me.cLeft.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.cLeft.Width = 50
         '
         'ctop
         '
-        Me.ctop.Text = "Top"
+        Me.ctop.Text = "Y"
+        Me.ctop.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.ctop.Width = 50
         '
         'cright
         '
-        Me.cright.Text = "Right"
+        Me.cright.Text = "Width"
+        Me.cright.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.cright.Width = 50
         '
         'cBottom
         '
-        Me.cBottom.Text = "Bottom"
+        Me.cBottom.Text = "Height"
+        Me.cBottom.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.cBottom.Width = 50
         '
         'bClear
         '
         Me.bClear.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bClear.Image = Global.PDFHelper.My.Resources.Resources.cancel
-        Me.bClear.Location = New System.Drawing.Point(48, 94)
+        Me.bClear.Location = New System.Drawing.Point(72, 94)
         Me.bClear.Margin = New System.Windows.Forms.Padding(0)
         Me.bClear.Name = "bClear"
         Me.bClear.Size = New System.Drawing.Size(24, 24)
@@ -276,37 +276,17 @@ Partial Class Form1
         '
         Me.bDel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.bDel.Image = Global.PDFHelper.My.Resources.Resources.remove
-        Me.bDel.Location = New System.Drawing.Point(24, 94)
+        Me.bDel.Location = New System.Drawing.Point(48, 94)
         Me.bDel.Margin = New System.Windows.Forms.Padding(0)
         Me.bDel.Name = "bDel"
         Me.bDel.Size = New System.Drawing.Size(24, 24)
         Me.bDel.TabIndex = 18
         Me.bDel.UseVisualStyleBackColor = True
         '
-        'bAdd
-        '
-        Me.bAdd.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.bAdd.Image = Global.PDFHelper.My.Resources.Resources.add
-        Me.bAdd.Location = New System.Drawing.Point(0, 94)
-        Me.bAdd.Margin = New System.Windows.Forms.Padding(0)
-        Me.bAdd.Name = "bAdd"
-        Me.bAdd.Size = New System.Drawing.Size(24, 24)
-        Me.bAdd.TabIndex = 17
-        Me.bAdd.UseVisualStyleBackColor = True
-        '
-        'bReset
-        '
-        Me.bReset.Location = New System.Drawing.Point(169, 171)
-        Me.bReset.Name = "bReset"
-        Me.bReset.Size = New System.Drawing.Size(73, 23)
-        Me.bReset.TabIndex = 12
-        Me.bReset.Text = "Reset"
-        Me.bReset.UseVisualStyleBackColor = True
-        '
         'lScale
         '
         Me.lScale.AutoSize = True
-        Me.lScale.Location = New System.Drawing.Point(190, 122)
+        Me.lScale.Location = New System.Drawing.Point(230, 99)
         Me.lScale.Name = "lScale"
         Me.lScale.Size = New System.Drawing.Size(13, 15)
         Me.lScale.TabIndex = 16
@@ -314,17 +294,18 @@ Partial Class Form1
         '
         'bSaveTest
         '
-        Me.bSaveTest.Location = New System.Drawing.Point(88, 171)
+        Me.bSaveTest.Image = Global.PDFHelper.My.Resources.Resources.save
+        Me.bSaveTest.Location = New System.Drawing.Point(24, 94)
+        Me.bSaveTest.Margin = New System.Windows.Forms.Padding(0)
         Me.bSaveTest.Name = "bSaveTest"
-        Me.bSaveTest.Size = New System.Drawing.Size(73, 23)
+        Me.bSaveTest.Size = New System.Drawing.Size(24, 24)
         Me.bSaveTest.TabIndex = 11
-        Me.bSaveTest.Text = "Save test"
         Me.bSaveTest.UseVisualStyleBackColor = True
         '
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(9, 147)
+        Me.Label5.Location = New System.Drawing.Point(4, 124)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(71, 15)
         Me.Label5.TabIndex = 13
@@ -334,17 +315,17 @@ Partial Class Form1
         '
         Me.tScale.AutoSize = False
         Me.tScale.LargeChange = 1
-        Me.tScale.Location = New System.Drawing.Point(84, 116)
+        Me.tScale.Location = New System.Drawing.Point(147, 96)
         Me.tScale.Minimum = 1
         Me.tScale.Name = "tScale"
-        Me.tScale.Size = New System.Drawing.Size(100, 22)
+        Me.tScale.Size = New System.Drawing.Size(85, 22)
         Me.tScale.TabIndex = 14
         Me.tScale.Value = 4
         '
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(41, 122)
+        Me.Label6.Location = New System.Drawing.Point(117, 99)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(37, 15)
         Me.Label6.TabIndex = 15
@@ -352,7 +333,7 @@ Partial Class Form1
         '
         'tConf
         '
-        Me.tConf.Location = New System.Drawing.Point(88, 144)
+        Me.tConf.Location = New System.Drawing.Point(81, 121)
         Me.tConf.Name = "tConf"
         Me.tConf.ReadOnly = True
         Me.tConf.Size = New System.Drawing.Size(73, 23)
@@ -360,11 +341,12 @@ Partial Class Form1
         '
         'bTest
         '
-        Me.bTest.Location = New System.Drawing.Point(7, 171)
+        Me.bTest.Image = Global.PDFHelper.My.Resources.Resources.spell_check
+        Me.bTest.Location = New System.Drawing.Point(0, 94)
+        Me.bTest.Margin = New System.Windows.Forms.Padding(0)
         Me.bTest.Name = "bTest"
-        Me.bTest.Size = New System.Drawing.Size(73, 23)
+        Me.bTest.Size = New System.Drawing.Size(24, 24)
         Me.bTest.TabIndex = 9
-        Me.bTest.Text = "Test region"
         Me.bTest.UseVisualStyleBackColor = True
         '
         'pWorkers
@@ -374,10 +356,11 @@ Partial Class Form1
         Me.pWorkers.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.pWorkers.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.pWorkers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.pWorkers.Location = New System.Drawing.Point(0, 338)
+        Me.pWorkers.Location = New System.Drawing.Point(0, 272)
         Me.pWorkers.Name = "pWorkers"
-        Me.pWorkers.Size = New System.Drawing.Size(252, 198)
+        Me.pWorkers.Size = New System.Drawing.Size(252, 264)
         Me.pWorkers.TabIndex = 11
+        Me.pWorkers.WrapContents = False
         '
         'Panel2
         '
@@ -583,12 +566,10 @@ Partial Class Form1
     Friend WithEvents Label8 As Label
     Friend WithEvents nWorkers As NumericUpDown
     Friend WithEvents bExport As Button
-    Friend WithEvents bReset As Button
     Friend WithEvents bSaveTest As Button
     Friend WithEvents fbd As FolderBrowserDialog
     Friend WithEvents bClear As Button
     Friend WithEvents bDel As Button
-    Friend WithEvents bAdd As Button
     Friend WithEvents lRegions As ListView
     Friend WithEvents cIdx As ColumnHeader
     Friend WithEvents cLeft As ColumnHeader

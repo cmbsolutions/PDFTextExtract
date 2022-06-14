@@ -177,6 +177,22 @@ Public Class Form1
         lZoom.Text = $"Zoom {Convert.ToInt32(100 * _currentZoomFactor)}%"
     End Sub
 
+    Private Sub CenterCanvas()
+        Dim cx As Integer = Convert.ToInt32(CanvasX.Width / 2)
+        Dim cy As Integer = Convert.ToInt32(CanvasX.Height / 2)
+        Dim px As Integer = Convert.ToInt32(Canvas.Width / 2)
+        Dim py As Integer = Convert.ToInt32(Canvas.Height / 2)
+
+        Canvas.Left = Math.Max(cx - px, 10)
+        Canvas.Top = Math.Max(cy - py, 10)
+
+        CanvasShadow.Width = Canvas.Width
+        CanvasShadow.Height = Canvas.Height
+        CanvasShadow.Left = Canvas.Left + 5
+        CanvasShadow.Top = Canvas.Top + 5
+
+    End Sub
+
     Private Sub tsbZoomIn_Click(sender As Object, e As EventArgs) Handles Button1.Click
         _currentZoomFactor += 0.1
         ResizeAndCenterCanvas()
@@ -221,19 +237,36 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_Resize(sender As Object, e As EventArgs) Handles Me.Resize
-        ResizeAndCenterCanvas()
+        If _localImg Is Nothing Then
+            CenterCanvas()
+        Else
+            ResizeAndCenterCanvas()
+        End If
+
         RedrawCanvas()
     End Sub
 
     Private Async Sub bTest_Click(sender As Object, e As EventArgs) Handles bTest.Click
-        Dim datas As List(Of ExtractedData)
+        Dim data As ExtractedData
 
-        Dim renderTask = Task.Run(Function()
-                                      Return pdfHandler.extractData()
-                                  End Function)
-        datas = Await renderTask.ConfigureAwait(True)
+        If lRegions.SelectedItems.Count > 0 Then
+            Dim idx As Integer = CInt(lRegions.SelectedItems(0).Text)
+            Dim itm = pdfHandler.clippingPaths.FirstOrDefault(Function(c) c.idx = idx)
 
-        Dim data As New ExtractedData(datas.Average(Function(c) c.confidence), Strings.Join(datas.Select(Of String)(Function(c) c.text).ToArray), datas.First.pageIndex, 0)
+            Dim renderTask = Task.Run(Function()
+                                          Return pdfHandler.extractData(itm)
+                                      End Function)
+            data = Await renderTask.ConfigureAwait(True)
+        Else
+            Dim datas As List(Of ExtractedData)
+
+            Dim renderTask = Task.Run(Function()
+                                          Return pdfHandler.extractData()
+                                      End Function)
+            datas = Await renderTask.ConfigureAwait(True)
+
+            data = New ExtractedData(datas.Average(Function(c) c.confidence), Strings.Join(datas.Select(Of String)(Function(c) c.text).ToArray), datas.First.pageIndex, 0)
+        End If
 
         If data.confidence < 0.5 Then
             tConf.BackColor = Color.Salmon
@@ -300,7 +333,7 @@ Public Class Form1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles Me.Load
         handleButtons()
-
+        CenterCanvas()
     End Sub
 
     Private Sub ManageWorkers()
@@ -380,18 +413,6 @@ Public Class Form1
 
             MessageBox.Show("Done")
         End If
-    End Sub
-
-    Private Sub bAdd_Click(sender As Object, e As EventArgs) Handles bAdd.Click
-        Dim idx = pdfHandler.AddClippingPath(lt.X, lt.Y, rb.X, rb.Y)
-        Dim itm As New ListViewItem
-        itm.SubItems(0).Text = idx.ToString
-        itm.SubItems.Add(lt.X.ToString)
-        itm.SubItems.Add(lt.Y.ToString)
-        itm.SubItems.Add(rb.X.ToString)
-        itm.SubItems.Add(rb.Y.ToString)
-
-        lRegions.Items.Add(itm)
     End Sub
 
     Private Sub bClear_Click(sender As Object, e As EventArgs) Handles bClear.Click
