@@ -247,7 +247,7 @@ Public Class Form1
     End Sub
 
     Private Async Sub bTest_Click(sender As Object, e As EventArgs) Handles bTest.Click
-        Dim data As ExtractedData
+        Dim datas As New List(Of ExtractedData)
 
         If lRegions.SelectedItems.Count > 0 Then
             Dim idx As Integer = CInt(lRegions.SelectedItems(0).Text)
@@ -256,30 +256,35 @@ Public Class Form1
             Dim renderTask = Task.Run(Function()
                                           Return pdfHandler.extractData(itm)
                                       End Function)
-            data = Await renderTask.ConfigureAwait(True)
+            datas.Add(Await renderTask.ConfigureAwait(True))
         Else
-            Dim datas As List(Of ExtractedData)
-
             Dim renderTask = Task.Run(Function()
                                           Return pdfHandler.extractData()
                                       End Function)
             datas = Await renderTask.ConfigureAwait(True)
 
-            data = New ExtractedData(datas.Average(Function(c) c.confidence), Strings.Join(datas.Select(Of String)(Function(c) c.text).ToArray), datas.First.pageIndex, 0)
+            'data = New ExtractedData(datas.Average(Function(c) c.confidence), Strings.Join(datas.Select(Of String)(Function(c) c.text).ToArray), datas.First.pageIndex, 0)
         End If
 
-        If data.confidence < 0.5 Then
-            tConf.BackColor = Color.Salmon
-        ElseIf data.confidence >= 0.5 And data.confidence < 0.75 Then
-            tConf.BackColor = Color.Orange
-        ElseIf data.confidence >= 0.75 And data.confidence < 0.85 Then
-            tConf.BackColor = Color.Yellow
-        Else
-            tConf.BackColor = Color.LightGreen
-        End If
+        rResult.ResetText()
 
-        tConf.Text = $"{data.confidence * 100}%"
-        rResult.Text = data.text
+        For Each result In datas
+            Dim c As Color
+            If result.confidence < 0.5 Then
+                c = Color.Red
+            ElseIf result.confidence >= 0.5 And result.confidence < 0.75 Then
+                c = Color.Orange
+            ElseIf result.confidence >= 0.75 And result.confidence < 0.85 Then
+                c = Color.DarkGoldenrod
+            Else
+                c = Color.Green
+            End If
+
+            rResult.AppendBoldColoredText("Capture confidence: ", Color.Black)
+            rResult.AppendLineBoldColoredText($"{CInt(result.confidence * 100)}%", c)
+            rResult.AppendLineColoredText(result.text, Color.Black)
+            rResult.AppendText(vbCrLf)
+        Next
 
         bExtractAll.Enabled = True
     End Sub
@@ -430,7 +435,14 @@ Public Class Form1
 
         If itm IsNot Nothing Then
             pdfHandler.RemoveClippingPath(itm)
+            lRegions.Items.Remove(lRegions.SelectedItems(0))
+            RedrawCanvas()
         End If
+    End Sub
+
+    Private Sub bMailpackIndicator_Click(sender As Object, e As EventArgs) Handles bMailpackIndicator.Click
+        sc1.Panel1Collapsed = sc1.Panel2Collapsed
+        sc1.Panel2Collapsed = Not sc1.Panel1Collapsed
     End Sub
 
     Private Sub pdfHandler_WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles pdfHandler.WorkerProgressChanged

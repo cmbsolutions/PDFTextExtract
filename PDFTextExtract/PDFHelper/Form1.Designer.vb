@@ -22,6 +22,7 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.bPdf = New System.Windows.Forms.Button()
         Me.ofdPdf = New System.Windows.Forms.OpenFileDialog()
         Me.Button1 = New System.Windows.Forms.Button()
@@ -31,9 +32,12 @@ Partial Class Form1
         Me.Canvas = New System.Windows.Forms.PictureBox()
         Me.CanvasShadow = New System.Windows.Forms.Panel()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.Panel3 = New System.Windows.Forms.Panel()
+        Me.sc1 = New System.Windows.Forms.SplitContainer()
         Me.rResult = New System.Windows.Forms.RichTextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.tRegex = New System.Windows.Forms.TextBox()
         Me.Panel4 = New System.Windows.Forms.Panel()
+        Me.bMailpackIndicator = New System.Windows.Forms.Button()
         Me.lRegions = New System.Windows.Forms.ListView()
         Me.cIdx = New System.Windows.Forms.ColumnHeader()
         Me.cLeft = New System.Windows.Forms.ColumnHeader()
@@ -44,10 +48,8 @@ Partial Class Form1
         Me.bDel = New System.Windows.Forms.Button()
         Me.lScale = New System.Windows.Forms.Label()
         Me.bSaveTest = New System.Windows.Forms.Button()
-        Me.Label5 = New System.Windows.Forms.Label()
         Me.tScale = New System.Windows.Forms.TrackBar()
         Me.Label6 = New System.Windows.Forms.Label()
-        Me.tConf = New System.Windows.Forms.TextBox()
         Me.bTest = New System.Windows.Forms.Button()
         Me.pWorkers = New System.Windows.Forms.FlowLayoutPanel()
         Me.Panel2 = New System.Windows.Forms.Panel()
@@ -64,10 +66,14 @@ Partial Class Form1
         Me.lZoom = New System.Windows.Forms.ToolStripStatusLabel()
         Me.sfd = New System.Windows.Forms.SaveFileDialog()
         Me.fbd = New System.Windows.Forms.FolderBrowserDialog()
+        Me.tt = New System.Windows.Forms.ToolTip(Me.components)
         Me.CanvasX.SuspendLayout()
         CType(Me.Canvas, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
-        Me.Panel3.SuspendLayout()
+        CType(Me.sc1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.sc1.Panel1.SuspendLayout()
+        Me.sc1.Panel2.SuspendLayout()
+        Me.sc1.SuspendLayout()
         Me.Panel4.SuspendLayout()
         CType(Me.tScale, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel2.SuspendLayout()
@@ -164,7 +170,7 @@ Partial Class Form1
         '
         'Panel1
         '
-        Me.Panel1.Controls.Add(Me.Panel3)
+        Me.Panel1.Controls.Add(Me.sc1)
         Me.Panel1.Controls.Add(Me.Panel4)
         Me.Panel1.Controls.Add(Me.pWorkers)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Right
@@ -173,14 +179,27 @@ Partial Class Form1
         Me.Panel1.Size = New System.Drawing.Size(252, 536)
         Me.Panel1.TabIndex = 11
         '
-        'Panel3
+        'sc1
         '
-        Me.Panel3.Controls.Add(Me.rResult)
-        Me.Panel3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel3.Location = New System.Drawing.Point(0, 154)
-        Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(252, 118)
-        Me.Panel3.TabIndex = 17
+        Me.sc1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.sc1.IsSplitterFixed = True
+        Me.sc1.Location = New System.Drawing.Point(0, 130)
+        Me.sc1.Margin = New System.Windows.Forms.Padding(0)
+        Me.sc1.Name = "sc1"
+        '
+        'sc1.Panel1
+        '
+        Me.sc1.Panel1.Controls.Add(Me.rResult)
+        '
+        'sc1.Panel2
+        '
+        Me.sc1.Panel2.Controls.Add(Me.tRegex)
+        Me.sc1.Panel2.Controls.Add(Me.Label1)
+        Me.sc1.Panel2Collapsed = True
+        Me.sc1.Size = New System.Drawing.Size(252, 142)
+        Me.sc1.SplitterDistance = 84
+        Me.sc1.SplitterWidth = 1
+        Me.sc1.TabIndex = 19
         '
         'rResult
         '
@@ -188,28 +207,60 @@ Partial Class Form1
         Me.rResult.Location = New System.Drawing.Point(0, 0)
         Me.rResult.Name = "rResult"
         Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(252, 118)
+        Me.rResult.Size = New System.Drawing.Size(252, 142)
         Me.rResult.TabIndex = 11
         Me.rResult.Text = ""
+        Me.rResult.WordWrap = False
+        '
+        'Label1
+        '
+        Me.Label1.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label1.Location = New System.Drawing.Point(0, 0)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(167, 50)
+        Me.Label1.TabIndex = 3
+        Me.Label1.Text = "Enter a regular expression to indicate the first page of a multipage mailpack"
+        Me.Label1.TextAlign = System.Drawing.ContentAlignment.TopCenter
+        '
+        'tRegex
+        '
+        Me.tRegex.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.tRegex.Location = New System.Drawing.Point(0, 50)
+        Me.tRegex.Multiline = True
+        Me.tRegex.Name = "tRegex"
+        Me.tRegex.PlaceholderText = "Eg. ^\d{8}$"
+        Me.tRegex.Size = New System.Drawing.Size(167, 92)
+        Me.tRegex.TabIndex = 1
         '
         'Panel4
         '
         Me.Panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Panel4.Controls.Add(Me.bMailpackIndicator)
         Me.Panel4.Controls.Add(Me.lRegions)
         Me.Panel4.Controls.Add(Me.bClear)
         Me.Panel4.Controls.Add(Me.bDel)
         Me.Panel4.Controls.Add(Me.lScale)
         Me.Panel4.Controls.Add(Me.bSaveTest)
-        Me.Panel4.Controls.Add(Me.Label5)
         Me.Panel4.Controls.Add(Me.tScale)
         Me.Panel4.Controls.Add(Me.Label6)
-        Me.Panel4.Controls.Add(Me.tConf)
         Me.Panel4.Controls.Add(Me.bTest)
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel4.Location = New System.Drawing.Point(0, 0)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(252, 154)
+        Me.Panel4.Size = New System.Drawing.Size(252, 130)
         Me.Panel4.TabIndex = 18
+        '
+        'bMailpackIndicator
+        '
+        Me.bMailpackIndicator.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.bMailpackIndicator.Image = Global.PDFHelper.My.Resources.Resources.clip_cut
+        Me.bMailpackIndicator.Location = New System.Drawing.Point(96, 94)
+        Me.bMailpackIndicator.Margin = New System.Windows.Forms.Padding(0)
+        Me.bMailpackIndicator.Name = "bMailpackIndicator"
+        Me.bMailpackIndicator.Size = New System.Drawing.Size(24, 24)
+        Me.bMailpackIndicator.TabIndex = 21
+        Me.tt.SetToolTip(Me.bMailpackIndicator, "Multipage mailpacks")
+        Me.bMailpackIndicator.UseVisualStyleBackColor = True
         '
         'lRegions
         '
@@ -270,6 +321,7 @@ Partial Class Form1
         Me.bClear.Name = "bClear"
         Me.bClear.Size = New System.Drawing.Size(24, 24)
         Me.bClear.TabIndex = 19
+        Me.tt.SetToolTip(Me.bClear, "Remove all clippingpaths")
         Me.bClear.UseVisualStyleBackColor = True
         '
         'bDel
@@ -281,6 +333,7 @@ Partial Class Form1
         Me.bDel.Name = "bDel"
         Me.bDel.Size = New System.Drawing.Size(24, 24)
         Me.bDel.TabIndex = 18
+        Me.tt.SetToolTip(Me.bDel, "Remove selected clippingpath")
         Me.bDel.UseVisualStyleBackColor = True
         '
         'lScale
@@ -300,16 +353,8 @@ Partial Class Form1
         Me.bSaveTest.Name = "bSaveTest"
         Me.bSaveTest.Size = New System.Drawing.Size(24, 24)
         Me.bSaveTest.TabIndex = 11
+        Me.tt.SetToolTip(Me.bSaveTest, "Export all (or selected) clippingpath images")
         Me.bSaveTest.UseVisualStyleBackColor = True
-        '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(4, 124)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(71, 15)
-        Me.Label5.TabIndex = 13
-        Me.Label5.Text = "Confidence:"
         '
         'tScale
         '
@@ -320,6 +365,7 @@ Partial Class Form1
         Me.tScale.Name = "tScale"
         Me.tScale.Size = New System.Drawing.Size(85, 22)
         Me.tScale.TabIndex = 14
+        Me.tt.SetToolTip(Me.tScale, "Level of enlargement. Level 4 is best for most.")
         Me.tScale.Value = 4
         '
         'Label6
@@ -331,14 +377,6 @@ Partial Class Form1
         Me.Label6.TabIndex = 15
         Me.Label6.Text = "Scale:"
         '
-        'tConf
-        '
-        Me.tConf.Location = New System.Drawing.Point(81, 121)
-        Me.tConf.Name = "tConf"
-        Me.tConf.ReadOnly = True
-        Me.tConf.Size = New System.Drawing.Size(73, 23)
-        Me.tConf.TabIndex = 12
-        '
         'bTest
         '
         Me.bTest.Image = Global.PDFHelper.My.Resources.Resources.spell_check
@@ -347,6 +385,7 @@ Partial Class Form1
         Me.bTest.Name = "bTest"
         Me.bTest.Size = New System.Drawing.Size(24, 24)
         Me.bTest.TabIndex = 9
+        Me.tt.SetToolTip(Me.bTest, "Test all (or selected) clippingpaths")
         Me.bTest.UseVisualStyleBackColor = True
         '
         'pWorkers
@@ -506,6 +545,10 @@ Partial Class Form1
         Me.fbd.Description = "Select save folder"
         Me.fbd.UseDescriptionForTitle = True
         '
+        'tt
+        '
+        Me.tt.BackColor = System.Drawing.Color.Khaki
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
@@ -521,7 +564,11 @@ Partial Class Form1
         Me.CanvasX.ResumeLayout(False)
         CType(Me.Canvas, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel1.ResumeLayout(False)
-        Me.Panel3.ResumeLayout(False)
+        Me.sc1.Panel1.ResumeLayout(False)
+        Me.sc1.Panel2.ResumeLayout(False)
+        Me.sc1.Panel2.PerformLayout()
+        CType(Me.sc1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.sc1.ResumeLayout(False)
         Me.Panel4.ResumeLayout(False)
         Me.Panel4.PerformLayout()
         CType(Me.tScale, System.ComponentModel.ISupportInitialize).EndInit()
@@ -555,14 +602,11 @@ Partial Class Form1
     Friend WithEvents rResult As RichTextBox
     Friend WithEvents bExtractAll As Button
     Friend WithEvents sfd As SaveFileDialog
-    Friend WithEvents Label5 As Label
-    Friend WithEvents tConf As TextBox
     Friend WithEvents Label6 As Label
     Friend WithEvents tScale As TrackBar
     Friend WithEvents lScale As Label
     Friend WithEvents pWorkers As FlowLayoutPanel
     Friend WithEvents Panel4 As Panel
-    Friend WithEvents Panel3 As Panel
     Friend WithEvents Label8 As Label
     Friend WithEvents nWorkers As NumericUpDown
     Friend WithEvents bExport As Button
@@ -576,4 +620,9 @@ Partial Class Form1
     Friend WithEvents ctop As ColumnHeader
     Friend WithEvents cright As ColumnHeader
     Friend WithEvents cBottom As ColumnHeader
+    Friend WithEvents tt As ToolTip
+    Friend WithEvents sc1 As SplitContainer
+    Friend WithEvents bMailpackIndicator As Button
+    Friend WithEvents Label1 As Label
+    Friend WithEvents tRegex As TextBox
 End Class

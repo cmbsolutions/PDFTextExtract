@@ -123,6 +123,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property clip_cut() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("clip_cut", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property dis_action_goto_first() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("dis_action_goto_first", resourceCulture)

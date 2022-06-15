@@ -119,7 +119,7 @@ Public Class PdfHandler
         imageHandler.SetClippingPath(path)
 
         Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
-            Return New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx, path.idx)
+            Return New ExtractedData(page.MeanConfidence, page.Text.Trim, currentPageIdx, path.idx)
         End Using
 
     End Function
@@ -133,7 +133,7 @@ Public Class PdfHandler
             imageHandler.SetClippingPath(clippingPath)
 
             Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
-                data.Add(New ExtractedData(page.MeanConfidence, page.Text, currentPageIdx, clippingPath.idx))
+                data.Add(New ExtractedData(page.MeanConfidence, page.Text.Trim, currentPageIdx, clippingPath.idx))
             End Using
             imageHandler.ResetClippingPath()
         Next
@@ -205,7 +205,7 @@ Public Class PdfHandler
                         imgHandler.SetClippingPath(clippingPath)
 
                         Using p = eng.Process(imgHandler.ConvertPage(currentDocument.Pages(i)))
-                            LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text, i, clippingPath.idx))
+                            LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, clippingPath.idx))
                         End Using
                         imgHandler.ResetClippingPath()
                     Next
