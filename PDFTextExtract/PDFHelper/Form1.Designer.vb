@@ -34,8 +34,9 @@ Partial Class Form1
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.sc1 = New System.Windows.Forms.SplitContainer()
         Me.rResult = New System.Windows.Forms.RichTextBox()
-        Me.Label1 = New System.Windows.Forms.Label()
         Me.tRegex = New System.Windows.Forms.TextBox()
+        Me.mpRegion = New System.Windows.Forms.ComboBox()
+        Me.Label1 = New System.Windows.Forms.Label()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.bMailpackIndicator = New System.Windows.Forms.Button()
         Me.lRegions = New System.Windows.Forms.ListView()
@@ -67,6 +68,8 @@ Partial Class Form1
         Me.sfd = New System.Windows.Forms.SaveFileDialog()
         Me.fbd = New System.Windows.Forms.FolderBrowserDialog()
         Me.tt = New System.Windows.Forms.ToolTip(Me.components)
+        Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.cMatching = New System.Windows.Forms.CheckBox()
         Me.CanvasX.SuspendLayout()
         CType(Me.Canvas, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
@@ -79,6 +82,7 @@ Partial Class Form1
         Me.Panel2.SuspendLayout()
         CType(Me.nWorkers, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.StatusStrip1.SuspendLayout()
+        Me.TableLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
         '
         'bPdf
@@ -183,7 +187,7 @@ Partial Class Form1
         '
         Me.sc1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.sc1.IsSplitterFixed = True
-        Me.sc1.Location = New System.Drawing.Point(0, 130)
+        Me.sc1.Location = New System.Drawing.Point(0, 122)
         Me.sc1.Margin = New System.Windows.Forms.Padding(0)
         Me.sc1.Name = "sc1"
         '
@@ -193,10 +197,9 @@ Partial Class Form1
         '
         'sc1.Panel2
         '
-        Me.sc1.Panel2.Controls.Add(Me.tRegex)
-        Me.sc1.Panel2.Controls.Add(Me.Label1)
+        Me.sc1.Panel2.Controls.Add(Me.TableLayoutPanel1)
         Me.sc1.Panel2Collapsed = True
-        Me.sc1.Size = New System.Drawing.Size(252, 142)
+        Me.sc1.Size = New System.Drawing.Size(252, 151)
         Me.sc1.SplitterDistance = 84
         Me.sc1.SplitterWidth = 1
         Me.sc1.TabIndex = 19
@@ -207,30 +210,49 @@ Partial Class Form1
         Me.rResult.Location = New System.Drawing.Point(0, 0)
         Me.rResult.Name = "rResult"
         Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(252, 142)
+        Me.rResult.Size = New System.Drawing.Size(252, 151)
         Me.rResult.TabIndex = 11
         Me.rResult.Text = ""
         Me.rResult.WordWrap = False
         '
-        'Label1
-        '
-        Me.Label1.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Label1.Location = New System.Drawing.Point(0, 0)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(167, 50)
-        Me.Label1.TabIndex = 3
-        Me.Label1.Text = "Enter a regular expression to indicate the first page of a multipage mailpack"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        '
         'tRegex
         '
+        Me.tRegex.AutoCompleteCustomSource.AddRange(New String() {"\d", "\D", "\w", "\W", "\s", "\S", "[0-9A-F]", "[^0-9a-f]"})
+        Me.tRegex.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest
+        Me.tRegex.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource
+        Me.TableLayoutPanel1.SetColumnSpan(Me.tRegex, 2)
         Me.tRegex.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.tRegex.Location = New System.Drawing.Point(0, 50)
+        Me.tRegex.Location = New System.Drawing.Point(0, 68)
+        Me.tRegex.Margin = New System.Windows.Forms.Padding(0)
         Me.tRegex.Multiline = True
         Me.tRegex.Name = "tRegex"
         Me.tRegex.PlaceholderText = "Eg. ^\d{8}$"
-        Me.tRegex.Size = New System.Drawing.Size(167, 92)
+        Me.tRegex.Size = New System.Drawing.Size(167, 83)
         Me.tRegex.TabIndex = 1
+        '
+        'mpRegion
+        '
+        Me.mpRegion.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.mpRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.mpRegion.FormattingEnabled = True
+        Me.mpRegion.Location = New System.Drawing.Point(83, 40)
+        Me.mpRegion.Margin = New System.Windows.Forms.Padding(0)
+        Me.mpRegion.Name = "mpRegion"
+        Me.mpRegion.Size = New System.Drawing.Size(84, 23)
+        Me.mpRegion.Sorted = True
+        Me.mpRegion.TabIndex = 4
+        Me.tt.SetToolTip(Me.mpRegion, "Select the id of the region to match the regex against")
+        '
+        'Label1
+        '
+        Me.TableLayoutPanel1.SetColumnSpan(Me.Label1, 2)
+        Me.Label1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label1.Location = New System.Drawing.Point(3, 0)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(161, 40)
+        Me.Label1.TabIndex = 3
+        Me.Label1.Text = "Enter a regular expression to indicate the first page of a multipage mailpack"
+        Me.Label1.TextAlign = System.Drawing.ContentAlignment.TopCenter
         '
         'Panel4
         '
@@ -247,7 +269,7 @@ Partial Class Form1
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel4.Location = New System.Drawing.Point(0, 0)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(252, 130)
+        Me.Panel4.Size = New System.Drawing.Size(252, 122)
         Me.Panel4.TabIndex = 18
         '
         'bMailpackIndicator
@@ -339,7 +361,7 @@ Partial Class Form1
         'lScale
         '
         Me.lScale.AutoSize = True
-        Me.lScale.Location = New System.Drawing.Point(230, 99)
+        Me.lScale.Location = New System.Drawing.Point(234, 99)
         Me.lScale.Name = "lScale"
         Me.lScale.Size = New System.Drawing.Size(13, 15)
         Me.lScale.TabIndex = 16
@@ -360,7 +382,7 @@ Partial Class Form1
         '
         Me.tScale.AutoSize = False
         Me.tScale.LargeChange = 1
-        Me.tScale.Location = New System.Drawing.Point(147, 96)
+        Me.tScale.Location = New System.Drawing.Point(151, 96)
         Me.tScale.Minimum = 1
         Me.tScale.Name = "tScale"
         Me.tScale.Size = New System.Drawing.Size(85, 22)
@@ -371,7 +393,7 @@ Partial Class Form1
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(117, 99)
+        Me.Label6.Location = New System.Drawing.Point(121, 99)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(37, 15)
         Me.Label6.TabIndex = 15
@@ -395,9 +417,9 @@ Partial Class Form1
         Me.pWorkers.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.pWorkers.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.pWorkers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.pWorkers.Location = New System.Drawing.Point(0, 272)
+        Me.pWorkers.Location = New System.Drawing.Point(0, 273)
         Me.pWorkers.Name = "pWorkers"
-        Me.pWorkers.Size = New System.Drawing.Size(252, 264)
+        Me.pWorkers.Size = New System.Drawing.Size(252, 263)
         Me.pWorkers.TabIndex = 11
         Me.pWorkers.WrapContents = False
         '
@@ -549,6 +571,37 @@ Partial Class Form1
         '
         Me.tt.BackColor = System.Drawing.Color.Khaki
         '
+        'TableLayoutPanel1
+        '
+        Me.TableLayoutPanel1.ColumnCount = 2
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel1.Controls.Add(Me.Label1, 0, 0)
+        Me.TableLayoutPanel1.Controls.Add(Me.mpRegion, 1, 1)
+        Me.TableLayoutPanel1.Controls.Add(Me.tRegex, 0, 2)
+        Me.TableLayoutPanel1.Controls.Add(Me.cMatching, 0, 1)
+        Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 0)
+        Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
+        Me.TableLayoutPanel1.RowCount = 3
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(167, 151)
+        Me.TableLayoutPanel1.TabIndex = 5
+        '
+        'cMatching
+        '
+        Me.cMatching.AutoSize = True
+        Me.cMatching.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.cMatching.Location = New System.Drawing.Point(0, 40)
+        Me.cMatching.Margin = New System.Windows.Forms.Padding(0)
+        Me.cMatching.Name = "cMatching"
+        Me.cMatching.Size = New System.Drawing.Size(83, 28)
+        Me.cMatching.TabIndex = 5
+        Me.cMatching.Text = "Use matching? ID:"
+        Me.cMatching.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
@@ -566,7 +619,6 @@ Partial Class Form1
         Me.Panel1.ResumeLayout(False)
         Me.sc1.Panel1.ResumeLayout(False)
         Me.sc1.Panel2.ResumeLayout(False)
-        Me.sc1.Panel2.PerformLayout()
         CType(Me.sc1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.sc1.ResumeLayout(False)
         Me.Panel4.ResumeLayout(False)
@@ -577,6 +629,8 @@ Partial Class Form1
         CType(Me.nWorkers, System.ComponentModel.ISupportInitialize).EndInit()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.TableLayoutPanel1.ResumeLayout(False)
+        Me.TableLayoutPanel1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -625,4 +679,7 @@ Partial Class Form1
     Friend WithEvents bMailpackIndicator As Button
     Friend WithEvents Label1 As Label
     Friend WithEvents tRegex As TextBox
+    Friend WithEvents mpRegion As ComboBox
+    Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
+    Friend WithEvents cMatching As CheckBox
 End Class

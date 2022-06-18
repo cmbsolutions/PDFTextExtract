@@ -15,7 +15,7 @@ Public Class PdfHandler
     Private disposedValue As Boolean
     Private pdfScale As Integer = 4
 
-    Private bgWorkers As List(Of BackgroundWorker)
+    Private bgWorkers As List(Of workerState)
     Private CapturedData As List(Of ExtractedData)
 
     Private startTime As Date
@@ -25,6 +25,10 @@ Public Class PdfHandler
 
     Public ReadOnly Property clippingPaths As New List(Of ClippingPath)
     Private AutoResetClippingPaths As Boolean = False
+
+    Public Property useMatching As Boolean = False
+    Public Property firstPageRegex As String
+    Public Property firstPageRegion As ClippingPath
 
     Public Event WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs)
     Public Event WorkersCompleted(sender As Object, data As List(Of ExtractedData), workingTime As TimeSpan)
@@ -154,54 +158,83 @@ Public Class PdfHandler
 
 #Region "Workers"
     Public Sub StartWorkers(workers As Integer)
-        bgWorkers = New List(Of BackgroundWorker)
+        bgWorkers = New List(Of workerState)
 
         For i As Integer = 0 To workers - 1
-            Dim worker As New BackgroundWorker With {
-                .WorkerReportsProgress = True,
-                .WorkerSupportsCancellation = True
+            Dim ws As New workerState With {
+                .worker = New BackgroundWorker With {
+                    .WorkerReportsProgress = True,
+                    .WorkerSupportsCancellation = True
+                },
+                .completed = False,
+                .workerId = i
             }
 
-            AddHandler worker.ProgressChanged, AddressOf bgWorkerProgressChangedEventHandler
-            AddHandler worker.RunWorkerCompleted, AddressOf bgWorkerRunWorkerCompletedEventHandler
-            AddHandler worker.DoWork, AddressOf bgWorkerDoWorkHandler
+            AddHandler ws.worker.ProgressChanged, AddressOf bgWorkerProgressChangedEventHandler
+            AddHandler ws.worker.RunWorkerCompleted, AddressOf bgWorkerRunWorkerCompletedEventHandler
+            AddHandler ws.worker.DoWork, AddressOf bgWorkerDoWorkHandler
 
-            worker.RunWorkerAsync(New workerInfo With {.start = i, .skip = workers, .ref = worker})
-            bgWorkers.Add(worker)
+            ws.worker.RunWorkerAsync(New workerInfo With {.workerId = i, .startPage = i, .skip = workers, .ref = ws.worker})
+            bgWorkers.Add(ws)
         Next
     End Sub
 
     Public Sub CancelWorkers()
         If bgWorkers Is Nothing Then Exit Sub
 
-        For Each worker In bgWorkers
-            If Not worker.CancellationPending Then worker.CancelAsync()
+        For Each ws In bgWorkers
+            If Not ws.worker.CancellationPending Then ws.worker.CancelAsync()
         Next
     End Sub
 
     Private Sub bgWorkerDoWorkHandler(sender As Object, e As DoWorkEventArgs)
-        Dim worker = DirectCast(e.Argument, workerInfo).ref
-        Dim startPage As Integer = DirectCast(e.Argument, workerInfo).start
-        Dim skip As Integer = DirectCast(e.Argument, workerInfo).skip
+        Dim info As workerInfo = DirectCast(e.Argument, workerInfo)
+        Dim worker = info.ref
         Dim LocalCapturedData As New List(Of ExtractedData)
         Dim proc As Double = 0.0
+        Dim skippedPages As Integer = 0
 
-        Dim pagesToProcess = Math.Ceiling(GetPageCount() / skip)
+        Dim pagesToProcess = CInt(Math.Ceiling(GetPageCount() / info.skip))
+
+        Dim matcher As Regex = Nothing
 
         Using eng = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
             Using imgHandler As New Imager
                 imgHandler.SetPageSize(pageSize)
                 imgHandler.SetScale(pdfScale)
 
-                For i As Integer = startPage To GetPageCount() - 1 Step skip
+                For i As Integer = info.startPage To GetPageCount() - 1 Step info.skip
                     If worker.CancellationPending Then
                         LocalCapturedData = Nothing
-                        worker.ReportProgress(100, startPage)
+                        worker.ReportProgress(100, info.workerId)
                         e.Cancel = True
                         Exit Sub
                     End If
 
+                    ' We probably have multipage mailpacks, so only capture the first pages.
+                    If useMatching Then
+                        If matcher Is Nothing Then matcher = New Regex(firstPageRegex)
+
+                        imgHandler.SetClippingPath(firstPageRegion)
+
+                        Using p = eng.Process(imgHandler.ConvertPage(currentDocument.Pages(i)))
+
+                            If Not matcher.IsMatch(p.Text.Trim) Then
+                                ' no match found so we are probably not on a first page, just go to the next step
+                                imgHandler.ResetClippingPath()
+                                Continue For
+                            Else
+                                LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, firstPageRegion.idx))
+                            End If
+                        End Using
+
+                        imgHandler.ResetClippingPath()
+                    End If
+
                     For Each clippingPath In _clippingPaths
+
+                        If useMatching And clippingPath.idx = firstPageRegion.idx Then Continue For
+
                         imgHandler.SetClippingPath(clippingPath)
 
                         Using p = eng.Process(imgHandler.ConvertPage(currentDocument.Pages(i)))
@@ -211,22 +244,29 @@ Public Class PdfHandler
                     Next
 
                     proc += 100 / pagesToProcess
-                    worker.ReportProgress(CInt(proc), startPage)
+                    worker.ReportProgress(CInt(proc), info.workerId)
                 Next
 
             End Using
         End Using
-        worker.ReportProgress(100, startPage)
+        worker.ReportProgress(100, info.workerId)
 
-        e.Result = LocalCapturedData
+        e.Result = New workerResult With {
+            .datas = LocalCapturedData,
+            .workerId = info.workerId,
+            .ref = info.ref
+            }
     End Sub
 
     Private Sub bgWorkerRunWorkerCompletedEventHandler(sender As Object, e As RunWorkerCompletedEventArgs)
         If Not e.Cancelled And e.Error Is Nothing Then
+            Dim results = DirectCast(e.Result, workerResult)
 
-            CapturedData.AddRange(DirectCast(e.Result, List(Of ExtractedData)))
+            CapturedData.AddRange(results.datas)
 
-            If CInt(CapturedData.Count / clippingPaths.Count) = GetPageCount() Then
+            bgWorkers.First(Function(c) c.workerId = results.workerId).completed = True
+
+            If bgWorkers.Where(Function(c) c.completed).Count = bgWorkers.Count Then
                 stopTime = Now
 
                 _runningTime = stopTime.Subtract(startTime)
@@ -238,8 +278,8 @@ Public Class PdfHandler
             CapturedData = Nothing
         End If
 
-        For Each worker In bgWorkers
-            worker.Dispose()
+        For Each ws In bgWorkers
+            ws.worker.Dispose()
         Next
     End Sub
 
@@ -248,11 +288,25 @@ Public Class PdfHandler
     End Sub
 
     Private Class workerInfo
-        Property start As Integer
+        Property workerId As Integer
+        Property startPage As Integer
+        Property endPage As Integer
+
         Property skip As Integer
         Property ref As BackgroundWorker
     End Class
 
+    Private Class workerResult
+        Property workerId As Integer
+        Property datas As List(Of ExtractedData)
+        Property ref As BackgroundWorker
+    End Class
+
+    Private Class workerState
+        Property workerId As Integer
+        Property worker As BackgroundWorker
+        Property completed As Boolean = False
+    End Class
 #End Region
 
 #Region "ClippingPaths"

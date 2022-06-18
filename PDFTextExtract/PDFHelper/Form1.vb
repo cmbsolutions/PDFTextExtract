@@ -70,6 +70,11 @@ Public Class Form1
 
             lRegions.Items.Add(itm)
 
+            Dim lv As IEnumerable(Of ListViewItem) = lRegions.Items.Cast(Of ListViewItem)
+
+            mpRegion.DataSource = (From r In lv Select r.SubItems(0).Text).ToArray
+            mpRegion.Refresh()
+
             RedrawCanvas()
         End If
 
@@ -280,6 +285,15 @@ Public Class Form1
                 c = Color.Green
             End If
 
+            If cMatching.Checked Then
+                If result.clipIdx = pdfHandler.firstPageRegion.idx Then
+                    Dim matcher As New Regex(tRegex.Text)
+                    If matcher.IsMatch(result.text.Trim) Then
+                        rResult.AppendLineColoredText("First page regex matched", Color.ForestGreen)
+                    End If
+                End If
+            End If
+
             rResult.AppendBoldColoredText("Capture confidence: ", Color.Black)
             rResult.AppendLineBoldColoredText($"{CInt(result.confidence * 100)}%", c)
             rResult.AppendLineColoredText(result.text, Color.Black)
@@ -343,6 +357,7 @@ Public Class Form1
 
     Private Sub ManageWorkers()
         pWorkers.Controls.Clear()
+        Dim totalHeight = 0
 
         For i As Integer = 0 To CInt(nWorkers.Value) - 1
             Dim l As New Label With {
@@ -356,6 +371,7 @@ Public Class Form1
                 .Visible = True,
                 .Tag = i
             }
+            totalHeight += 16
 
             Dim p As New ProgressBar With {
                 .Location = New Point(1, 16),
@@ -371,6 +387,7 @@ Public Class Form1
             }
 
             pWorkers.Controls.AddRange({l, p})
+            totalHeight += 16
         Next
 
         Dim b As New Button With {
@@ -386,6 +403,9 @@ Public Class Form1
         AddHandler b.Click, AddressOf bCancel_Click
 
         pWorkers.Controls.Add(b)
+        totalHeight += 32
+
+        pWorkers.Height = totalHeight + 30
     End Sub
 
     Private Sub bCancel_Click(sender As Object, e As EventArgs)
@@ -443,6 +463,18 @@ Public Class Form1
     Private Sub bMailpackIndicator_Click(sender As Object, e As EventArgs) Handles bMailpackIndicator.Click
         sc1.Panel1Collapsed = sc1.Panel2Collapsed
         sc1.Panel2Collapsed = Not sc1.Panel1Collapsed
+    End Sub
+
+    Private Sub mpRegion_SelectedIndexChanged(sender As Object, e As EventArgs) Handles mpRegion.SelectedIndexChanged
+        pdfHandler.firstPageRegion = pdfHandler.clippingPaths.First(Function(x) x.idx = CInt(mpRegion.SelectedItem))
+    End Sub
+
+    Private Sub tRegex_TextChanged(sender As Object, e As EventArgs) Handles tRegex.TextChanged
+        pdfHandler.firstPageRegex = tRegex.Text
+    End Sub
+
+    Private Sub cMatching_CheckedChanged(sender As Object, e As EventArgs) Handles cMatching.CheckedChanged
+        pdfHandler.useMatching = cMatching.Checked
     End Sub
 
     Private Sub pdfHandler_WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles pdfHandler.WorkerProgressChanged

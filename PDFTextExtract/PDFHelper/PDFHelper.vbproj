@@ -8,6 +8,11 @@
     <MyType>WindowsForms</MyType>
     <OptionStrict>On</OptionStrict>
     <Platforms>x64</Platforms>
+    <Version>1.0.1</Version>
+    <Authors>Maurice</Authors>
+    <Company>CMBSolutions</Company>
+    <Description>A GUI for the PDFTextExtract library</Description>
+    <Copyright>CMBSolutions 2022</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -25,6 +30,10 @@
     <Import Include="System.Data" />
     <Import Include="System.Drawing" />
     <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CmbCustomControls" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
