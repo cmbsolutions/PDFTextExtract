@@ -95,6 +95,7 @@ Public Class Form1
             pdfHandler.SetScale(pdfScale)
 
             pdfHandler.LoadDocument(currentPdf)
+            lRegions.Items.Clear()
             handleButtons()
             LoadPage(True)
         End If
@@ -129,8 +130,6 @@ Public Class Form1
         Else
             RedrawCanvas()
         End If
-
-
     End Sub
 
     Private Sub RedrawCanvas()

@@ -33,10 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CmbCustomControls" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PDFTextExtract\PDFTextExtract.vbproj" />
   </ItemGroup>
 
