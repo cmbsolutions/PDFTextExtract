@@ -76,11 +76,49 @@ Public Class Imager
         End Using
     End Function
 
+    Public Function ConvertRegion() As TesseractOCR.Pix.Image
+        RenderedPageMemoryStream.Position = 0
+        Using img As New ImageMagick.MagickImage(RenderedPageMemoryStream)
+
+            If clippingPath IsNot Nothing Then
+                img.Crop(clippingPath.region)
+                'img.RePage()
+            End If
+
+            Using ms As New IO.MemoryStream
+                img.Write(ms, MagickFormat.Png32)
+
+                Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
+            End Using
+        End Using
+    End Function
+
+    Private RenderedPageMemoryStream As IO.MemoryStream
+    Public Function LoadPage(pdfPage As PdfPage) As Boolean
+        Dim width = CInt(Math.Round(pageSize.Width * scale))
+        Dim height = CInt(Math.Round(pageSize.Height * scale))
+
+        Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
+
+            'If pdfPage.HasTransparency Then
+            bm.Fill(New FPDF_COLOR(255, 255, 255))
+
+            pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+
+            If RenderedPageMemoryStream IsNot Nothing Then RenderedPageMemoryStream.Close()
+
+            RenderedPageMemoryStream = New IO.MemoryStream
+            bm.Save(RenderedPageMemoryStream, 72, 72)
+        End Using
+
+        Return True
+    End Function
+
 #Region "Dispose"
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
             If disposing Then
-                ' TODO: dispose managed state (managed objects)
+                If RenderedPageMemoryStream IsNot Nothing Then RenderedPageMemoryStream.Close()
             End If
 
             ' TODO: free unmanaged resources (unmanaged objects) and override finalizer

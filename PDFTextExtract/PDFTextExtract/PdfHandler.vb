@@ -192,7 +192,6 @@ Public Class PdfHandler
         Dim worker = info.ref
         Dim LocalCapturedData As New List(Of ExtractedData)
         Dim proc As Double = 0.0
-        Dim skippedPages As Integer = 0
 
         Dim pagesToProcess = CInt(Math.Ceiling(GetPageCount() / info.skip))
 
@@ -211,13 +210,18 @@ Public Class PdfHandler
                         Exit Sub
                     End If
 
+                    proc += 100 / pagesToProcess
+                    worker.ReportProgress(CInt(proc), info.workerId)
+
+                    imgHandler.LoadPage(currentDocument.Pages(i))
+
                     ' We probably have multipage mailpacks, so only capture the first pages.
                     If useMatching Then
                         If matcher Is Nothing Then matcher = New Regex(firstPageRegex)
 
                         imgHandler.SetClippingPath(firstPageRegion)
 
-                        Using p = eng.Process(imgHandler.ConvertPage(currentDocument.Pages(i)))
+                        Using p = eng.Process(imgHandler.ConvertRegion())
 
                             If Not matcher.IsMatch(p.Text.Trim) Then
                                 ' no match found so we are probably not on a first page, just go to the next step
@@ -237,14 +241,11 @@ Public Class PdfHandler
 
                         imgHandler.SetClippingPath(clippingPath)
 
-                        Using p = eng.Process(imgHandler.ConvertPage(currentDocument.Pages(i)))
+                        Using p = eng.Process(imgHandler.ConvertRegion())
                             LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, clippingPath.idx))
                         End Using
                         imgHandler.ResetClippingPath()
                     Next
-
-                    proc += 100 / pagesToProcess
-                    worker.ReportProgress(CInt(proc), info.workerId)
                 Next
 
             End Using
@@ -259,12 +260,10 @@ Public Class PdfHandler
     End Sub
 
     Private Sub bgWorkerRunWorkerCompletedEventHandler(sender As Object, e As RunWorkerCompletedEventArgs)
-        If Not e.Cancelled And e.Error Is Nothing Then
+        If Not e.Cancelled Then
             Dim results = DirectCast(e.Result, workerResult)
-
-            CapturedData.AddRange(results.datas)
-
             bgWorkers.First(Function(c) c.workerId = results.workerId).completed = True
+            CapturedData.AddRange(results.datas)
 
             If bgWorkers.Where(Function(c) c.completed).Count = bgWorkers.Count Then
                 stopTime = Now
@@ -272,11 +271,14 @@ Public Class PdfHandler
                 _runningTime = stopTime.Subtract(startTime)
 
                 If AutoResetClippingPaths Then ResetClippingPaths()
+
                 RaiseEvent WorkersCompleted(Me, CapturedData, runningTime)
+            Else
+                Exit Sub
             End If
-        Else
-            CapturedData = Nothing
         End If
+
+
 
         For Each ws In bgWorkers
             ws.worker.Dispose()
@@ -306,6 +308,7 @@ Public Class PdfHandler
         Property workerId As Integer
         Property worker As BackgroundWorker
         Property completed As Boolean = False
+        Property cancelled As Boolean = False
     End Class
 #End Region
 

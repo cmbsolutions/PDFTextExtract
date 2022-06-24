@@ -138,12 +138,17 @@ Public Class Form1
         Using g = Graphics.FromImage(zbmp)
 
             For Each itm As ListViewItem In lRegions.Items
+                Dim c As Color = Color.MediumSeaGreen
+
+                If itm.Selected Then
+                    c = Color.MediumVioletRed
+                End If
                 Dim x = CInt(itm.SubItems.Item(1).Text)
                 Dim y = CInt(itm.SubItems.Item(2).Text)
                 Dim w = CInt(itm.SubItems.Item(3).Text)
                 Dim h = CInt(itm.SubItems.Item(4).Text)
 
-                g.DrawRectangle(New Pen(RandomColor, 2), CInt(x * _currentZoomFactor), CInt(y * _currentZoomFactor), CInt(w * _currentZoomFactor), CInt(h * _currentZoomFactor))
+                g.DrawRectangle(New Pen(c, 2), CInt(x * _currentZoomFactor), CInt(y * _currentZoomFactor), CInt(w * _currentZoomFactor), CInt(h * _currentZoomFactor))
             Next
         End Using
         Canvas.Image = zbmp
@@ -253,7 +258,7 @@ Public Class Form1
     Private Async Sub bTest_Click(sender As Object, e As EventArgs) Handles bTest.Click
         Dim datas As New List(Of ExtractedData)
 
-        If lRegions.SelectedItems.Count > 0 Then
+        If lRegions.SelectedItems.Count = 1 Then
             Dim idx As Integer = CInt(lRegions.SelectedItems(0).Text)
             Dim itm = pdfHandler.clippingPaths.FirstOrDefault(Function(c) c.idx = idx)
 
@@ -261,13 +266,42 @@ Public Class Form1
                                           Return pdfHandler.extractData(itm)
                                       End Function)
             datas.Add(Await renderTask.ConfigureAwait(True))
+
+        ElseIf lRegions.SelectedItems.Count > 1 Then
+            Dim l, t, r, b As Integer
+            Dim first As Boolean = True
+
+            For Each itm As ListViewItem In lRegions.SelectedItems
+                Dim idx = CInt(itm.Text)
+                Dim cp = pdfHandler.clippingPaths.FirstOrDefault(Function(c) c.idx = idx)
+
+                If cp IsNot Nothing Then
+                    If first Then
+                        l = cp.region.X
+                        t = cp.region.Y
+                        r = cp.region.Width
+                        b = cp.region.Height
+
+                        first = False
+                    Else
+                        l = Math.Min(l, cp.region.X)
+                        t = Math.Min(t, cp.region.Y)
+                        r = Math.Max(r, cp.region.Width)
+                        b = Math.Max(b, cp.region.Height)
+                    End If
+                End If
+            Next
+            Dim newCp As New ClippingPath(l, t, r, b)
+
+            Dim renderTask = Task.Run(Function()
+                                          Return pdfHandler.extractData(newCp)
+                                      End Function)
+            datas.Add(Await renderTask.ConfigureAwait(True))
         Else
             Dim renderTask = Task.Run(Function()
                                           Return pdfHandler.extractData()
                                       End Function)
             datas = Await renderTask.ConfigureAwait(True)
-
-            'data = New ExtractedData(datas.Average(Function(c) c.confidence), Strings.Join(datas.Select(Of String)(Function(c) c.text).ToArray), datas.First.pageIndex, 0)
         End If
 
         rResult.ResetText()
@@ -427,6 +461,7 @@ Public Class Form1
         End If
 
         bExport.Enabled = False
+        bView.Enabled = False
         exportData = Nothing
         MessageBox.Show($"Captured data exported!")
     End Sub
@@ -443,6 +478,7 @@ Public Class Form1
         If MessageBox.Show("Weet je zeker dat je alle regio's wilt verwijderen?", "Verwijderen", MessageBoxButtons.YesNo) = DialogResult.Yes Then
             pdfHandler.ResetClippingPaths()
             lRegions.Items.Clear()
+            RedrawCanvas()
         End If
     End Sub
 
@@ -476,6 +512,18 @@ Public Class Form1
         pdfHandler.useMatching = cMatching.Checked
     End Sub
 
+    Private Sub lRegions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lRegions.SelectedIndexChanged
+        RedrawCanvas()
+    End Sub
+
+    Private Sub bView_Click(sender As Object, e As EventArgs) Handles bView.Click
+        Dim frm As New CapturedDataView With {
+            .exportData = exportData
+        }
+
+        frm.ShowDialog()
+    End Sub
+
     Private Sub pdfHandler_WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles pdfHandler.WorkerProgressChanged
         If InvokeRequired Then
             Dim d As pdfHandler_WorkerProgressChangedDelegate = AddressOf pdfHandler_WorkerProgressChanged
@@ -490,9 +538,11 @@ Public Class Form1
     Private Sub pdfHandler_WorkersCompleted(sender As Object, data As List(Of PDFTextExtract.ExtractedData), workingTime As TimeSpan) Handles pdfHandler.WorkersCompleted
         exportData = data
         bExport.Enabled = True
+        bView.Enabled = True
 
         Dim accuracy = exportData.Average(Function(c) c.confidence)
 
         MessageBox.Show($"All {pdfHandler.GetPageCount} pages are processed with {nWorkers.Value} workers with an accuracy of {accuracy}% in {workingTime.Hours} hours, {workingTime.Minutes} minutes and {workingTime.Seconds} seconds. You can now export the results.")
+        pWorkers.Controls.Clear()
     End Sub
 End Class
