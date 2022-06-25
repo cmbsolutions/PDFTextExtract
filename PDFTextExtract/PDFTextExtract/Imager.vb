@@ -6,7 +6,7 @@ Public Class Imager
     Implements IDisposable
 
     Private disposedValue As Boolean
-    Private scale As Integer = 3
+    Private scale As Integer = 2
 
     Public ReadOnly Property outputImage As TesseractOCR.Pix.Image
 
@@ -39,7 +39,7 @@ Public Class Imager
             pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
             Dim renderedPage As New IO.MemoryStream
-            bm.Save(renderedPage, 72, 72)
+            bm.Save(renderedPage, 300, 300)
             renderedPage.Position = 0
             Return renderedPage
         End Using
@@ -57,13 +57,13 @@ Public Class Imager
             pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
             Using ms1 As New IO.MemoryStream
-                bm.Save(ms1, 72, 72)
+                bm.Save(ms1, 300, 300)
                 ms1.Position = 0
                 Using img As New ImageMagick.MagickImage(ms1)
 
                     If clippingPath IsNot Nothing Then
                         img.Crop(clippingPath.region)
-                        img.RePage()
+                        'img.RePage()
                     End If
 
                     Using ms As New IO.MemoryStream
@@ -108,7 +108,7 @@ Public Class Imager
             If RenderedPageMemoryStream IsNot Nothing Then RenderedPageMemoryStream.Close()
 
             RenderedPageMemoryStream = New IO.MemoryStream
-            bm.Save(RenderedPageMemoryStream, 72, 72)
+            bm.Save(RenderedPageMemoryStream, 300, 300)
         End Using
 
         Return True

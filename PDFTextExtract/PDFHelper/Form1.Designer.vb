@@ -56,6 +56,7 @@ Partial Class Form1
         Me.bTest = New System.Windows.Forms.Button()
         Me.pWorkers = New System.Windows.Forms.FlowLayoutPanel()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.bView = New System.Windows.Forms.Button()
         Me.bExport = New System.Windows.Forms.Button()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.nWorkers = New System.Windows.Forms.NumericUpDown()
@@ -70,7 +71,6 @@ Partial Class Form1
         Me.sfd = New System.Windows.Forms.SaveFileDialog()
         Me.fbd = New System.Windows.Forms.FolderBrowserDialog()
         Me.tt = New System.Windows.Forms.ToolTip(Me.components)
-        Me.bView = New System.Windows.Forms.Button()
         Me.CanvasX.SuspendLayout()
         CType(Me.Canvas, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
@@ -396,7 +396,7 @@ Partial Class Form1
         Me.lScale.Name = "lScale"
         Me.lScale.Size = New System.Drawing.Size(13, 15)
         Me.lScale.TabIndex = 16
-        Me.lScale.Text = "4"
+        Me.lScale.Text = "2"
         '
         'bSaveTest
         '
@@ -419,7 +419,7 @@ Partial Class Form1
         Me.tScale.Size = New System.Drawing.Size(85, 22)
         Me.tScale.TabIndex = 14
         Me.tt.SetToolTip(Me.tScale, "Level of enlargement. Level 4 is best for most.")
-        Me.tScale.Value = 4
+        Me.tScale.Value = 2
         '
         'Label6
         '
@@ -476,6 +476,16 @@ Partial Class Form1
         Me.Panel2.Size = New System.Drawing.Size(724, 32)
         Me.Panel2.TabIndex = 12
         '
+        'bView
+        '
+        Me.bView.Enabled = False
+        Me.bView.Location = New System.Drawing.Point(355, 4)
+        Me.bView.Name = "bView"
+        Me.bView.Size = New System.Drawing.Size(55, 23)
+        Me.bView.TabIndex = 18
+        Me.bView.Text = "View"
+        Me.bView.UseVisualStyleBackColor = True
+        '
         'bExport
         '
         Me.bExport.Enabled = False
@@ -498,7 +508,7 @@ Partial Class Form1
         'nWorkers
         '
         Me.nWorkers.Location = New System.Drawing.Point(240, 5)
-        Me.nWorkers.Maximum = New Decimal(New Integer() {8, 0, 0, 0})
+        Me.nWorkers.Maximum = New Decimal(New Integer() {12, 0, 0, 0})
         Me.nWorkers.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.nWorkers.Name = "nWorkers"
         Me.nWorkers.Size = New System.Drawing.Size(48, 23)
@@ -602,16 +612,6 @@ Partial Class Form1
         'tt
         '
         Me.tt.BackColor = System.Drawing.Color.Khaki
-        '
-        'bView
-        '
-        Me.bView.Enabled = False
-        Me.bView.Location = New System.Drawing.Point(355, 4)
-        Me.bView.Name = "bView"
-        Me.bView.Size = New System.Drawing.Size(55, 23)
-        Me.bView.TabIndex = 18
-        Me.bView.Text = "View"
-        Me.bView.UseVisualStyleBackColor = True
         '
         'Form1
         '

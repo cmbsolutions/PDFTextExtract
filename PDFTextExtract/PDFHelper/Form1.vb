@@ -5,7 +5,7 @@ Imports PDFTextExtract
 Public Class Form1
     Private currentPdf As String
 
-    Private pdfScale As Integer = 4
+    Private pdfScale As Integer = 2
     Private RC As Rectangle
     Private screenPtA, screenPtB As Point
     Private boxPta, boxPtb As Point
@@ -343,7 +343,9 @@ Public Class Form1
     End Sub
 
     Private Sub tScale_Scroll(sender As Object, e As EventArgs) Handles tScale.Scroll
+
         pdfScale = tScale.Value
+
         pdfHandler.SetScale(pdfScale)
         lScale.Text = pdfScale.ToString
 

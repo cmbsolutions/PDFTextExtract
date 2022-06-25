@@ -13,7 +13,7 @@ Public Class PdfHandler
     Public ReadOnly Property pageSize As FS_SIZEF
     Private engine As TesseractOCR.Engine = Nothing
     Private disposedValue As Boolean
-    Private pdfScale As Integer = 4
+    Private pdfScale As Integer = 2
 
     Private bgWorkers As List(Of workerState)
     Private CapturedData As List(Of ExtractedData)
@@ -35,7 +35,7 @@ Public Class PdfHandler
 
     Sub New()
         imageHandler = New Imager
-        SetScale(4)
+        SetScale(pdfScale)
 
         engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
     End Sub
