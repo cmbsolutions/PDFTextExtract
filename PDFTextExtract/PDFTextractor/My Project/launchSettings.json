@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PDFTextractor": {
+      "commandName": "Project",
+      "commandLineArgs": "-in \"E:\\My Documents\\localRepos\\PDFTextExtract\\TestData\\101-200.pdf\" -w 4 -s 4"
+    }
+  }
+}

@@ -77,20 +77,23 @@ Public Class Imager
     End Function
 
     Public Function ConvertRegion() As TesseractOCR.Pix.Image
-        RenderedPageMemoryStream.Position = 0
-        Using img As New ImageMagick.MagickImage(RenderedPageMemoryStream)
+        If RenderedPageMemoryStream IsNot Nothing Then
+            RenderedPageMemoryStream.Position = 0
 
-            If clippingPath IsNot Nothing Then
-                img.Crop(clippingPath.region)
-                'img.RePage()
-            End If
+            Using img As New ImageMagick.MagickImage(RenderedPageMemoryStream)
 
-            Using ms As New IO.MemoryStream
-                img.Write(ms, MagickFormat.Png32)
+                If clippingPath IsNot Nothing Then
+                    img.Crop(clippingPath.region)
+                    'img.RePage()
+                End If
 
-                Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
+                Using ms As New IO.MemoryStream
+                    img.Write(ms, MagickFormat.Png32)
+
+                    Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
+                End Using
             End Using
-        End Using
+        End If
     End Function
 
     Private RenderedPageMemoryStream As IO.MemoryStream
@@ -119,6 +122,7 @@ Public Class Imager
         If Not disposedValue Then
             If disposing Then
                 If RenderedPageMemoryStream IsNot Nothing Then RenderedPageMemoryStream.Close()
+                If outputImage IsNot Nothing Then outputImage.Dispose()
             End If
 
             ' TODO: free unmanaged resources (unmanaged objects) and override finalizer

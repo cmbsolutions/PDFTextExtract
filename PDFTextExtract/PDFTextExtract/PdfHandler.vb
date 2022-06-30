@@ -174,8 +174,8 @@ Public Class PdfHandler
             AddHandler ws.worker.RunWorkerCompleted, AddressOf bgWorkerRunWorkerCompletedEventHandler
             AddHandler ws.worker.DoWork, AddressOf bgWorkerDoWorkHandler
 
-            ws.worker.RunWorkerAsync(New workerInfo With {.workerId = i, .startPage = i, .skip = workers, .ref = ws.worker})
             bgWorkers.Add(ws)
+            ws.worker.RunWorkerAsync(New workerInfo With {.workerId = i, .startPage = i, .skip = workers, .ref = ws.worker})
         Next
     End Sub
 
@@ -237,7 +237,7 @@ Public Class PdfHandler
 
                     For Each clippingPath In _clippingPaths
 
-                        If useMatching And clippingPath.idx = firstPageRegion.idx Then Continue For
+                        If useMatching AndAlso clippingPath.idx = firstPageRegion.idx Then Continue For
 
                         imgHandler.SetClippingPath(clippingPath)
 
@@ -277,12 +277,6 @@ Public Class PdfHandler
                 Exit Sub
             End If
         End If
-
-
-
-        For Each ws In bgWorkers
-            ws.worker.Dispose()
-        Next
     End Sub
 
     Private Sub bgWorkerProgressChangedEventHandler(sender As Object, e As ProgressChangedEventArgs)
@@ -342,6 +336,11 @@ Public Class PdfHandler
                 If engine IsNot Nothing Then engine.Dispose()
                 If currentDocument IsNot Nothing Then currentDocument.Close()
                 If imageHandler IsNot Nothing Then imageHandler.Dispose()
+                If bgWorkers IsNot Nothing Then
+                    For Each ws In bgWorkers
+                        ws.worker.Dispose()
+                    Next
+                End If
             End If
 
             ' TODO: free unmanaged resources (unmanaged objects) and override finalizer
