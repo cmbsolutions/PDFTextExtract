@@ -13,10 +13,11 @@ Public Class PdfHandler
     Public ReadOnly Property pageSize As FS_SIZEF
     Private engine As TesseractOCR.Engine = Nothing
     Private disposedValue As Boolean
-    Private pdfScale As Integer = 2
+    Private pdfScale As Integer = 4
+    Private renderDPI As Integer = 150
 
     Private bgWorkers As List(Of workerState)
-    Private CapturedData As List(Of ExtractedData)
+    Private CapturedData As Concurrent.ConcurrentBag(Of ExtractedData)
 
     Private startTime As Date
     Private stopTime As Date
@@ -36,6 +37,7 @@ Public Class PdfHandler
     Sub New()
         imageHandler = New Imager
         SetScale(pdfScale)
+        imageHandler.SetDPI(renderDPI)
 
         engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
     End Sub
@@ -71,6 +73,11 @@ Public Class PdfHandler
     Public Sub SetScale(scale As Integer)
         imageHandler.SetScale(scale)
         pdfScale = scale
+    End Sub
+
+    Public Sub SetDPI(dpi As Integer)
+        renderDPI = dpi
+        imageHandler.SetDPI(dpi)
     End Sub
 
 #Region "Navigation"
@@ -115,6 +122,7 @@ Public Class PdfHandler
                 data.AppendLine($"{currentPageIdx};{clippingPath.idx};{clippingPath.region};{page.MeanConfidence};{Regex.Replace(page.Text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
             End Using
         Next
+        'engine.ClearAdaptiveClassifier()
         IO.File.WriteAllText(IO.Path.Combine(imageLocation, $"{filename}.txt"), data.ToString)
         If AutoResetClippingPaths Then ResetClippingPaths()
     End Sub
@@ -125,7 +133,7 @@ Public Class PdfHandler
         Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
             Return New ExtractedData(page.MeanConfidence, page.Text.Trim, currentPageIdx, path.idx)
         End Using
-
+        'engine.ClearAdaptiveClassifier()
     End Function
 
     Public Function extractData() As List(Of ExtractedData)
@@ -142,13 +150,14 @@ Public Class PdfHandler
             imageHandler.ResetClippingPath()
         Next
 
+        'engine.ClearAdaptiveClassifier()
         If AutoResetClippingPaths Then ResetClippingPaths()
 
         Return data
     End Function
 
     Public Sub BeginExtractAllData(workers As Integer)
-        CapturedData = New List(Of ExtractedData)
+        CapturedData = New Concurrent.ConcurrentBag(Of ExtractedData)
 
         InitClippingPath()
 
@@ -201,6 +210,7 @@ Public Class PdfHandler
             Using imgHandler As New Imager
                 imgHandler.SetPageSize(pageSize)
                 imgHandler.SetScale(pdfScale)
+                imgHandler.SetDPI(renderDPI)
 
                 For i As Integer = info.startPage To GetPageCount() - 1 Step info.skip
                     If worker.CancellationPending Then
@@ -228,7 +238,7 @@ Public Class PdfHandler
                                 imgHandler.ResetClippingPath()
                                 Continue For
                             Else
-                                LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, firstPageRegion.idx))
+                                CapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, firstPageRegion.idx))
                             End If
                         End Using
 
@@ -242,10 +252,12 @@ Public Class PdfHandler
                         imgHandler.SetClippingPath(clippingPath)
 
                         Using p = eng.Process(imgHandler.ConvertRegion())
-                            LocalCapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, clippingPath.idx))
+                            CapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, clippingPath.idx))
                         End Using
                         imgHandler.ResetClippingPath()
                     Next
+
+                    'eng.ClearAdaptiveClassifier()
                 Next
 
             End Using
@@ -263,7 +275,7 @@ Public Class PdfHandler
         If Not e.Cancelled Then
             Dim results = DirectCast(e.Result, workerResult)
             bgWorkers.First(Function(c) c.workerId = results.workerId).completed = True
-            CapturedData.AddRange(results.datas)
+
 
             If bgWorkers.Where(Function(c) c.completed).Count = bgWorkers.Count Then
                 stopTime = Now
@@ -272,7 +284,7 @@ Public Class PdfHandler
 
                 If AutoResetClippingPaths Then ResetClippingPaths()
 
-                RaiseEvent WorkersCompleted(Me, CapturedData, runningTime)
+                RaiseEvent WorkersCompleted(Me, CapturedData.ToList, runningTime)
             Else
                 Exit Sub
             End If
@@ -318,6 +330,11 @@ Public Class PdfHandler
         Return clippingPaths.Last.idx
     End Function
 
+    Public Function AddClippingPaths(paths As ClippingPath()) As Integer
+        _clippingPaths.AddRange(paths)
+        Return clippingPaths.Last.idx
+    End Function
+
     Public Sub RemoveClippingPath(item As ClippingPath)
         _clippingPaths.Remove(item)
     End Sub
@@ -333,7 +350,11 @@ Public Class PdfHandler
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
             If disposing Then
-                If engine IsNot Nothing Then engine.Dispose()
+                If engine IsNot Nothing Then
+                    'engine.ClearAdaptiveClassifier()
+                    'engine.ClearPersistentCache()
+                    engine.Dispose()
+                End If
                 If currentDocument IsNot Nothing Then currentDocument.Close()
                 If imageHandler IsNot Nothing Then imageHandler.Dispose()
                 If bgWorkers IsNot Nothing Then

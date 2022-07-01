@@ -396,7 +396,7 @@ Partial Class Form1
         Me.lScale.Name = "lScale"
         Me.lScale.Size = New System.Drawing.Size(13, 15)
         Me.lScale.TabIndex = 16
-        Me.lScale.Text = "2"
+        Me.lScale.Text = "4"
         '
         'bSaveTest
         '
@@ -419,7 +419,7 @@ Partial Class Form1
         Me.tScale.Size = New System.Drawing.Size(85, 22)
         Me.tScale.TabIndex = 14
         Me.tt.SetToolTip(Me.tScale, "Level of enlargement. Level 4 is best for most.")
-        Me.tScale.Value = 2
+        Me.tScale.Value = 4
         '
         'Label6
         '

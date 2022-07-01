@@ -64,10 +64,10 @@ Namespace My.Resources
         '''  Looks up a localized string similar to PDFTextractor v1.0.0
         '''Usage: PDFTextractor [options] -in &lt;pdffile&gt; -out &lt;outputfile&gt;
         '''Options:
-        '''-w [1..12]	Set the amount of workers (threads) to process the PDF. Defaults to 4, maximum is 12.
-        '''-s [1..8]	Set the scale of the PDF. Each page will be enlarged N times, a higher scale is more accurate but is slower and uses more memory. Defaults to 2, maximum is 8.
-        '''-d &lt;N&gt;		Set the DPI of the PDF page. Higher DPI yields better results but costs ALLOT more memory! Defaults to 72, maximum is 600.
-        '''-o			Overwrite o [rest of string was truncated]&quot;;.
+        '''-w [1..12]		Set the amount of workers (threads) to process the PDF. Defaults to 4, maximum is 12.
+        '''-s [1..8]		Set the scale of the PDF. Each page will be enlarged N times, a higher scale is more accurate but is slower and uses more memory. Defaults to 2, maximum is 8.
+        '''-d &lt;N&gt;			Set the DPI of the PDF page. Higher DPI yields better results but costs ALLOT more memory! Defaults to 72, maximum is 600.
+        '''-c {L,T,R,B}	 [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property help() As String
             Get

@@ -2,7 +2,7 @@
   "profiles": {
     "PDFTextractor": {
       "commandName": "Project",
-      "commandLineArgs": "-in \"E:\\My Documents\\localRepos\\PDFTextExtract\\TestData\\101-200.pdf\" -w 4 -s 4"
+      "commandLineArgs": "-in \"E:\\My Documents\\localRepos\\PDFTextExtract\\TestData\\101-200.pdf\" -out \"E:\\My Documents\\localRepos\\PDFTextExtract\\TestData\\debuggerdata.csv\" -w 4 -d 300 -c 245,308,584,116"
     }
   }
 }

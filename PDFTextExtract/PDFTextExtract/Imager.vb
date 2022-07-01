@@ -6,7 +6,8 @@ Public Class Imager
     Implements IDisposable
 
     Private disposedValue As Boolean
-    Private scale As Integer = 2
+    Private scale As Integer = 4
+    Private DPI As Integer = 150
 
     Public ReadOnly Property outputImage As TesseractOCR.Pix.Image
 
@@ -30,16 +31,20 @@ Public Class Imager
         scale = s
     End Sub
 
+    Public Sub SetDPI(renderDPI As Integer)
+        DPI = renderDPI
+    End Sub
+
     Public Function RenderCurrentPage(pdfPage As PdfPage) As IO.Stream
         Dim width = CInt(Math.Round(pageSize.Width * scale))
         Dim height = CInt(Math.Round(pageSize.Height * scale))
 
         Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
-            If pdfPage.HasTransparency Then bm.Fill(New FPDF_COLOR(255, 255, 255))
+            bm.Fill(New FPDF_COLOR(255, 255, 255))
             pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
             Dim renderedPage As New IO.MemoryStream
-            bm.Save(renderedPage, 300, 300)
+            bm.Save(renderedPage, DPI, DPI)
             renderedPage.Position = 0
             Return renderedPage
         End Using
@@ -51,18 +56,18 @@ Public Class Imager
 
         Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
 
-            'If pdfPage.HasTransparency Then
             bm.Fill(New FPDF_COLOR(255, 255, 255))
 
             pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
             Using ms1 As New IO.MemoryStream
-                bm.Save(ms1, 300, 300)
+                bm.Save(ms1, DPI, DPI)
                 ms1.Position = 0
                 Using img As New ImageMagick.MagickImage(ms1)
 
                     If clippingPath IsNot Nothing Then
                         img.Crop(clippingPath.region)
+                        'img.Chop(clippingPath.region)
                         'img.RePage()
                     End If
 
@@ -93,6 +98,8 @@ Public Class Imager
                     Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
                 End Using
             End Using
+        Else
+            Throw New MagickStreamErrorException("Memorystream is empty.")
         End If
     End Function
 
@@ -108,10 +115,14 @@ Public Class Imager
 
             pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
-            If RenderedPageMemoryStream IsNot Nothing Then RenderedPageMemoryStream.Close()
+            If RenderedPageMemoryStream IsNot Nothing Then
+                RenderedPageMemoryStream.Close()
+                RenderedPageMemoryStream.Dispose()
+                'GC.Collect()
+            End If
 
             RenderedPageMemoryStream = New IO.MemoryStream
-            bm.Save(RenderedPageMemoryStream, 300, 300)
+            bm.Save(RenderedPageMemoryStream, DPI, DPI)
         End Using
 
         Return True
@@ -121,7 +132,10 @@ Public Class Imager
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
             If disposing Then
-                If RenderedPageMemoryStream IsNot Nothing Then RenderedPageMemoryStream.Close()
+                If RenderedPageMemoryStream IsNot Nothing Then
+                    RenderedPageMemoryStream.Close()
+                    RenderedPageMemoryStream.Dispose()
+                End If
                 If outputImage IsNot Nothing Then outputImage.Dispose()
             End If
 

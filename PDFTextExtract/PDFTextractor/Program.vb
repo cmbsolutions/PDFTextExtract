@@ -1,5 +1,6 @@
 Imports System
 Imports System.ComponentModel
+Imports System.Text.RegularExpressions
 Imports System.Threading
 Imports PDFTextExtract
 
@@ -10,17 +11,16 @@ Module Program
     Private ctsDone As CancellationTokenSource
     Private inFile As String = ""
     Private outFile As String = ""
-    Private customScale As Integer = 2
+    Private customScale As Integer = 4
     Private workerCount As Integer = 4
-    Private customDpi As Integer = 72
+    Private customDpi As Integer = 150
     Private overwrite As Boolean = False
     Private quiet As Boolean = False
     Private verbose As Boolean = False
+    Private regions As New List(Of ClippingPath)
 
     Sub Main(args As String())
         Try
-
-
             Console.Clear()
 
             If args.Length = 0 Then
@@ -79,6 +79,22 @@ Module Program
                             customDpi = 72
                         End If
                         i += 1
+                    Case "-c"
+                        Dim cps = args(i + 1).Split(";")
+
+                        For Each cp In cps
+                            Dim c = cp.Split(",")
+
+                            Dim l, t, r, b As Integer
+
+                            If Integer.TryParse(c(0), l) AndAlso Integer.TryParse(c(1), t) AndAlso Integer.TryParse(c(2), r) AndAlso Integer.TryParse(c(3), b) Then
+                                regions.Add(New ClippingPath(l, t, r, b))
+                            Else
+                                Console.WriteLine("Invalid clippingpath.")
+                                Environment.Exit(7)
+                            End If
+                        Next
+                        i += 1
                     Case "-o"
                         overwrite = True
                     Case "-q"
@@ -113,7 +129,10 @@ Module Program
             AddHandler pdfHandler.WorkerProgressChanged, AddressOf workerProgressChanged
 
             pdfHandler.SetScale(customScale)
+            pdfHandler.SetDPI(customDpi)
+
             pdfHandler.LoadDocument(inFile)
+            pdfHandler.AddClippingPaths(regions.ToArray)
 
             pdfHandler.BeginExtractAllData(workerCount)
 
@@ -121,22 +140,20 @@ Module Program
                                               Do
                                                   While Not Console.KeyAvailable
                                                       If tokenDone.IsCancellationRequested Then Exit Sub
-                                                      'Thread.Yield()
-                                                      Thread.Sleep(250)
+                                                      Thread.Sleep(50)
                                                   End While
                                               Loop While Console.ReadKey(True).KeyChar.ToString.ToUpperInvariant <> "C"
                                               pdfHandler.CancelWorkers()
-                                          End Sub, tokenDone)
+                                          End Sub)
             mytask.Wait(tokenDone)
 
         Catch ex As Exception
-            ShowHelp()
+            Console.WriteLine(ex.Message)
         End Try
     End Sub
 
     Private Sub workerProgressChanged(sender As Object, e As ProgressChangedEventArgs)
         pb.Report(e.ProgressPercentage, CInt(e.UserState))
-        'Thread.Yield()
     End Sub
 
     Private Sub workersCompleted(sender As Object, data As List(Of ExtractedData), workingTime As TimeSpan)
@@ -146,9 +163,21 @@ Module Program
             RemoveHandler pdfHandler.WorkersCompleted, AddressOf workersCompleted
             Console.SetCursorPosition(0, pb.MaxRow + 2)
             Console.WriteLine($"All {pdfHandler.GetPageCount} pages are processed with {workerCount} workers with an accuracy of {accuracy}% in {workingTime.Hours} hours, {workingTime.Minutes} minutes and {workingTime.Seconds} seconds.")
+            ExportData(data)
             pdfHandler.Dispose()
         End If
         ctsDone.Cancel()
+    End Sub
+
+    Private Sub ExportData(data As List(Of ExtractedData))
+        Using fs As New IO.FileStream(outFile, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
+            Using sw As New IO.StreamWriter(fs, System.Text.Encoding.Unicode)
+                sw.WriteLine("PageIndex;RegionIndex;Region;Accuracy;CapturedText")
+                For Each d In data
+                    sw.WriteLine($"{d.pageIndex};{d.clipIdx};{pdfHandler.clippingPaths.First(Function(c) c.idx = d.clipIdx).region};{d.confidence};{Regex.Replace(d.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
+                Next
+            End Using
+        End Using
     End Sub
 
     Private Sub ShowHelp()
