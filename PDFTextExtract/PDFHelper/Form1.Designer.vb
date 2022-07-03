@@ -68,6 +68,7 @@ Partial Class Form1
         Me.bFirst = New System.Windows.Forms.Button()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.lZoom = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.tLog = New System.Windows.Forms.ToolStripStatusLabel()
         Me.sfd = New System.Windows.Forms.SaveFileDialog()
         Me.fbd = New System.Windows.Forms.FolderBrowserDialog()
         Me.tt = New System.Windows.Forms.ToolTip(Me.components)
@@ -150,7 +151,7 @@ Partial Class Form1
         Me.CanvasX.Location = New System.Drawing.Point(0, 32)
         Me.CanvasX.Margin = New System.Windows.Forms.Padding(0)
         Me.CanvasX.Name = "CanvasX"
-        Me.CanvasX.Size = New System.Drawing.Size(472, 536)
+        Me.CanvasX.Size = New System.Drawing.Size(472, 486)
         Me.CanvasX.TabIndex = 4
         '
         'Canvas
@@ -181,7 +182,7 @@ Partial Class Form1
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Right
         Me.Panel1.Location = New System.Drawing.Point(472, 32)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(252, 536)
+        Me.Panel1.Size = New System.Drawing.Size(252, 486)
         Me.Panel1.TabIndex = 11
         '
         'sc1
@@ -200,7 +201,7 @@ Partial Class Form1
         '
         Me.sc1.Panel2.Controls.Add(Me.TableLayoutPanel1)
         Me.sc1.Panel2Collapsed = True
-        Me.sc1.Size = New System.Drawing.Size(252, 151)
+        Me.sc1.Size = New System.Drawing.Size(252, 101)
         Me.sc1.SplitterDistance = 84
         Me.sc1.SplitterWidth = 1
         Me.sc1.TabIndex = 19
@@ -211,7 +212,7 @@ Partial Class Form1
         Me.rResult.Location = New System.Drawing.Point(0, 0)
         Me.rResult.Name = "rResult"
         Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(252, 151)
+        Me.rResult.Size = New System.Drawing.Size(252, 101)
         Me.rResult.TabIndex = 11
         Me.rResult.Text = ""
         Me.rResult.WordWrap = False
@@ -448,7 +449,7 @@ Partial Class Form1
         Me.pWorkers.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.pWorkers.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.pWorkers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.pWorkers.Location = New System.Drawing.Point(0, 273)
+        Me.pWorkers.Location = New System.Drawing.Point(0, 223)
         Me.pWorkers.Name = "pWorkers"
         Me.pWorkers.Size = New System.Drawing.Size(252, 263)
         Me.pWorkers.TabIndex = 11
@@ -582,8 +583,8 @@ Partial Class Form1
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lZoom})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 568)
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lZoom, Me.tLog})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 518)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(724, 24)
         Me.StatusStrip1.TabIndex = 13
@@ -596,6 +597,14 @@ Partial Class Form1
         Me.lZoom.Name = "lZoom"
         Me.lZoom.Size = New System.Drawing.Size(77, 19)
         Me.lZoom.Text = "Zoom: 100%"
+        '
+        'tLog
+        '
+        Me.tLog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.tLog.LiveSetting = System.Windows.Forms.Automation.AutomationLiveSetting.Polite
+        Me.tLog.Name = "tLog"
+        Me.tLog.Size = New System.Drawing.Size(30, 19)
+        Me.tLog.Text = "Log:"
         '
         'sfd
         '
@@ -617,7 +626,7 @@ Partial Class Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(724, 592)
+        Me.ClientSize = New System.Drawing.Size(724, 542)
         Me.Controls.Add(Me.CanvasX)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.Panel2)
@@ -694,4 +703,5 @@ Partial Class Form1
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents cMatching As CheckBox
     Friend WithEvents bView As Button
+    Friend WithEvents tLog As ToolStripStatusLabel
 End Class

@@ -36,38 +36,70 @@ Public Class Imager
     End Sub
 
     Public Function RenderCurrentPage(pdfPage As PdfPage) As IO.Stream
-        Dim width = CInt(Math.Round(pageSize.Width * scale))
-        Dim height = CInt(Math.Round(pageSize.Height * scale))
+        Try
+            Dim width = CInt(Math.Round(pageSize.Width * scale))
+            Dim height = CInt(Math.Round(pageSize.Height * scale))
 
-        Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
-            bm.Fill(New FPDF_COLOR(255, 255, 255))
-            pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+            Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
+                bm.Fill(New FPDF_COLOR(255, 255, 255))
+                pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
-            Dim renderedPage As New IO.MemoryStream
-            bm.Save(renderedPage, DPI, DPI)
-            renderedPage.Position = 0
-            Return renderedPage
-        End Using
+                Dim renderedPage As New IO.MemoryStream
+                bm.Save(renderedPage, DPI, DPI)
+                renderedPage.Position = 0
+                Return renderedPage
+            End Using
+        Catch ex As Exception
+            Helpers.dumpException(ex)
+        End Try
+        Return Nothing
     End Function
 
     Public Function ConvertPage(pdfPage As PDFiumSharp.PdfPage) As TesseractOCR.Pix.Image
-        Dim width = CInt(Math.Round(pageSize.Width * scale))
-        Dim height = CInt(Math.Round(pageSize.Height * scale))
+        Try
+            Dim width = CInt(Math.Round(pageSize.Width * scale))
+            Dim height = CInt(Math.Round(pageSize.Height * scale))
 
-        Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
+            Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
 
-            bm.Fill(New FPDF_COLOR(255, 255, 255))
+                bm.Fill(New FPDF_COLOR(255, 255, 255))
 
-            pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+                pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
-            Using ms1 As New IO.MemoryStream
-                bm.Save(ms1, DPI, DPI)
-                ms1.Position = 0
-                Using img As New ImageMagick.MagickImage(ms1)
+                Using ms1 As New IO.MemoryStream
+                    bm.Save(ms1, DPI, DPI)
+                    ms1.Position = 0
+                    Using img As New ImageMagick.MagickImage(ms1)
+
+                        If clippingPath IsNot Nothing Then
+                            img.Crop(clippingPath.region)
+                            'img.Chop(clippingPath.region)
+                            'img.RePage()
+                        End If
+
+                        Using ms As New IO.MemoryStream
+                            img.Write(ms, MagickFormat.Png32)
+
+                            Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
+                        End Using
+                    End Using
+                End Using
+            End Using
+        Catch ex As Exception
+            Helpers.dumpException(ex)
+        End Try
+        Return Nothing
+    End Function
+
+    Public Function ConvertRegion() As TesseractOCR.Pix.Image
+        Try
+            If RenderedPageMemoryStream IsNot Nothing Then
+                RenderedPageMemoryStream.Position = 0
+
+                Using img As New ImageMagick.MagickImage(RenderedPageMemoryStream)
 
                     If clippingPath IsNot Nothing Then
                         img.Crop(clippingPath.region)
-                        'img.Chop(clippingPath.region)
                         'img.RePage()
                     End If
 
@@ -77,54 +109,40 @@ Public Class Imager
                         Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
                     End Using
                 End Using
-            End Using
-        End Using
-    End Function
-
-    Public Function ConvertRegion() As TesseractOCR.Pix.Image
-        If RenderedPageMemoryStream IsNot Nothing Then
-            RenderedPageMemoryStream.Position = 0
-
-            Using img As New ImageMagick.MagickImage(RenderedPageMemoryStream)
-
-                If clippingPath IsNot Nothing Then
-                    img.Crop(clippingPath.region)
-                    'img.RePage()
-                End If
-
-                Using ms As New IO.MemoryStream
-                    img.Write(ms, MagickFormat.Png32)
-
-                    Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
-                End Using
-            End Using
-        Else
-            Throw New MagickStreamErrorException("Memorystream is empty.")
-        End If
+            Else
+                Throw New MagickStreamErrorException("Memorystream is empty.")
+            End If
+        Catch ex As Exception
+            Helpers.dumpException(ex)
+        End Try
+        Return Nothing
     End Function
 
     Private RenderedPageMemoryStream As IO.MemoryStream
     Public Function LoadPage(pdfPage As PdfPage) As Boolean
-        Dim width = CInt(Math.Round(pageSize.Width * scale))
-        Dim height = CInt(Math.Round(pageSize.Height * scale))
+        Try
+            Dim width = CInt(Math.Round(pageSize.Width * scale))
+            Dim height = CInt(Math.Round(pageSize.Height * scale))
 
-        Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
+            Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
 
-            'If pdfPage.HasTransparency Then
-            bm.Fill(New FPDF_COLOR(255, 255, 255))
+                'If pdfPage.HasTransparency Then
+                bm.Fill(New FPDF_COLOR(255, 255, 255))
 
-            pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+                pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
 
-            If RenderedPageMemoryStream IsNot Nothing Then
-                RenderedPageMemoryStream.Close()
-                RenderedPageMemoryStream.Dispose()
-                'GC.Collect()
-            End If
+                If RenderedPageMemoryStream IsNot Nothing Then
+                    RenderedPageMemoryStream.Close()
+                    RenderedPageMemoryStream.Dispose()
+                    'GC.Collect()
+                End If
 
-            RenderedPageMemoryStream = New IO.MemoryStream
-            bm.Save(RenderedPageMemoryStream, DPI, DPI)
-        End Using
-
+                RenderedPageMemoryStream = New IO.MemoryStream
+                bm.Save(RenderedPageMemoryStream, DPI, DPI)
+            End Using
+        Catch ex As Exception
+            Helpers.dumpException(ex)
+        End Try
         Return True
     End Function
 

@@ -7,8 +7,8 @@ Imports PDFTextExtract
 Module Program
     Private pdfHandler As PdfHandler
     Private pb As CmbConsoleControls.CmbMultiBar
-    Private cts As CancellationTokenSource
     Private ctsDone As CancellationTokenSource
+    Private ctsCompleted As Boolean
     Private inFile As String = ""
     Private outFile As String = ""
     Private customScale As Integer = 4
@@ -18,6 +18,7 @@ Module Program
     Private quiet As Boolean = False
     Private verbose As Boolean = False
     Private regions As New List(Of ClippingPath)
+    Private ctl As ConsoleTraceListener
 
     Sub Main(args As String())
         Try
@@ -101,6 +102,7 @@ Module Program
                         quiet = True
                     Case "-v"
                         verbose = True
+                        ctl = New ConsoleTraceListener
                     Case "-h"
                         ShowHelp()
                         Environment.Exit(0)
@@ -111,17 +113,17 @@ Module Program
             Next
 
             pb = New CmbConsoleControls.CmbMultiBar
-            cts = New CancellationTokenSource
             ctsDone = New CancellationTokenSource
-            Dim token = cts.Token
             Dim tokenDone = ctsDone.Token
 
             Console.WriteLine("Press C to cancel")
             Console.WriteLine()
 
-            For y As Integer = 0 To workerCount - 1
-                pb.Add($"Worker {y}", True, True)
-            Next
+            If Not quiet Then
+                For y As Integer = 0 To workerCount - 1
+                    pb.Add($"Worker {y}", True, True)
+                Next
+            End If
 
             pdfHandler = New PdfHandler
 
@@ -132,52 +134,82 @@ Module Program
             pdfHandler.SetDPI(customDpi)
 
             pdfHandler.LoadDocument(inFile)
+
             pdfHandler.AddClippingPaths(regions.ToArray)
 
             pdfHandler.BeginExtractAllData(workerCount)
 
-            Dim mytask As Task = Task.Run(Sub()
-                                              Do
-                                                  While Not Console.KeyAvailable
-                                                      If tokenDone.IsCancellationRequested Then Exit Sub
-                                                      Thread.Sleep(50)
-                                                  End While
-                                              Loop While Console.ReadKey(True).KeyChar.ToString.ToUpperInvariant <> "C"
-                                              pdfHandler.CancelWorkers()
-                                          End Sub)
+            Dim mytask As Task(Of Boolean) = Task.Run(Function()
+                                                          Do
+                                                              While Not Console.KeyAvailable
+                                                                  If ctsCompleted Then Return False
+                                                                  Thread.Sleep(50)
+                                                              End While
+                                                          Loop While Console.ReadKey(True).KeyChar.ToString.ToUpperInvariant <> "C"
+
+                                                          pdfHandler.CancelWorkers()
+                                                          Console.SetCursorPosition(0, 0)
+                                                          Console.Write("Cancelling workers...")
+
+                                                          While Not pdfHandler.WorkersCancelled
+                                                              pdfHandler.WaitOnGarbageCollect()
+                                                          End While
+
+                                                          Return True
+                                                      End Function)
+
             mytask.Wait(tokenDone)
 
+            Dim wasCancelled As Boolean = mytask.Result
+
+            If wasCancelled Then
+                Console.SetCursorPosition(22, 0)
+                Console.Write("Done!")
+            End If
+
+            pdfHandler.Dispose()
+
         Catch ex As Exception
-            Console.WriteLine(ex.Message)
+            Helpers.dumpException(ex)
         End Try
     End Sub
 
     Private Sub workerProgressChanged(sender As Object, e As ProgressChangedEventArgs)
-        pb.Report(e.ProgressPercentage, CInt(e.UserState))
+        If Not quiet Then
+            pb.Report(e.ProgressPercentage, CInt(e.UserState))
+        End If
     End Sub
 
     Private Sub workersCompleted(sender As Object, data As List(Of ExtractedData), workingTime As TimeSpan)
-        Dim accuracy = data.Average(Function(c) c.confidence)
-        If pdfHandler IsNot Nothing Then
-            RemoveHandler pdfHandler.WorkerProgressChanged, AddressOf workerProgressChanged
-            RemoveHandler pdfHandler.WorkersCompleted, AddressOf workersCompleted
-            Console.SetCursorPosition(0, pb.MaxRow + 2)
-            Console.WriteLine($"All {pdfHandler.GetPageCount} pages are processed with {workerCount} workers with an accuracy of {accuracy}% in {workingTime.Hours} hours, {workingTime.Minutes} minutes and {workingTime.Seconds} seconds.")
-            ExportData(data)
-            pdfHandler.Dispose()
-        End If
-        ctsDone.Cancel()
+        Try
+            Dim accuracy = data.Average(Function(c) c.confidence)
+            If pdfHandler IsNot Nothing Then
+                RemoveHandler pdfHandler.WorkerProgressChanged, AddressOf workerProgressChanged
+                RemoveHandler pdfHandler.WorkersCompleted, AddressOf workersCompleted
+                Console.SetCursorPosition(0, pb.MaxRow + 2)
+                Console.WriteLine($"All {pdfHandler.GetPageCount} pages are processed with {workerCount} workers with an accuracy of {accuracy}% in {workingTime.Hours} hours, {workingTime.Minutes} minutes and {workingTime.Seconds} seconds.")
+                ExportData(data)
+            End If
+        Catch ex As Exception
+            Helpers.dumpException(ex)
+        Finally
+            ctsCompleted = True
+        End Try
     End Sub
 
     Private Sub ExportData(data As List(Of ExtractedData))
-        Using fs As New IO.FileStream(outFile, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
-            Using sw As New IO.StreamWriter(fs, System.Text.Encoding.Unicode)
-                sw.WriteLine("PageIndex;RegionIndex;Region;Accuracy;CapturedText")
-                For Each d In data
-                    sw.WriteLine($"{d.pageIndex};{d.clipIdx};{pdfHandler.clippingPaths.First(Function(c) c.idx = d.clipIdx).region};{d.confidence};{Regex.Replace(d.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
-                Next
+        Try
+            Using fs As New IO.FileStream(outFile, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
+                Using sw As New IO.StreamWriter(fs, System.Text.Encoding.Unicode)
+                    sw.WriteLine($"PageIndex;{If(verbose, "RegionIndex;Region;", "")}Accuracy;CapturedText")
+                    For Each d In data
+                        sw.WriteLine($"{d.pageIndex};{If(verbose, $"{d.clipIdx};{pdfHandler.clippingPaths.First(Function(c) c.idx = d.clipIdx).region};", "")}{d.confidence};{Regex.Replace(d.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
+                    Next
+                End Using
             End Using
-        End Using
+        Catch ex As Exception
+            Helpers.dumpException(ex)
+        End Try
     End Sub
 
     Private Sub ShowHelp()
