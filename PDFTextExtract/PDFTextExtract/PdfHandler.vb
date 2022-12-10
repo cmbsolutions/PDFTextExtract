@@ -15,6 +15,7 @@ Public Class PdfHandler
     Private disposedValue As Boolean
     Private pdfScale As Integer = 4
     Private renderDPI As Integer = 150
+    Private currentFilename As String
 
     Private bgWorkers As List(Of workerState)
     Private CapturedData As Concurrent.ConcurrentBag(Of ExtractedData)
@@ -56,6 +57,7 @@ Public Class PdfHandler
                 imageHandler.SetPageSize(pageSize)
                 imageHandler.ResetClippingPath()
                 ResetClippingPaths()
+                currentFilename = file
             End If
         Catch ex As Exception
             Helpers.dumpException(ex)
@@ -280,7 +282,6 @@ Public Class PdfHandler
                         End If
 
                         For Each clippingPath In _clippingPaths
-
                             If useMatching AndAlso clippingPath.idx = firstPageRegion.idx Then Continue For
 
                             imgHandler.SetClippingPath(clippingPath)
@@ -290,10 +291,7 @@ Public Class PdfHandler
                             End Using
                             imgHandler.ResetClippingPath()
                         Next
-
-                        'eng.ClearAdaptiveClassifier()
                     Next
-
                 End Using
             End Using
         Catch ex As Exception

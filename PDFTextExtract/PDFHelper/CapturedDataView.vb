@@ -1,4 +1,6 @@
-﻿Public Class CapturedDataView
+﻿Imports System.Text.RegularExpressions
+
+Public Class CapturedDataView
     Property exportData As List(Of PDFTextExtract.ExtractedData)
     Private bd As BindingSource
 
@@ -8,8 +10,13 @@
     End Sub
 
     Private Sub CapturedDataView_Load(sender As Object, e As EventArgs) Handles Me.Load
+        Dim data = (From x In exportData Select New With {
+                                             .PageIndex = x.pageIndex,
+                                             .Confidence = x.confidence,
+                                             .Text = Regex.Replace(x.text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)})
+
         bd = New BindingSource
-        bd.DataSource = exportData.ToArray
+        bd.DataSource = data.ToArray
 
         dgv1.DataSource = bd
         dgv1.Refresh()
