@@ -1,6 +1,7 @@
 Imports PDFiumSharp
 Imports PDFiumSharp.Types
 Imports ImageMagick
+Imports System.IO
 
 Public Class Imager
     Implements IDisposable
@@ -55,7 +56,7 @@ Public Class Imager
         Return Nothing
     End Function
 
-    Public Function ConvertPage(pdfPage As PDFiumSharp.PdfPage) As TesseractOCR.Pix.Image
+    Public Function ConvertPage(pdfPage As PDFiumSharp.PdfPage) As ImagerOutput
         Try
             Dim width = CInt(Math.Round(pageSize.Width * scale))
             Dim height = CInt(Math.Round(pageSize.Height * scale))
@@ -77,10 +78,16 @@ Public Class Imager
                             'img.RePage()
                         End If
 
+                        Dim imageroutput As New ImagerOutput
+
                         Using ms As New IO.MemoryStream
                             img.Write(ms, MagickFormat.Png32)
 
-                            Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
+                            imageroutput.BarcodeImage = New IO.MemoryStream
+                            img.Write(imageroutput.BarcodeImage, MagickFormat.Png32)
+                            imageroutput.BarcodeImage.Position = 0
+                            imageroutput.OcrImage = TesseractOCR.Pix.Image.LoadFromMemory(ms)
+                            Return imageroutput
                         End Using
                     End Using
                 End Using
@@ -91,7 +98,9 @@ Public Class Imager
         Return Nothing
     End Function
 
-    Public Function ConvertRegion() As TesseractOCR.Pix.Image
+
+
+    Public Function ConvertRegion() As ImagerOutput
         Try
             If RenderedPageMemoryStream IsNot Nothing Then
                 RenderedPageMemoryStream.Position = 0
@@ -103,10 +112,16 @@ Public Class Imager
                         'img.RePage()
                     End If
 
+                    Dim imageroutput As New ImagerOutput
+
                     Using ms As New IO.MemoryStream
                         img.Write(ms, MagickFormat.Png32)
 
-                        Return TesseractOCR.Pix.Image.LoadFromMemory(ms)
+                        imageroutput.BarcodeImage = New IO.MemoryStream
+                        img.Write(imageroutput.BarcodeImage, MagickFormat.Png32)
+                        imageroutput.BarcodeImage.Position = 0
+                        imageroutput.OcrImage = TesseractOCR.Pix.Image.LoadFromMemory(ms)
+                        Return imageroutput
                     End Using
                 End Using
             Else
@@ -176,4 +191,9 @@ Public Class Imager
         GC.SuppressFinalize(Me)
     End Sub
 #End Region
+End Class
+
+Public Class ImagerOutput
+    Property OcrImage As TesseractOCR.Pix.Image
+    Property BarcodeImage As MemoryStream
 End Class

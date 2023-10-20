@@ -1,8 +1,10 @@
 ﻿Imports System.ComponentModel
 Imports System.Text
 Imports System.Text.RegularExpressions
+Imports ImageMagick
 Imports PDFiumSharp
 Imports PDFiumSharp.Types
+Imports ZXing.Magick
 
 Public Class PdfHandler
     Implements IDisposable
@@ -12,6 +14,9 @@ Public Class PdfHandler
     Public ReadOnly Property currentPageIdx As Integer = 0
     Public ReadOnly Property pageSize As FS_SIZEF
     Private engine As TesseractOCR.Engine = Nothing
+
+    Private barcodeEngine As BarcodeReader
+
     Private disposedValue As Boolean
     Private pdfScale As Integer = 4
     Private renderDPI As Integer = 150
@@ -42,6 +47,8 @@ Public Class PdfHandler
             imageHandler.SetDPI(renderDPI)
 
             engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
+            barcodeEngine = New BarcodeReader
+
         Catch ex As Exception
             Helpers.dumpException(ex)
         End Try
@@ -127,9 +134,9 @@ Public Class PdfHandler
                 imageHandler.SetClippingPath(clippingPath)
 
                 Dim image = imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx))
-                image.Save(IO.Path.Combine(imageLocation, $"{filename}_{clippingPath.idx}_{clippingPath.region}.png"), TesseractOCR.Enums.ImageFormat.Png)
+                image.OcrImage.Save(IO.Path.Combine(imageLocation, $"{filename}_{clippingPath.idx}_{clippingPath.region}.png"), TesseractOCR.Enums.ImageFormat.Png)
 
-                Using page = engine.Process(image)
+                Using page = engine.Process(image.OcrImage)
                     data.AppendLine($"{currentPageIdx};{clippingPath.idx};{clippingPath.region};{page.MeanConfidence};{Regex.Replace(page.Text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
                 End Using
             Next
@@ -145,7 +152,11 @@ Public Class PdfHandler
         Try
             imageHandler.SetClippingPath(path)
 
-            Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
+            Dim bresult = barcodeEngine.Decode(New MagickImage(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)).BarcodeImage))
+
+            Return New ExtractedData(100, bresult.Text, currentPageIdx, path.idx)
+
+            Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)).OcrImage)
                 Return New ExtractedData(page.MeanConfidence, page.Text.Trim, currentPageIdx, path.idx)
             End Using
         Catch ex As Exception
@@ -163,7 +174,7 @@ Public Class PdfHandler
             For Each clippingPath In clippingPaths
                 imageHandler.SetClippingPath(clippingPath)
 
-                Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)))
+                Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)).OcrImage)
                     data.Add(New ExtractedData(page.MeanConfidence, page.Text.Trim, currentPageIdx, clippingPath.idx))
                 End Using
                 imageHandler.ResetClippingPath()
@@ -267,7 +278,7 @@ Public Class PdfHandler
 
                             imgHandler.SetClippingPath(firstPageRegion)
 
-                            Using p = eng.Process(imgHandler.ConvertRegion())
+                            Using p = eng.Process(imgHandler.ConvertRegion().OcrImage)
 
                                 If Not matcher.IsMatch(p.Text.Trim) Then
                                     ' no match found so we are probably not on a first page, just go to the next step
@@ -286,7 +297,7 @@ Public Class PdfHandler
 
                             imgHandler.SetClippingPath(clippingPath)
 
-                            Using p = eng.Process(imgHandler.ConvertRegion())
+                            Using p = eng.Process(imgHandler.ConvertRegion().OcrImage)
                                 CapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, clippingPath.idx))
                             End Using
                             imgHandler.ResetClippingPath()
