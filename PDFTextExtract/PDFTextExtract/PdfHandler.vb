@@ -9,45 +9,45 @@ Imports ZXing.Magick
 Public Class PdfHandler
     Implements IDisposable
 
-    Private imageHandler As Imager = Nothing
-    Public ReadOnly Property currentDocument As PdfDocument = Nothing
-    Public ReadOnly Property currentPageIdx As Integer = 0
-    Public ReadOnly Property pageSize As FS_SIZEF
-    Private engine As TesseractOCR.Engine = Nothing
+    Private ImageHandler As Imager = Nothing
+    Public ReadOnly Property CurrentDocument As PdfDocument = Nothing
+    Public ReadOnly Property CurrentPageIdx As Integer = 0
+    Public ReadOnly Property PageSize As FS_SIZEF
+    Private Engine As TesseractOCR.Engine = Nothing
 
-    Private barcodeEngine As BarcodeReader
+    Private BarcodeEngine As BarcodeReader
 
-    Private disposedValue As Boolean
-    Private pdfScale As Integer = 4
-    Private renderDPI As Integer = 150
-    Private currentFilename As String
+    Private DisposedValue As Boolean
+    Private PdfScale As Integer = 4
+    Private RenderDPI As Integer = 150
+    Private CurrentFilename As String
 
-    Private bgWorkers As List(Of workerState)
+    Private BgWorkers As List(Of workerState)
     Private CapturedData As Concurrent.ConcurrentBag(Of ExtractedData)
 
-    Private startTime As Date
-    Private stopTime As Date
+    Private StartTime As Date
+    Private StopTime As Date
 
-    Public ReadOnly Property runningTime As TimeSpan
+    Public ReadOnly Property RunningTime As TimeSpan
 
-    Public ReadOnly Property clippingPaths As New List(Of ClippingPath)
+    Public ReadOnly Property ClippingPaths As New List(Of ClippingPath)
     Private AutoResetClippingPaths As Boolean = False
 
-    Public Property useMatching As Boolean = False
-    Public Property firstPageRegex As String
-    Public Property firstPageRegion As ClippingPath
+    Public Property UseMatching As Boolean = False
+    Public Property FirstPageRegex As String
+    Public Property FirstPageRegion As ClippingPath
 
     Public Event WorkerProgressChanged(sender As Object, e As ProgressChangedEventArgs)
     Public Event WorkersCompleted(sender As Object, data As List(Of ExtractedData), workingTime As TimeSpan)
 
     Sub New()
         Try
-            imageHandler = New Imager
-            SetScale(pdfScale)
-            imageHandler.SetDPI(renderDPI)
+            ImageHandler = New Imager
+            SetScale(PdfScale)
+            ImageHandler.SetDPI(RenderDPI)
 
-            engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
-            barcodeEngine = New BarcodeReader
+            Engine = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
+            BarcodeEngine = New BarcodeReader
 
         Catch ex As Exception
             Helpers.dumpException(ex)
@@ -57,14 +57,14 @@ Public Class PdfHandler
     Public Sub LoadDocument(file As String)
         Try
             If IO.File.Exists(file) Then
-                If currentDocument IsNot Nothing Then currentDocument.Close()
-                _currentDocument = New PdfDocument(file)
-                _currentPageIdx = 0
-                _pageSize = New FS_SIZEF(CSng(currentDocument.Pages(currentPageIdx).Width), CSng(currentDocument.Pages(currentPageIdx).Height))
-                imageHandler.SetPageSize(pageSize)
-                imageHandler.ResetClippingPath()
+                If CurrentDocument IsNot Nothing Then CurrentDocument.Close()
+                _CurrentDocument = New PdfDocument(file)
+                _CurrentPageIdx = 0
+                _PageSize = New FS_SIZEF(CSng(CurrentDocument.Pages(CurrentPageIdx).Width), CSng(CurrentDocument.Pages(CurrentPageIdx).Height))
+                ImageHandler.SetPageSize(PageSize)
+                ImageHandler.ResetClippingPath()
                 ResetClippingPaths()
-                currentFilename = file
+                CurrentFilename = file
             End If
         Catch ex As Exception
             Helpers.dumpException(ex)
@@ -72,16 +72,25 @@ Public Class PdfHandler
     End Sub
 
     Public Function GetPageCount() As Integer
-        If currentDocument IsNot Nothing Then
-            Return currentDocument.Pages.Count
+        If CurrentDocument IsNot Nothing Then
+            Return CurrentDocument.Pages.Count
         Else
             Return 0
         End If
     End Function
 
     Public Function GetRenderedPage() As IO.Stream
-        If currentDocument IsNot Nothing Then
-            Return imageHandler.RenderCurrentPage(currentDocument.Pages(currentPageIdx))
+        If CurrentDocument IsNot Nothing Then
+            ImageHandler.SetPageSize(GetCurrentPageSize)
+            Return ImageHandler.RenderCurrentPage(CurrentDocument.Pages(CurrentPageIdx))
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Function GetCurrentPageSize() As FS_SIZEF
+        If CurrentDocument IsNot Nothing Then
+            Return New FS_SIZEF(CSng(CurrentDocument.Pages(CurrentPageIdx).Width), CSng(CurrentDocument.Pages(CurrentPageIdx).Height))
         Else
             Return Nothing
         End If
@@ -99,26 +108,26 @@ Public Class PdfHandler
 
 #Region "Navigation"
     Public Sub FirstPage()
-        _currentPageIdx = 0
+        _CurrentPageIdx = 0
     End Sub
 
     Public Sub PreviousPage()
-        If currentPageIdx > 0 Then _currentPageIdx -= 1
+        If CurrentPageIdx > 0 Then _CurrentPageIdx -= 1
     End Sub
 
     Public Sub NextPage()
-        If currentDocument IsNot Nothing AndAlso currentPageIdx <= currentDocument.Pages.Count - 1 Then _currentPageIdx += 1
+        If CurrentDocument IsNot Nothing AndAlso CurrentPageIdx <= CurrentDocument.Pages.Count - 1 Then _CurrentPageIdx += 1
     End Sub
 
     Public Sub LastPage()
-        If currentDocument IsNot Nothing Then _currentPageIdx = currentDocument.Pages.Count - 1
+        If CurrentDocument IsNot Nothing Then _CurrentPageIdx = CurrentDocument.Pages.Count - 1
     End Sub
 
     Public Sub GotoPage(pageNumber As Integer)
         ' pages are counted from 0, so when you ask page 10 we need the 9th index
         If pageNumber > 0 Then pageNumber -= 1
 
-        If currentDocument IsNot Nothing AndAlso pageNumber > 0 AndAlso pageNumber <= currentDocument.Pages.Count - 1 Then _currentPageIdx = pageNumber
+        If CurrentDocument IsNot Nothing AndAlso pageNumber >= 0 AndAlso pageNumber <= CurrentDocument.Pages.Count - 1 Then _CurrentPageIdx = pageNumber
     End Sub
 #End Region
 
@@ -133,11 +142,11 @@ Public Class PdfHandler
             For Each clippingPath In clippingPaths
                 imageHandler.SetClippingPath(clippingPath)
 
-                Dim image = imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx))
+                Dim image = imageHandler.ConvertPage(CurrentDocument.Pages(CurrentPageIdx))
                 image.OcrImage.Save(IO.Path.Combine(imageLocation, $"{filename}_{clippingPath.idx}_{clippingPath.region}.png"), TesseractOCR.Enums.ImageFormat.Png)
 
-                Using page = engine.Process(image.OcrImage)
-                    data.AppendLine($"{currentPageIdx};{clippingPath.idx};{clippingPath.region};{page.MeanConfidence};{Regex.Replace(page.Text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
+                Using page = Engine.Process(image.OcrImage)
+                    data.AppendLine($"{CurrentPageIdx};{clippingPath.idx};{clippingPath.region};{page.MeanConfidence};{Regex.Replace(page.Text, "(?:\r\n|\r|\n)", "\n", RegexOptions.IgnoreCase Or RegexOptions.Singleline)}")
                 End Using
             Next
 
@@ -148,16 +157,16 @@ Public Class PdfHandler
         End Try
     End Sub
 
-    Public Function extractData(path As ClippingPath) As ExtractedData
+    Public Function ExtractData(path As ClippingPath) As ExtractedData
         Try
-            imageHandler.SetClippingPath(path)
+            ImageHandler.SetClippingPath(path)
 
-            Dim bresult = barcodeEngine.Decode(New MagickImage(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)).BarcodeImage))
+            Dim bresult = BarcodeEngine.Decode(New MagickImage(ImageHandler.ConvertPage(CurrentDocument.Pages(CurrentPageIdx)).BarcodeImage))
 
-            Return New ExtractedData(100, bresult.Text, currentPageIdx, path.idx)
+            Return New ExtractedData(100, bresult.Text, CurrentPageIdx, path.idx)
 
-            Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)).OcrImage)
-                Return New ExtractedData(page.MeanConfidence, page.Text.Trim, currentPageIdx, path.idx)
+            Using page = Engine.Process(ImageHandler.ConvertPage(CurrentDocument.Pages(CurrentPageIdx)).OcrImage)
+                Return New ExtractedData(page.MeanConfidence, page.Text.Trim, CurrentPageIdx, path.idx)
             End Using
         Catch ex As Exception
             Helpers.dumpException(ex)
@@ -165,22 +174,22 @@ Public Class PdfHandler
         Return Nothing
     End Function
 
-    Public Function extractData() As List(Of ExtractedData)
+    Public Function ExtractData() As List(Of ExtractedData)
         Try
             Dim data As New List(Of ExtractedData)
 
             InitClippingPath()
 
-            For Each clippingPath In clippingPaths
-                imageHandler.SetClippingPath(clippingPath)
+            For Each clippingPath In ClippingPaths
+                ImageHandler.SetClippingPath(clippingPath)
 
-                Using page = engine.Process(imageHandler.ConvertPage(currentDocument.Pages(currentPageIdx)).OcrImage)
-                    data.Add(New ExtractedData(page.MeanConfidence, page.Text.Trim, currentPageIdx, clippingPath.idx))
+                Using page = Engine.Process(ImageHandler.ConvertPage(CurrentDocument.Pages(CurrentPageIdx)).OcrImage)
+                    data.Add(New ExtractedData(page.MeanConfidence, page.Text.Trim, CurrentPageIdx, clippingPath.idx))
                 End Using
-                imageHandler.ResetClippingPath()
+                ImageHandler.ResetClippingPath()
             Next
 
-            'engine.ClearAdaptiveClassifier()
+            'Engine.ClearAdaptiveClassifier()
             If AutoResetClippingPaths Then ResetClippingPaths()
 
             Return data
@@ -240,7 +249,7 @@ Public Class PdfHandler
         Return True
     End Function
 
-    Private Sub bgWorkerDoWorkHandler(sender As Object, e As DoWorkEventArgs)
+    Private Sub BgWorkerDoWorkHandler(sender As Object, e As DoWorkEventArgs)
         Dim info As workerInfo = DirectCast(e.Argument, workerInfo)
         Dim worker = info.ref
         Dim LocalCapturedData As New List(Of ExtractedData)
@@ -253,9 +262,9 @@ Public Class PdfHandler
         Try
             Using eng = New TesseractOCR.Engine("./tessdata", TesseractOCR.Enums.Language.Dutch, TesseractOCR.Enums.EngineMode.LstmOnly)
                 Using imgHandler As New Imager
-                    imgHandler.SetPageSize(pageSize)
-                    imgHandler.SetScale(pdfScale)
-                    imgHandler.SetDPI(renderDPI)
+                    imgHandler.SetPageSize(PageSize)
+                    imgHandler.SetScale(PdfScale)
+                    imgHandler.SetDPI(RenderDPI)
 
                     For i As Integer = info.startPage To GetPageCount() - 1 Step info.skip
                         If worker.CancellationPending Then
@@ -270,13 +279,13 @@ Public Class PdfHandler
                         proc += 100 / pagesToProcess
                         worker.ReportProgress(CInt(proc), info.workerId)
 
-                        imgHandler.LoadPage(currentDocument.Pages(i))
+                        imgHandler.LoadPage(CurrentDocument.Pages(i))
 
                         ' We probably have multipage mailpacks, so only capture the first pages.
-                        If useMatching Then
-                            If matcher Is Nothing Then matcher = New Regex(firstPageRegex)
+                        If UseMatching Then
+                            If matcher Is Nothing Then matcher = New Regex(FirstPageRegex)
 
-                            imgHandler.SetClippingPath(firstPageRegion)
+                            imgHandler.SetClippingPath(FirstPageRegion)
 
                             Using p = eng.Process(imgHandler.ConvertRegion().OcrImage)
 
@@ -285,15 +294,15 @@ Public Class PdfHandler
                                     imgHandler.ResetClippingPath()
                                     Continue For
                                 Else
-                                    CapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, firstPageRegion.idx))
+                                    CapturedData.Add(New ExtractedData(p.MeanConfidence, p.Text.Trim, i, FirstPageRegion.idx))
                                 End If
                             End Using
 
                             imgHandler.ResetClippingPath()
                         End If
 
-                        For Each clippingPath In _clippingPaths
-                            If useMatching AndAlso clippingPath.idx = firstPageRegion.idx Then Continue For
+                        For Each clippingPath In _ClippingPaths
+                            If UseMatching AndAlso clippingPath.idx = FirstPageRegion.idx Then Continue For
 
                             imgHandler.SetClippingPath(clippingPath)
 
@@ -371,7 +380,7 @@ Public Class PdfHandler
 #Region "ClippingPaths"
     Private Sub InitClippingPath()
         If _clippingPaths.Count = 0 Then
-            AddClippingPath(0, 0, CInt(Math.Ceiling(pageSize.Width)), CInt(Math.Ceiling(pageSize.Height)))
+            AddClippingPath(0, 0, CInt(Math.Ceiling(PageSize.Width)), CInt(Math.Ceiling(PageSize.Height)))
             AutoResetClippingPaths = True
         End If
     End Sub
@@ -409,12 +418,12 @@ Public Class PdfHandler
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
             If disposing Then
-                If engine IsNot Nothing Then
-                    'engine.ClearAdaptiveClassifier()
-                    'engine.ClearPersistentCache()
-                    engine.Dispose()
+                If Engine IsNot Nothing Then
+                    'Engine.ClearAdaptiveClassifier()
+                    'Engine.ClearPersistentCache()
+                    Engine.Dispose()
                 End If
-                If currentDocument IsNot Nothing Then currentDocument.Close()
+                If CurrentDocument IsNot Nothing Then CurrentDocument.Close()
                 If imageHandler IsNot Nothing Then imageHandler.Dispose()
                 If bgWorkers IsNot Nothing Then
                     For Each ws In bgWorkers

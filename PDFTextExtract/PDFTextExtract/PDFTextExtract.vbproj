@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace>PDFTextExtract</RootNamespace>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <OptionStrict>On</OptionStrict>
     <Authors>Maurice</Authors>
     <Company>CMBSolutions</Company>
@@ -37,14 +37,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-x64" Version="13.3.0" />
-    <PackageReference Include="Magick.NET.Core" Version="13.3.0" />
+    <PackageReference Include="Magick.NET-Q16-x64" Version="14.0.0" />
+    <PackageReference Include="Magick.NET.Core" Version="14.0.0" />
     <PackageReference Include="PDFium.Linux.x64" Version="1.0.0" />
     <PackageReference Include="PDFium.Windows" Version="1.0.0" />
-    <PackageReference Include="PDFiumSharpV2" Version="1.1.3" />
-    <PackageReference Include="TesseractOCR" Version="5.3.5" />
+    <PackageReference Include="PDFiumSharpV2" Version="1.1.4" />
+    <PackageReference Include="TesseractOCR" Version="5.4.2" />
     <PackageReference Include="ZXing.Net" Version="0.16.9" />
-    <PackageReference Include="ZXing.Net.Bindings.Magick" Version="0.16.13" />
+    <PackageReference Include="ZXing.Net.Bindings.Magick" Version="0.16.15" />
   </ItemGroup>
 
   <ItemGroup>

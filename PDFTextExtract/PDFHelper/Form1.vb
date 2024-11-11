@@ -23,7 +23,7 @@ Public Class Form1
 
 #Region "selection rectangle"
     Private Sub Canvas_MouseDown(sender As Object, e As MouseEventArgs) Handles Canvas.MouseDown
-        If e.Button = Windows.Forms.MouseButtons.Left Then
+        If e.Button = MouseButtons.Left Then
             Dim pb As PictureBox = CType(sender, PictureBox)
             Cursor.Clip = pb.RectangleToScreen(pb.ClientRectangle)
             screenPtA = Cursor.Position
@@ -35,7 +35,7 @@ Public Class Form1
     End Sub
 
     Private Sub Canvas_MouseMove(sender As Object, e As MouseEventArgs) Handles Canvas.MouseMove
-        If e.Button = Windows.Forms.MouseButtons.Left And dragging Then
+        If e.Button = MouseButtons.Left And dragging Then
             ControlPaint.DrawReversibleFrame(RC, Color.Black, FrameStyle.Dashed)
             screenPtB = Cursor.Position
             RC = NormalizedRC(screenPtA, screenPtB)
@@ -44,7 +44,7 @@ Public Class Form1
     End Sub
 
     Private Sub Canvas_MouseUp(sender As Object, e As MouseEventArgs) Handles Canvas.MouseUp
-        If e.Button = Windows.Forms.MouseButtons.Left And dragging Then
+        If e.Button = MouseButtons.Left And dragging Then
             Cursor.Clip = Nothing
             Dim pb As PictureBox = CType(sender, PictureBox)
             RC = pb.RectangleToClient(RC)
@@ -224,24 +224,32 @@ Public Class Form1
         pdfHandler.FirstPage()
         handleButtons()
         LoadPage(False)
+        ResizeAndCenterCanvas()
+        RedrawCanvas()
     End Sub
 
     Private Sub bPrev_Click(sender As Object, e As EventArgs) Handles bPrev.Click
         pdfHandler.PreviousPage()
         handleButtons()
         LoadPage(False)
+        ResizeAndCenterCanvas()
+        RedrawCanvas()
     End Sub
 
     Private Sub bNext_Click(sender As Object, e As EventArgs) Handles bNext.Click
         pdfHandler.NextPage()
         handleButtons()
         LoadPage(False)
+        ResizeAndCenterCanvas()
+        RedrawCanvas()
     End Sub
 
     Private Sub bLast_Click(sender As Object, e As EventArgs) Handles bLast.Click
         pdfHandler.LastPage()
         handleButtons()
         LoadPage(False)
+        ResizeAndCenterCanvas()
+        RedrawCanvas()
     End Sub
 
     Private Sub Form1_Resize(sender As Object, e As EventArgs) Handles Me.Resize
@@ -278,15 +286,15 @@ Public Class Form1
                     If first Then
                         l = cp.region.X
                         t = cp.region.Y
-                        r = cp.region.Width
-                        b = cp.region.Height
+                        r = CInt(cp.region.Width)
+                        b = CInt(cp.region.Height)
 
                         first = False
                     Else
                         l = Math.Min(l, cp.region.X)
                         t = Math.Min(t, cp.region.Y)
-                        r = Math.Max(r, cp.region.Width)
-                        b = Math.Max(b, cp.region.Height)
+                        r = CInt(Math.Max(r, cp.region.Width))
+                        b = CInt(Math.Max(b, cp.region.Height))
                     End If
                 End If
             Next
@@ -357,7 +365,7 @@ Public Class Form1
     Private Sub handleButtons()
         If pdfHandler Is Nothing Then Exit Sub
 
-        If pdfHandler.currentPageIdx = 0 Then
+        If pdfHandler.CurrentPageIdx = 0 Then
             bFirst.Enabled = False
             bFirst.Image = My.Resources.dis_action_goto_first
             bPrev.Enabled = False
@@ -369,7 +377,7 @@ Public Class Form1
             bPrev.Image = My.Resources.action_goto_previous
         End If
 
-        If pdfHandler.currentPageIdx >= pdfHandler.GetPageCount - 1 Then
+        If pdfHandler.CurrentPageIdx >= pdfHandler.GetPageCount - 1 Then
             bLast.Enabled = False
             bLast.Image = My.Resources.dis_action_goto_last
             bNext.Enabled = False
@@ -381,7 +389,15 @@ Public Class Form1
             bNext.Image = My.Resources.action_goto_next
         End If
 
-        tPages.Text = $"{pdfHandler.currentPageIdx + 1}/{pdfHandler.GetPageCount}"
+
+        RemoveHandler cbPages.SelectedIndexChanged, AddressOf cbPages_SelectedIndexChanged
+        cbPages.Items.Clear()
+        For i As Integer = 0 To pdfHandler.GetPageCount - 1
+            cbPages.Items.Add($"{i + 1}/{pdfHandler.GetPageCount}")
+        Next
+
+        cbPages.SelectedIndex = pdfHandler.CurrentPageIdx
+        AddHandler cbPages.SelectedIndexChanged, AddressOf cbPages_SelectedIndexChanged
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles Me.Load
@@ -545,5 +561,13 @@ Public Class Form1
 
         MessageBox.Show($"All {pdfHandler.GetPageCount} pages are processed with {nWorkers.Value} workers with an accuracy of {accuracy}% in {workingTime.Hours} hours, {workingTime.Minutes} minutes and {workingTime.Seconds} seconds. You can now export the results.")
         pWorkers.Controls.Clear()
+    End Sub
+
+    Private Sub cbPages_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbPages.SelectedIndexChanged
+        pdfHandler.GotoPage(cbPages.SelectedIndex + 1)
+        handleButtons()
+        LoadPage(False)
+        ResizeAndCenterCanvas()
+        RedrawCanvas()
     End Sub
 End Class

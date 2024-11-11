@@ -22,637 +22,635 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
-        Me.bPdf = New System.Windows.Forms.Button()
-        Me.ofdPdf = New System.Windows.Forms.OpenFileDialog()
-        Me.Button1 = New System.Windows.Forms.Button()
-        Me.Button2 = New System.Windows.Forms.Button()
-        Me.Button3 = New System.Windows.Forms.Button()
-        Me.CanvasX = New System.Windows.Forms.Panel()
-        Me.Canvas = New System.Windows.Forms.PictureBox()
-        Me.CanvasShadow = New System.Windows.Forms.Panel()
-        Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.sc1 = New System.Windows.Forms.SplitContainer()
-        Me.rResult = New System.Windows.Forms.RichTextBox()
-        Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.mpRegion = New System.Windows.Forms.ComboBox()
-        Me.tRegex = New System.Windows.Forms.TextBox()
-        Me.cMatching = New System.Windows.Forms.CheckBox()
-        Me.Panel4 = New System.Windows.Forms.Panel()
-        Me.bMailpackIndicator = New System.Windows.Forms.Button()
-        Me.lRegions = New System.Windows.Forms.ListView()
-        Me.cIdx = New System.Windows.Forms.ColumnHeader()
-        Me.cLeft = New System.Windows.Forms.ColumnHeader()
-        Me.ctop = New System.Windows.Forms.ColumnHeader()
-        Me.cright = New System.Windows.Forms.ColumnHeader()
-        Me.cBottom = New System.Windows.Forms.ColumnHeader()
-        Me.bClear = New System.Windows.Forms.Button()
-        Me.bDel = New System.Windows.Forms.Button()
-        Me.lScale = New System.Windows.Forms.Label()
-        Me.bSaveTest = New System.Windows.Forms.Button()
-        Me.tScale = New System.Windows.Forms.TrackBar()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.bTest = New System.Windows.Forms.Button()
-        Me.pWorkers = New System.Windows.Forms.FlowLayoutPanel()
-        Me.Panel2 = New System.Windows.Forms.Panel()
-        Me.bView = New System.Windows.Forms.Button()
-        Me.bExport = New System.Windows.Forms.Button()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.nWorkers = New System.Windows.Forms.NumericUpDown()
-        Me.bExtractAll = New System.Windows.Forms.Button()
-        Me.tPages = New System.Windows.Forms.TextBox()
-        Me.bLast = New System.Windows.Forms.Button()
-        Me.bNext = New System.Windows.Forms.Button()
-        Me.bPrev = New System.Windows.Forms.Button()
-        Me.bFirst = New System.Windows.Forms.Button()
-        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
-        Me.lZoom = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.tLog = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.sfd = New System.Windows.Forms.SaveFileDialog()
-        Me.fbd = New System.Windows.Forms.FolderBrowserDialog()
-        Me.tt = New System.Windows.Forms.ToolTip(Me.components)
-        Me.CanvasX.SuspendLayout()
-        CType(Me.Canvas, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.Panel1.SuspendLayout()
-        CType(Me.sc1, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.sc1.Panel1.SuspendLayout()
-        Me.sc1.Panel2.SuspendLayout()
-        Me.sc1.SuspendLayout()
-        Me.TableLayoutPanel1.SuspendLayout()
-        Me.Panel4.SuspendLayout()
-        CType(Me.tScale, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.Panel2.SuspendLayout()
-        CType(Me.nWorkers, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.StatusStrip1.SuspendLayout()
-        Me.SuspendLayout()
-        '
-        'bPdf
-        '
-        Me.bPdf.Location = New System.Drawing.Point(3, 4)
-        Me.bPdf.Name = "bPdf"
-        Me.bPdf.Size = New System.Drawing.Size(75, 23)
-        Me.bPdf.TabIndex = 1
-        Me.bPdf.Text = "Load PDF"
-        Me.bPdf.UseVisualStyleBackColor = True
-        '
-        'ofdPdf
-        '
-        Me.ofdPdf.DefaultExt = "pdf"
-        Me.ofdPdf.Filter = "PDF files|*.pdf"
-        Me.ofdPdf.Title = "Select PDF file"
-        '
-        'Button1
-        '
-        Me.Button1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.Button1.Image = Global.PDFHelper.My.Resources.Resources.zoom_in
-        Me.Button1.Location = New System.Drawing.Point(447, 4)
-        Me.Button1.Margin = New System.Windows.Forms.Padding(0)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(24, 24)
-        Me.Button1.TabIndex = 1
-        Me.Button1.UseVisualStyleBackColor = True
-        '
-        'Button2
-        '
-        Me.Button2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.Button2.Image = Global.PDFHelper.My.Resources.Resources.zoom_out
-        Me.Button2.Location = New System.Drawing.Point(472, 4)
-        Me.Button2.Margin = New System.Windows.Forms.Padding(0)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(24, 24)
-        Me.Button2.TabIndex = 2
-        Me.Button2.UseVisualStyleBackColor = True
-        '
-        'Button3
-        '
-        Me.Button3.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.Button3.Image = Global.PDFHelper.My.Resources.Resources.zoom_fit
-        Me.Button3.Location = New System.Drawing.Point(497, 4)
-        Me.Button3.Margin = New System.Windows.Forms.Padding(0)
-        Me.Button3.Name = "Button3"
-        Me.Button3.Size = New System.Drawing.Size(24, 24)
-        Me.Button3.TabIndex = 3
-        Me.Button3.UseVisualStyleBackColor = True
-        '
-        'CanvasX
-        '
-        Me.CanvasX.AutoScroll = True
-        Me.CanvasX.AutoScrollMargin = New System.Drawing.Size(10, 10)
-        Me.CanvasX.AutoSize = True
-        Me.CanvasX.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.CanvasX.BackColor = System.Drawing.SystemColors.AppWorkspace
-        Me.CanvasX.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.CanvasX.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.CanvasX.CausesValidation = False
-        Me.CanvasX.Controls.Add(Me.Canvas)
-        Me.CanvasX.Controls.Add(Me.CanvasShadow)
-        Me.CanvasX.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.CanvasX.Location = New System.Drawing.Point(0, 32)
-        Me.CanvasX.Margin = New System.Windows.Forms.Padding(0)
-        Me.CanvasX.Name = "CanvasX"
-        Me.CanvasX.Size = New System.Drawing.Size(472, 486)
-        Me.CanvasX.TabIndex = 4
-        '
-        'Canvas
-        '
-        Me.Canvas.BackColor = System.Drawing.Color.White
-        Me.Canvas.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.Canvas.Location = New System.Drawing.Point(26, 49)
-        Me.Canvas.Name = "Canvas"
-        Me.Canvas.Size = New System.Drawing.Size(292, 410)
-        Me.Canvas.TabIndex = 1
-        Me.Canvas.TabStop = False
-        '
-        'CanvasShadow
-        '
-        Me.CanvasShadow.BackColor = System.Drawing.SystemColors.WindowFrame
-        Me.CanvasShadow.CausesValidation = False
-        Me.CanvasShadow.Enabled = False
-        Me.CanvasShadow.Location = New System.Drawing.Point(35, 56)
-        Me.CanvasShadow.Name = "CanvasShadow"
-        Me.CanvasShadow.Size = New System.Drawing.Size(292, 410)
-        Me.CanvasShadow.TabIndex = 0
-        '
-        'Panel1
-        '
-        Me.Panel1.Controls.Add(Me.sc1)
-        Me.Panel1.Controls.Add(Me.Panel4)
-        Me.Panel1.Controls.Add(Me.pWorkers)
-        Me.Panel1.Dock = System.Windows.Forms.DockStyle.Right
-        Me.Panel1.Location = New System.Drawing.Point(472, 32)
-        Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(252, 486)
-        Me.Panel1.TabIndex = 11
-        '
-        'sc1
-        '
-        Me.sc1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.sc1.IsSplitterFixed = True
-        Me.sc1.Location = New System.Drawing.Point(0, 122)
-        Me.sc1.Margin = New System.Windows.Forms.Padding(0)
-        Me.sc1.Name = "sc1"
-        '
-        'sc1.Panel1
-        '
-        Me.sc1.Panel1.Controls.Add(Me.rResult)
-        '
-        'sc1.Panel2
-        '
-        Me.sc1.Panel2.Controls.Add(Me.TableLayoutPanel1)
-        Me.sc1.Panel2Collapsed = True
-        Me.sc1.Size = New System.Drawing.Size(252, 101)
-        Me.sc1.SplitterDistance = 84
-        Me.sc1.SplitterWidth = 1
-        Me.sc1.TabIndex = 19
-        '
-        'rResult
-        '
-        Me.rResult.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.rResult.Location = New System.Drawing.Point(0, 0)
-        Me.rResult.Name = "rResult"
-        Me.rResult.ReadOnly = True
-        Me.rResult.Size = New System.Drawing.Size(252, 101)
-        Me.rResult.TabIndex = 11
-        Me.rResult.Text = ""
-        Me.rResult.WordWrap = False
-        '
-        'TableLayoutPanel1
-        '
-        Me.TableLayoutPanel1.ColumnCount = 2
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.Controls.Add(Me.Label1, 0, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.mpRegion, 1, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.tRegex, 0, 2)
-        Me.TableLayoutPanel1.Controls.Add(Me.cMatching, 0, 1)
-        Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 0)
-        Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
-        Me.TableLayoutPanel1.RowCount = 3
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(96, 100)
-        Me.TableLayoutPanel1.TabIndex = 5
-        '
-        'Label1
-        '
-        Me.TableLayoutPanel1.SetColumnSpan(Me.Label1, 2)
-        Me.Label1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label1.Location = New System.Drawing.Point(3, 0)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(90, 40)
-        Me.Label1.TabIndex = 3
-        Me.Label1.Text = "Enter a regular expression to indicate the first page of a multipage mailpack"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        '
-        'mpRegion
-        '
-        Me.mpRegion.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.mpRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.mpRegion.FormattingEnabled = True
-        Me.mpRegion.Location = New System.Drawing.Point(48, 40)
-        Me.mpRegion.Margin = New System.Windows.Forms.Padding(0)
-        Me.mpRegion.Name = "mpRegion"
-        Me.mpRegion.Size = New System.Drawing.Size(48, 23)
-        Me.mpRegion.Sorted = True
-        Me.mpRegion.TabIndex = 4
-        Me.tt.SetToolTip(Me.mpRegion, "Select the id of the region to match the regex against")
-        '
-        'tRegex
-        '
-        Me.tRegex.AutoCompleteCustomSource.AddRange(New String() {"\d", "\D", "\w", "\W", "\s", "\S", "[0-9A-F]", "[^0-9a-f]"})
-        Me.tRegex.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest
-        Me.tRegex.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource
-        Me.TableLayoutPanel1.SetColumnSpan(Me.tRegex, 2)
-        Me.tRegex.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.tRegex.Location = New System.Drawing.Point(0, 68)
-        Me.tRegex.Margin = New System.Windows.Forms.Padding(0)
-        Me.tRegex.Multiline = True
-        Me.tRegex.Name = "tRegex"
-        Me.tRegex.PlaceholderText = "Eg. ^\d{8}$"
-        Me.tRegex.Size = New System.Drawing.Size(96, 32)
-        Me.tRegex.TabIndex = 1
-        '
-        'cMatching
-        '
-        Me.cMatching.AutoSize = True
-        Me.cMatching.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.cMatching.Location = New System.Drawing.Point(0, 40)
-        Me.cMatching.Margin = New System.Windows.Forms.Padding(0)
-        Me.cMatching.Name = "cMatching"
-        Me.cMatching.Size = New System.Drawing.Size(48, 28)
-        Me.cMatching.TabIndex = 5
-        Me.cMatching.Text = "Use matching? ID:"
-        Me.cMatching.UseVisualStyleBackColor = True
-        '
-        'Panel4
-        '
-        Me.Panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.Panel4.Controls.Add(Me.bMailpackIndicator)
-        Me.Panel4.Controls.Add(Me.lRegions)
-        Me.Panel4.Controls.Add(Me.bClear)
-        Me.Panel4.Controls.Add(Me.bDel)
-        Me.Panel4.Controls.Add(Me.lScale)
-        Me.Panel4.Controls.Add(Me.bSaveTest)
-        Me.Panel4.Controls.Add(Me.tScale)
-        Me.Panel4.Controls.Add(Me.Label6)
-        Me.Panel4.Controls.Add(Me.bTest)
-        Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel4.Location = New System.Drawing.Point(0, 0)
-        Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(252, 122)
-        Me.Panel4.TabIndex = 18
-        '
-        'bMailpackIndicator
-        '
-        Me.bMailpackIndicator.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.bMailpackIndicator.Image = Global.PDFHelper.My.Resources.Resources.clip_cut
-        Me.bMailpackIndicator.Location = New System.Drawing.Point(96, 94)
-        Me.bMailpackIndicator.Margin = New System.Windows.Forms.Padding(0)
-        Me.bMailpackIndicator.Name = "bMailpackIndicator"
-        Me.bMailpackIndicator.Size = New System.Drawing.Size(24, 24)
-        Me.bMailpackIndicator.TabIndex = 21
-        Me.tt.SetToolTip(Me.bMailpackIndicator, "Multipage mailpacks")
-        Me.bMailpackIndicator.UseVisualStyleBackColor = True
-        '
-        'lRegions
-        '
-        Me.lRegions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lRegions.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.cIdx, Me.cLeft, Me.ctop, Me.cright, Me.cBottom})
-        Me.lRegions.Dock = System.Windows.Forms.DockStyle.Top
-        Me.lRegions.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.lRegions.FullRowSelect = True
-        Me.lRegions.GridLines = True
-        Me.lRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable
-        Me.lRegions.LabelWrap = False
-        Me.lRegions.Location = New System.Drawing.Point(0, 0)
-        Me.lRegions.Margin = New System.Windows.Forms.Padding(0)
-        Me.lRegions.Name = "lRegions"
-        Me.lRegions.ShowGroups = False
-        Me.lRegions.Size = New System.Drawing.Size(248, 94)
-        Me.lRegions.Sorting = System.Windows.Forms.SortOrder.Ascending
-        Me.lRegions.TabIndex = 20
-        Me.lRegions.UseCompatibleStateImageBehavior = False
-        Me.lRegions.View = System.Windows.Forms.View.Details
-        '
-        'cIdx
-        '
-        Me.cIdx.Text = "Id"
-        Me.cIdx.Width = 25
-        '
-        'cLeft
-        '
-        Me.cLeft.Text = "X"
-        Me.cLeft.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.cLeft.Width = 50
-        '
-        'ctop
-        '
-        Me.ctop.Text = "Y"
-        Me.ctop.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.ctop.Width = 50
-        '
-        'cright
-        '
-        Me.cright.Text = "Width"
-        Me.cright.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.cright.Width = 50
-        '
-        'cBottom
-        '
-        Me.cBottom.Text = "Height"
-        Me.cBottom.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.cBottom.Width = 50
-        '
-        'bClear
-        '
-        Me.bClear.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.bClear.Image = Global.PDFHelper.My.Resources.Resources.cancel
-        Me.bClear.Location = New System.Drawing.Point(72, 94)
-        Me.bClear.Margin = New System.Windows.Forms.Padding(0)
-        Me.bClear.Name = "bClear"
-        Me.bClear.Size = New System.Drawing.Size(24, 24)
-        Me.bClear.TabIndex = 19
-        Me.tt.SetToolTip(Me.bClear, "Remove all clippingpaths")
-        Me.bClear.UseVisualStyleBackColor = True
-        '
-        'bDel
-        '
-        Me.bDel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.bDel.Image = Global.PDFHelper.My.Resources.Resources.remove
-        Me.bDel.Location = New System.Drawing.Point(48, 94)
-        Me.bDel.Margin = New System.Windows.Forms.Padding(0)
-        Me.bDel.Name = "bDel"
-        Me.bDel.Size = New System.Drawing.Size(24, 24)
-        Me.bDel.TabIndex = 18
-        Me.tt.SetToolTip(Me.bDel, "Remove selected clippingpath")
-        Me.bDel.UseVisualStyleBackColor = True
-        '
-        'lScale
-        '
-        Me.lScale.AutoSize = True
-        Me.lScale.Location = New System.Drawing.Point(234, 99)
-        Me.lScale.Name = "lScale"
-        Me.lScale.Size = New System.Drawing.Size(13, 15)
-        Me.lScale.TabIndex = 16
-        Me.lScale.Text = "4"
-        '
-        'bSaveTest
-        '
-        Me.bSaveTest.Image = Global.PDFHelper.My.Resources.Resources.save
-        Me.bSaveTest.Location = New System.Drawing.Point(24, 94)
-        Me.bSaveTest.Margin = New System.Windows.Forms.Padding(0)
-        Me.bSaveTest.Name = "bSaveTest"
-        Me.bSaveTest.Size = New System.Drawing.Size(24, 24)
-        Me.bSaveTest.TabIndex = 11
-        Me.tt.SetToolTip(Me.bSaveTest, "Export all (or selected) clippingpath images")
-        Me.bSaveTest.UseVisualStyleBackColor = True
-        '
-        'tScale
-        '
-        Me.tScale.AutoSize = False
-        Me.tScale.LargeChange = 1
-        Me.tScale.Location = New System.Drawing.Point(151, 96)
-        Me.tScale.Minimum = 1
-        Me.tScale.Name = "tScale"
-        Me.tScale.Size = New System.Drawing.Size(85, 22)
-        Me.tScale.TabIndex = 14
-        Me.tt.SetToolTip(Me.tScale, "Level of enlargement. Level 4 is best for most.")
-        Me.tScale.Value = 4
-        '
-        'Label6
-        '
-        Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(121, 99)
-        Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(37, 15)
-        Me.Label6.TabIndex = 15
-        Me.Label6.Text = "Scale:"
-        '
-        'bTest
-        '
-        Me.bTest.Image = Global.PDFHelper.My.Resources.Resources.spell_check
-        Me.bTest.Location = New System.Drawing.Point(0, 94)
-        Me.bTest.Margin = New System.Windows.Forms.Padding(0)
-        Me.bTest.Name = "bTest"
-        Me.bTest.Size = New System.Drawing.Size(24, 24)
-        Me.bTest.TabIndex = 9
-        Me.tt.SetToolTip(Me.bTest, "Test all (or selected) clippingpaths")
-        Me.bTest.UseVisualStyleBackColor = True
-        '
-        'pWorkers
-        '
-        Me.pWorkers.AutoScroll = True
-        Me.pWorkers.BackColor = System.Drawing.SystemColors.WindowFrame
-        Me.pWorkers.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.pWorkers.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pWorkers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.pWorkers.Location = New System.Drawing.Point(0, 223)
-        Me.pWorkers.Name = "pWorkers"
-        Me.pWorkers.Size = New System.Drawing.Size(252, 263)
-        Me.pWorkers.TabIndex = 11
-        Me.pWorkers.WrapContents = False
-        '
-        'Panel2
-        '
-        Me.Panel2.Controls.Add(Me.bView)
-        Me.Panel2.Controls.Add(Me.bExport)
-        Me.Panel2.Controls.Add(Me.Label8)
-        Me.Panel2.Controls.Add(Me.nWorkers)
-        Me.Panel2.Controls.Add(Me.bExtractAll)
-        Me.Panel2.Controls.Add(Me.tPages)
-        Me.Panel2.Controls.Add(Me.bLast)
-        Me.Panel2.Controls.Add(Me.bNext)
-        Me.Panel2.Controls.Add(Me.bPrev)
-        Me.Panel2.Controls.Add(Me.bFirst)
-        Me.Panel2.Controls.Add(Me.bPdf)
-        Me.Panel2.Controls.Add(Me.Button1)
-        Me.Panel2.Controls.Add(Me.Button2)
-        Me.Panel2.Controls.Add(Me.Button3)
-        Me.Panel2.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel2.Location = New System.Drawing.Point(0, 0)
-        Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(724, 32)
-        Me.Panel2.TabIndex = 12
-        '
-        'bView
-        '
-        Me.bView.Enabled = False
-        Me.bView.Location = New System.Drawing.Point(355, 4)
-        Me.bView.Name = "bView"
-        Me.bView.Size = New System.Drawing.Size(55, 23)
-        Me.bView.TabIndex = 18
-        Me.bView.Text = "View"
-        Me.bView.UseVisualStyleBackColor = True
-        '
-        'bExport
-        '
-        Me.bExport.Enabled = False
-        Me.bExport.Location = New System.Drawing.Point(294, 4)
-        Me.bExport.Name = "bExport"
-        Me.bExport.Size = New System.Drawing.Size(55, 23)
-        Me.bExport.TabIndex = 17
-        Me.bExport.Text = "Export"
-        Me.bExport.UseVisualStyleBackColor = True
-        '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(181, 8)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(53, 15)
-        Me.Label8.TabIndex = 16
-        Me.Label8.Text = "Workers:"
-        '
-        'nWorkers
-        '
-        Me.nWorkers.Location = New System.Drawing.Point(240, 5)
-        Me.nWorkers.Maximum = New Decimal(New Integer() {12, 0, 0, 0})
-        Me.nWorkers.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-        Me.nWorkers.Name = "nWorkers"
-        Me.nWorkers.Size = New System.Drawing.Size(48, 23)
-        Me.nWorkers.TabIndex = 15
-        Me.nWorkers.Value = New Decimal(New Integer() {4, 0, 0, 0})
-        '
-        'bExtractAll
-        '
-        Me.bExtractAll.Enabled = False
-        Me.bExtractAll.Location = New System.Drawing.Point(80, 4)
-        Me.bExtractAll.Name = "bExtractAll"
-        Me.bExtractAll.Size = New System.Drawing.Size(95, 23)
-        Me.bExtractAll.TabIndex = 14
-        Me.bExtractAll.Text = "Extract data"
-        Me.bExtractAll.UseVisualStyleBackColor = True
-        '
-        'tPages
-        '
-        Me.tPages.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.tPages.Location = New System.Drawing.Point(593, 5)
-        Me.tPages.Name = "tPages"
-        Me.tPages.ReadOnly = True
-        Me.tPages.Size = New System.Drawing.Size(74, 23)
-        Me.tPages.TabIndex = 8
-        Me.tPages.Text = "-/-"
-        Me.tPages.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'bLast
-        '
-        Me.bLast.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.bLast.Image = Global.PDFHelper.My.Resources.Resources.action_goto_last
-        Me.bLast.Location = New System.Drawing.Point(695, 5)
-        Me.bLast.Margin = New System.Windows.Forms.Padding(0)
-        Me.bLast.Name = "bLast"
-        Me.bLast.Size = New System.Drawing.Size(24, 24)
-        Me.bLast.TabIndex = 7
-        Me.bLast.UseVisualStyleBackColor = True
-        '
-        'bNext
-        '
-        Me.bNext.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.bNext.Image = Global.PDFHelper.My.Resources.Resources.action_goto_next
-        Me.bNext.Location = New System.Drawing.Point(670, 5)
-        Me.bNext.Margin = New System.Windows.Forms.Padding(0)
-        Me.bNext.Name = "bNext"
-        Me.bNext.Size = New System.Drawing.Size(24, 24)
-        Me.bNext.TabIndex = 6
-        Me.bNext.UseVisualStyleBackColor = True
-        '
-        'bPrev
-        '
-        Me.bPrev.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.bPrev.Image = Global.PDFHelper.My.Resources.Resources.action_goto_previous
-        Me.bPrev.Location = New System.Drawing.Point(566, 4)
-        Me.bPrev.Margin = New System.Windows.Forms.Padding(0)
-        Me.bPrev.Name = "bPrev"
-        Me.bPrev.Size = New System.Drawing.Size(24, 24)
-        Me.bPrev.TabIndex = 5
-        Me.bPrev.UseVisualStyleBackColor = True
-        '
-        'bFirst
-        '
-        Me.bFirst.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.bFirst.Image = Global.PDFHelper.My.Resources.Resources.action_goto_first
-        Me.bFirst.Location = New System.Drawing.Point(541, 4)
-        Me.bFirst.Margin = New System.Windows.Forms.Padding(0)
-        Me.bFirst.Name = "bFirst"
-        Me.bFirst.Size = New System.Drawing.Size(24, 24)
-        Me.bFirst.TabIndex = 4
-        Me.bFirst.UseVisualStyleBackColor = True
-        '
-        'StatusStrip1
-        '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lZoom, Me.tLog})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 518)
-        Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(724, 24)
-        Me.StatusStrip1.TabIndex = 13
-        Me.StatusStrip1.Text = "StatusStrip1"
-        '
-        'lZoom
-        '
-        Me.lZoom.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.lZoom.BorderStyle = System.Windows.Forms.Border3DStyle.Bump
-        Me.lZoom.Name = "lZoom"
-        Me.lZoom.Size = New System.Drawing.Size(77, 19)
-        Me.lZoom.Text = "Zoom: 100%"
-        '
-        'tLog
-        '
-        Me.tLog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.tLog.LiveSetting = System.Windows.Forms.Automation.AutomationLiveSetting.Polite
-        Me.tLog.Name = "tLog"
-        Me.tLog.Size = New System.Drawing.Size(30, 19)
-        Me.tLog.Text = "Log:"
-        '
-        'sfd
-        '
-        Me.sfd.DefaultExt = "csv"
-        Me.sfd.Filter = "CSV Files|*.csv"
-        Me.sfd.SupportMultiDottedExtensions = True
-        Me.sfd.Title = "Save extracted data"
-        '
-        'fbd
-        '
-        Me.fbd.Description = "Select save folder"
-        Me.fbd.UseDescriptionForTitle = True
-        '
-        'tt
-        '
-        Me.tt.BackColor = System.Drawing.Color.Khaki
-        '
-        'Form1
-        '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(724, 542)
-        Me.Controls.Add(Me.CanvasX)
-        Me.Controls.Add(Me.Panel1)
-        Me.Controls.Add(Me.Panel2)
-        Me.Controls.Add(Me.StatusStrip1)
-        Me.Name = "Form1"
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "PDF Xtracktor"
-        Me.CanvasX.ResumeLayout(False)
-        CType(Me.Canvas, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.Panel1.ResumeLayout(False)
-        Me.sc1.Panel1.ResumeLayout(False)
-        Me.sc1.Panel2.ResumeLayout(False)
-        CType(Me.sc1, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.sc1.ResumeLayout(False)
-        Me.TableLayoutPanel1.ResumeLayout(False)
-        Me.TableLayoutPanel1.PerformLayout()
-        Me.Panel4.ResumeLayout(False)
-        Me.Panel4.PerformLayout()
-        CType(Me.tScale, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.Panel2.ResumeLayout(False)
-        Me.Panel2.PerformLayout()
-        CType(Me.nWorkers, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.StatusStrip1.ResumeLayout(False)
-        Me.StatusStrip1.PerformLayout()
-        Me.ResumeLayout(False)
-        Me.PerformLayout()
+        components = New ComponentModel.Container()
+        bPdf = New Button()
+        ofdPdf = New OpenFileDialog()
+        Button1 = New Button()
+        Button2 = New Button()
+        Button3 = New Button()
+        CanvasX = New Panel()
+        Canvas = New PictureBox()
+        CanvasShadow = New Panel()
+        Panel1 = New Panel()
+        sc1 = New SplitContainer()
+        rResult = New RichTextBox()
+        TableLayoutPanel1 = New TableLayoutPanel()
+        Label1 = New Label()
+        mpRegion = New ComboBox()
+        tRegex = New TextBox()
+        cMatching = New CheckBox()
+        Panel4 = New Panel()
+        bMailpackIndicator = New Button()
+        lRegions = New ListView()
+        cIdx = New ColumnHeader()
+        cLeft = New ColumnHeader()
+        ctop = New ColumnHeader()
+        cright = New ColumnHeader()
+        cBottom = New ColumnHeader()
+        bClear = New Button()
+        bDel = New Button()
+        lScale = New Label()
+        bSaveTest = New Button()
+        tScale = New TrackBar()
+        Label6 = New Label()
+        bTest = New Button()
+        pWorkers = New FlowLayoutPanel()
+        Panel2 = New Panel()
+        bView = New Button()
+        bExport = New Button()
+        Label8 = New Label()
+        nWorkers = New NumericUpDown()
+        bExtractAll = New Button()
+        bLast = New Button()
+        bNext = New Button()
+        bPrev = New Button()
+        bFirst = New Button()
+        StatusStrip1 = New StatusStrip()
+        lZoom = New ToolStripStatusLabel()
+        tLog = New ToolStripStatusLabel()
+        sfd = New SaveFileDialog()
+        fbd = New FolderBrowserDialog()
+        tt = New ToolTip(components)
+        cbPages = New ComboBox()
+        CanvasX.SuspendLayout()
+        CType(Canvas, ComponentModel.ISupportInitialize).BeginInit()
+        Panel1.SuspendLayout()
+        CType(sc1, ComponentModel.ISupportInitialize).BeginInit()
+        sc1.Panel1.SuspendLayout()
+        sc1.Panel2.SuspendLayout()
+        sc1.SuspendLayout()
+        TableLayoutPanel1.SuspendLayout()
+        Panel4.SuspendLayout()
+        CType(tScale, ComponentModel.ISupportInitialize).BeginInit()
+        Panel2.SuspendLayout()
+        CType(nWorkers, ComponentModel.ISupportInitialize).BeginInit()
+        StatusStrip1.SuspendLayout()
+        SuspendLayout()
+        ' 
+        ' bPdf
+        ' 
+        bPdf.Location = New Point(3, 4)
+        bPdf.Name = "bPdf"
+        bPdf.Size = New Size(75, 23)
+        bPdf.TabIndex = 1
+        bPdf.Text = "Load PDF"
+        bPdf.UseVisualStyleBackColor = True
+        ' 
+        ' ofdPdf
+        ' 
+        ofdPdf.DefaultExt = "pdf"
+        ofdPdf.Filter = "PDF files|*.pdf"
+        ofdPdf.Title = "Select PDF file"
+        ' 
+        ' Button1
+        ' 
+        Button1.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        Button1.Image = My.Resources.Resources.zoom_in
+        Button1.Location = New Point(414, 4)
+        Button1.Margin = New Padding(0)
+        Button1.Name = "Button1"
+        Button1.Size = New Size(24, 24)
+        Button1.TabIndex = 1
+        Button1.UseVisualStyleBackColor = True
+        ' 
+        ' Button2
+        ' 
+        Button2.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        Button2.Image = My.Resources.Resources.zoom_out
+        Button2.Location = New Point(439, 4)
+        Button2.Margin = New Padding(0)
+        Button2.Name = "Button2"
+        Button2.Size = New Size(24, 24)
+        Button2.TabIndex = 2
+        Button2.UseVisualStyleBackColor = True
+        ' 
+        ' Button3
+        ' 
+        Button3.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        Button3.Image = My.Resources.Resources.zoom_fit
+        Button3.Location = New Point(464, 4)
+        Button3.Margin = New Padding(0)
+        Button3.Name = "Button3"
+        Button3.Size = New Size(24, 24)
+        Button3.TabIndex = 3
+        Button3.UseVisualStyleBackColor = True
+        ' 
+        ' CanvasX
+        ' 
+        CanvasX.AutoScroll = True
+        CanvasX.AutoScrollMargin = New Size(10, 10)
+        CanvasX.AutoSize = True
+        CanvasX.AutoSizeMode = AutoSizeMode.GrowAndShrink
+        CanvasX.BackColor = SystemColors.AppWorkspace
+        CanvasX.BackgroundImageLayout = ImageLayout.None
+        CanvasX.BorderStyle = BorderStyle.Fixed3D
+        CanvasX.CausesValidation = False
+        CanvasX.Controls.Add(Canvas)
+        CanvasX.Controls.Add(CanvasShadow)
+        CanvasX.Dock = DockStyle.Fill
+        CanvasX.Location = New Point(0, 32)
+        CanvasX.Margin = New Padding(0)
+        CanvasX.Name = "CanvasX"
+        CanvasX.Size = New Size(469, 486)
+        CanvasX.TabIndex = 4
+        ' 
+        ' Canvas
+        ' 
+        Canvas.BackColor = Color.White
+        Canvas.BackgroundImageLayout = ImageLayout.None
+        Canvas.Location = New Point(26, 49)
+        Canvas.Name = "Canvas"
+        Canvas.Size = New Size(292, 410)
+        Canvas.TabIndex = 1
+        Canvas.TabStop = False
+        ' 
+        ' CanvasShadow
+        ' 
+        CanvasShadow.BackColor = SystemColors.WindowFrame
+        CanvasShadow.CausesValidation = False
+        CanvasShadow.Enabled = False
+        CanvasShadow.Location = New Point(35, 56)
+        CanvasShadow.Name = "CanvasShadow"
+        CanvasShadow.Size = New Size(292, 410)
+        CanvasShadow.TabIndex = 0
+        ' 
+        ' Panel1
+        ' 
+        Panel1.Controls.Add(sc1)
+        Panel1.Controls.Add(Panel4)
+        Panel1.Controls.Add(pWorkers)
+        Panel1.Dock = DockStyle.Right
+        Panel1.Location = New Point(469, 32)
+        Panel1.Name = "Panel1"
+        Panel1.Size = New Size(252, 486)
+        Panel1.TabIndex = 11
+        ' 
+        ' sc1
+        ' 
+        sc1.Dock = DockStyle.Fill
+        sc1.IsSplitterFixed = True
+        sc1.Location = New Point(0, 122)
+        sc1.Margin = New Padding(0)
+        sc1.Name = "sc1"
+        ' 
+        ' sc1.Panel1
+        ' 
+        sc1.Panel1.Controls.Add(rResult)
+        ' 
+        ' sc1.Panel2
+        ' 
+        sc1.Panel2.Controls.Add(TableLayoutPanel1)
+        sc1.Panel2Collapsed = True
+        sc1.Size = New Size(252, 101)
+        sc1.SplitterDistance = 84
+        sc1.SplitterWidth = 1
+        sc1.TabIndex = 19
+        ' 
+        ' rResult
+        ' 
+        rResult.Dock = DockStyle.Fill
+        rResult.Location = New Point(0, 0)
+        rResult.Name = "rResult"
+        rResult.ReadOnly = True
+        rResult.Size = New Size(252, 101)
+        rResult.TabIndex = 11
+        rResult.Text = ""
+        rResult.WordWrap = False
+        ' 
+        ' TableLayoutPanel1
+        ' 
+        TableLayoutPanel1.ColumnCount = 2
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
+        TableLayoutPanel1.Controls.Add(Label1, 0, 0)
+        TableLayoutPanel1.Controls.Add(mpRegion, 1, 1)
+        TableLayoutPanel1.Controls.Add(tRegex, 0, 2)
+        TableLayoutPanel1.Controls.Add(cMatching, 0, 1)
+        TableLayoutPanel1.Dock = DockStyle.Fill
+        TableLayoutPanel1.Location = New Point(0, 0)
+        TableLayoutPanel1.Name = "TableLayoutPanel1"
+        TableLayoutPanel1.RowCount = 3
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 40F))
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 28F))
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        TableLayoutPanel1.Size = New Size(96, 100)
+        TableLayoutPanel1.TabIndex = 5
+        ' 
+        ' Label1
+        ' 
+        TableLayoutPanel1.SetColumnSpan(Label1, 2)
+        Label1.Dock = DockStyle.Fill
+        Label1.Location = New Point(3, 0)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(90, 40)
+        Label1.TabIndex = 3
+        Label1.Text = "Enter a regular expression to indicate the first page of a multipage mailpack"
+        Label1.TextAlign = ContentAlignment.TopCenter
+        ' 
+        ' mpRegion
+        ' 
+        mpRegion.Dock = DockStyle.Fill
+        mpRegion.DropDownStyle = ComboBoxStyle.DropDownList
+        mpRegion.FormattingEnabled = True
+        mpRegion.Location = New Point(48, 40)
+        mpRegion.Margin = New Padding(0)
+        mpRegion.Name = "mpRegion"
+        mpRegion.Size = New Size(48, 23)
+        mpRegion.Sorted = True
+        mpRegion.TabIndex = 4
+        tt.SetToolTip(mpRegion, "Select the id of the region to match the regex against")
+        ' 
+        ' tRegex
+        ' 
+        tRegex.AutoCompleteCustomSource.AddRange(New String() {"\d", "\D", "\w", "\W", "\s", "\S", "[0-9A-F]", "[^0-9a-f]"})
+        tRegex.AutoCompleteMode = AutoCompleteMode.Suggest
+        tRegex.AutoCompleteSource = AutoCompleteSource.CustomSource
+        TableLayoutPanel1.SetColumnSpan(tRegex, 2)
+        tRegex.Dock = DockStyle.Fill
+        tRegex.Location = New Point(0, 68)
+        tRegex.Margin = New Padding(0)
+        tRegex.Multiline = True
+        tRegex.Name = "tRegex"
+        tRegex.PlaceholderText = "Eg. ^\d{8}$"
+        tRegex.Size = New Size(96, 32)
+        tRegex.TabIndex = 1
+        ' 
+        ' cMatching
+        ' 
+        cMatching.AutoSize = True
+        cMatching.Dock = DockStyle.Fill
+        cMatching.Location = New Point(0, 40)
+        cMatching.Margin = New Padding(0)
+        cMatching.Name = "cMatching"
+        cMatching.Size = New Size(48, 28)
+        cMatching.TabIndex = 5
+        cMatching.Text = "Use matching? ID:"
+        cMatching.UseVisualStyleBackColor = True
+        ' 
+        ' Panel4
+        ' 
+        Panel4.BorderStyle = BorderStyle.Fixed3D
+        Panel4.Controls.Add(bMailpackIndicator)
+        Panel4.Controls.Add(lRegions)
+        Panel4.Controls.Add(bClear)
+        Panel4.Controls.Add(bDel)
+        Panel4.Controls.Add(lScale)
+        Panel4.Controls.Add(bSaveTest)
+        Panel4.Controls.Add(tScale)
+        Panel4.Controls.Add(Label6)
+        Panel4.Controls.Add(bTest)
+        Panel4.Dock = DockStyle.Top
+        Panel4.Location = New Point(0, 0)
+        Panel4.Name = "Panel4"
+        Panel4.Size = New Size(252, 122)
+        Panel4.TabIndex = 18
+        ' 
+        ' bMailpackIndicator
+        ' 
+        bMailpackIndicator.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        bMailpackIndicator.Image = My.Resources.Resources.clip_cut
+        bMailpackIndicator.Location = New Point(96, 94)
+        bMailpackIndicator.Margin = New Padding(0)
+        bMailpackIndicator.Name = "bMailpackIndicator"
+        bMailpackIndicator.Size = New Size(24, 24)
+        bMailpackIndicator.TabIndex = 21
+        tt.SetToolTip(bMailpackIndicator, "Multipage mailpacks")
+        bMailpackIndicator.UseVisualStyleBackColor = True
+        ' 
+        ' lRegions
+        ' 
+        lRegions.BorderStyle = BorderStyle.FixedSingle
+        lRegions.Columns.AddRange(New ColumnHeader() {cIdx, cLeft, ctop, cright, cBottom})
+        lRegions.Dock = DockStyle.Top
+        lRegions.Font = New Font("Segoe UI", 8.25F)
+        lRegions.FullRowSelect = True
+        lRegions.GridLines = True
+        lRegions.HeaderStyle = ColumnHeaderStyle.Nonclickable
+        lRegions.LabelWrap = False
+        lRegions.Location = New Point(0, 0)
+        lRegions.Margin = New Padding(0)
+        lRegions.Name = "lRegions"
+        lRegions.ShowGroups = False
+        lRegions.Size = New Size(248, 94)
+        lRegions.Sorting = SortOrder.Ascending
+        lRegions.TabIndex = 20
+        lRegions.UseCompatibleStateImageBehavior = False
+        lRegions.View = View.Details
+        ' 
+        ' cIdx
+        ' 
+        cIdx.Text = "Id"
+        cIdx.Width = 25
+        ' 
+        ' cLeft
+        ' 
+        cLeft.Text = "X"
+        cLeft.TextAlign = HorizontalAlignment.Center
+        cLeft.Width = 50
+        ' 
+        ' ctop
+        ' 
+        ctop.Text = "Y"
+        ctop.TextAlign = HorizontalAlignment.Center
+        ctop.Width = 50
+        ' 
+        ' cright
+        ' 
+        cright.Text = "Width"
+        cright.TextAlign = HorizontalAlignment.Center
+        cright.Width = 50
+        ' 
+        ' cBottom
+        ' 
+        cBottom.Text = "Height"
+        cBottom.TextAlign = HorizontalAlignment.Center
+        cBottom.Width = 50
+        ' 
+        ' bClear
+        ' 
+        bClear.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        bClear.Image = My.Resources.Resources.cancel
+        bClear.Location = New Point(72, 94)
+        bClear.Margin = New Padding(0)
+        bClear.Name = "bClear"
+        bClear.Size = New Size(24, 24)
+        bClear.TabIndex = 19
+        tt.SetToolTip(bClear, "Remove all clippingpaths")
+        bClear.UseVisualStyleBackColor = True
+        ' 
+        ' bDel
+        ' 
+        bDel.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        bDel.Image = My.Resources.Resources.remove
+        bDel.Location = New Point(48, 94)
+        bDel.Margin = New Padding(0)
+        bDel.Name = "bDel"
+        bDel.Size = New Size(24, 24)
+        bDel.TabIndex = 18
+        tt.SetToolTip(bDel, "Remove selected clippingpath")
+        bDel.UseVisualStyleBackColor = True
+        ' 
+        ' lScale
+        ' 
+        lScale.AutoSize = True
+        lScale.Location = New Point(234, 99)
+        lScale.Name = "lScale"
+        lScale.Size = New Size(13, 15)
+        lScale.TabIndex = 16
+        lScale.Text = "4"
+        ' 
+        ' bSaveTest
+        ' 
+        bSaveTest.Image = My.Resources.Resources.save
+        bSaveTest.Location = New Point(24, 94)
+        bSaveTest.Margin = New Padding(0)
+        bSaveTest.Name = "bSaveTest"
+        bSaveTest.Size = New Size(24, 24)
+        bSaveTest.TabIndex = 11
+        tt.SetToolTip(bSaveTest, "Export all (or selected) clippingpath images")
+        bSaveTest.UseVisualStyleBackColor = True
+        ' 
+        ' tScale
+        ' 
+        tScale.AutoSize = False
+        tScale.LargeChange = 1
+        tScale.Location = New Point(151, 96)
+        tScale.Minimum = 1
+        tScale.Name = "tScale"
+        tScale.Size = New Size(85, 22)
+        tScale.TabIndex = 14
+        tt.SetToolTip(tScale, "Level of enlargement. Level 4 is best for most.")
+        tScale.Value = 4
+        ' 
+        ' Label6
+        ' 
+        Label6.AutoSize = True
+        Label6.Location = New Point(121, 99)
+        Label6.Name = "Label6"
+        Label6.Size = New Size(37, 15)
+        Label6.TabIndex = 15
+        Label6.Text = "Scale:"
+        ' 
+        ' bTest
+        ' 
+        bTest.Image = My.Resources.Resources.spell_check
+        bTest.Location = New Point(0, 94)
+        bTest.Margin = New Padding(0)
+        bTest.Name = "bTest"
+        bTest.Size = New Size(24, 24)
+        bTest.TabIndex = 9
+        tt.SetToolTip(bTest, "Test all (or selected) clippingpaths")
+        bTest.UseVisualStyleBackColor = True
+        ' 
+        ' pWorkers
+        ' 
+        pWorkers.AutoScroll = True
+        pWorkers.BackColor = SystemColors.WindowFrame
+        pWorkers.BorderStyle = BorderStyle.Fixed3D
+        pWorkers.Dock = DockStyle.Bottom
+        pWorkers.FlowDirection = FlowDirection.TopDown
+        pWorkers.Location = New Point(0, 223)
+        pWorkers.Name = "pWorkers"
+        pWorkers.Size = New Size(252, 263)
+        pWorkers.TabIndex = 11
+        pWorkers.WrapContents = False
+        ' 
+        ' Panel2
+        ' 
+        Panel2.Controls.Add(cbPages)
+        Panel2.Controls.Add(bView)
+        Panel2.Controls.Add(bExport)
+        Panel2.Controls.Add(Label8)
+        Panel2.Controls.Add(nWorkers)
+        Panel2.Controls.Add(bExtractAll)
+        Panel2.Controls.Add(bLast)
+        Panel2.Controls.Add(bNext)
+        Panel2.Controls.Add(bPrev)
+        Panel2.Controls.Add(bFirst)
+        Panel2.Controls.Add(bPdf)
+        Panel2.Controls.Add(Button1)
+        Panel2.Controls.Add(Button2)
+        Panel2.Controls.Add(Button3)
+        Panel2.Dock = DockStyle.Top
+        Panel2.Location = New Point(0, 0)
+        Panel2.Name = "Panel2"
+        Panel2.Size = New Size(721, 32)
+        Panel2.TabIndex = 12
+        ' 
+        ' bView
+        ' 
+        bView.Enabled = False
+        bView.Location = New Point(355, 4)
+        bView.Name = "bView"
+        bView.Size = New Size(55, 23)
+        bView.TabIndex = 18
+        bView.Text = "View"
+        bView.UseVisualStyleBackColor = True
+        ' 
+        ' bExport
+        ' 
+        bExport.Enabled = False
+        bExport.Location = New Point(294, 4)
+        bExport.Name = "bExport"
+        bExport.Size = New Size(55, 23)
+        bExport.TabIndex = 17
+        bExport.Text = "Export"
+        bExport.UseVisualStyleBackColor = True
+        ' 
+        ' Label8
+        ' 
+        Label8.AutoSize = True
+        Label8.Location = New Point(181, 8)
+        Label8.Name = "Label8"
+        Label8.Size = New Size(53, 15)
+        Label8.TabIndex = 16
+        Label8.Text = "Workers:"
+        ' 
+        ' nWorkers
+        ' 
+        nWorkers.Location = New Point(240, 5)
+        nWorkers.Maximum = New Decimal(New Integer() {12, 0, 0, 0})
+        nWorkers.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        nWorkers.Name = "nWorkers"
+        nWorkers.Size = New Size(48, 23)
+        nWorkers.TabIndex = 15
+        nWorkers.Value = New Decimal(New Integer() {4, 0, 0, 0})
+        ' 
+        ' bExtractAll
+        ' 
+        bExtractAll.Enabled = False
+        bExtractAll.Location = New Point(80, 4)
+        bExtractAll.Name = "bExtractAll"
+        bExtractAll.Size = New Size(95, 23)
+        bExtractAll.TabIndex = 14
+        bExtractAll.Text = "Extract data"
+        bExtractAll.UseVisualStyleBackColor = True
+        ' 
+        ' bLast
+        ' 
+        bLast.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        bLast.Image = My.Resources.Resources.action_goto_last
+        bLast.Location = New Point(692, 5)
+        bLast.Margin = New Padding(0)
+        bLast.Name = "bLast"
+        bLast.Size = New Size(24, 24)
+        bLast.TabIndex = 7
+        bLast.UseVisualStyleBackColor = True
+        ' 
+        ' bNext
+        ' 
+        bNext.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        bNext.Image = My.Resources.Resources.action_goto_next
+        bNext.Location = New Point(667, 5)
+        bNext.Margin = New Padding(0)
+        bNext.Name = "bNext"
+        bNext.Size = New Size(24, 24)
+        bNext.TabIndex = 6
+        bNext.UseVisualStyleBackColor = True
+        ' 
+        ' bPrev
+        ' 
+        bPrev.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        bPrev.Image = My.Resources.Resources.action_goto_previous
+        bPrev.Location = New Point(533, 4)
+        bPrev.Margin = New Padding(0)
+        bPrev.Name = "bPrev"
+        bPrev.Size = New Size(24, 24)
+        bPrev.TabIndex = 5
+        bPrev.UseVisualStyleBackColor = True
+        ' 
+        ' bFirst
+        ' 
+        bFirst.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        bFirst.Image = My.Resources.Resources.action_goto_first
+        bFirst.Location = New Point(508, 4)
+        bFirst.Margin = New Padding(0)
+        bFirst.Name = "bFirst"
+        bFirst.Size = New Size(24, 24)
+        bFirst.TabIndex = 4
+        bFirst.UseVisualStyleBackColor = True
+        ' 
+        ' StatusStrip1
+        ' 
+        StatusStrip1.Items.AddRange(New ToolStripItem() {lZoom, tLog})
+        StatusStrip1.Location = New Point(0, 518)
+        StatusStrip1.Name = "StatusStrip1"
+        StatusStrip1.Size = New Size(721, 24)
+        StatusStrip1.TabIndex = 13
+        StatusStrip1.Text = "StatusStrip1"
+        ' 
+        ' lZoom
+        ' 
+        lZoom.BorderSides = ToolStripStatusLabelBorderSides.Right
+        lZoom.BorderStyle = Border3DStyle.Bump
+        lZoom.Name = "lZoom"
+        lZoom.Size = New Size(77, 19)
+        lZoom.Text = "Zoom: 100%"
+        ' 
+        ' tLog
+        ' 
+        tLog.DisplayStyle = ToolStripItemDisplayStyle.Text
+        tLog.LiveSetting = Automation.AutomationLiveSetting.Polite
+        tLog.Name = "tLog"
+        tLog.Size = New Size(30, 19)
+        tLog.Text = "Log:"
+        ' 
+        ' sfd
+        ' 
+        sfd.DefaultExt = "csv"
+        sfd.Filter = "CSV Files|*.csv"
+        sfd.SupportMultiDottedExtensions = True
+        sfd.Title = "Save extracted data"
+        ' 
+        ' fbd
+        ' 
+        fbd.Description = "Select save folder"
+        fbd.UseDescriptionForTitle = True
+        ' 
+        ' tt
+        ' 
+        tt.BackColor = Color.Khaki
+        ' 
+        ' cbPages
+        ' 
+        cbPages.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        cbPages.FormattingEnabled = True
+        cbPages.Location = New Point(560, 5)
+        cbPages.Name = "cbPages"
+        cbPages.Size = New Size(104, 23)
+        cbPages.TabIndex = 19
+        ' 
+        ' Form1
+        ' 
+        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleMode = AutoScaleMode.Font
+        ClientSize = New Size(721, 542)
+        Controls.Add(CanvasX)
+        Controls.Add(Panel1)
+        Controls.Add(Panel2)
+        Controls.Add(StatusStrip1)
+        Name = "Form1"
+        StartPosition = FormStartPosition.CenterScreen
+        Text = "PDF Xtracktor"
+        CanvasX.ResumeLayout(False)
+        CType(Canvas, ComponentModel.ISupportInitialize).EndInit()
+        Panel1.ResumeLayout(False)
+        sc1.Panel1.ResumeLayout(False)
+        sc1.Panel2.ResumeLayout(False)
+        CType(sc1, ComponentModel.ISupportInitialize).EndInit()
+        sc1.ResumeLayout(False)
+        TableLayoutPanel1.ResumeLayout(False)
+        TableLayoutPanel1.PerformLayout()
+        Panel4.ResumeLayout(False)
+        Panel4.PerformLayout()
+        CType(tScale, ComponentModel.ISupportInitialize).EndInit()
+        Panel2.ResumeLayout(False)
+        Panel2.PerformLayout()
+        CType(nWorkers, ComponentModel.ISupportInitialize).EndInit()
+        StatusStrip1.ResumeLayout(False)
+        StatusStrip1.PerformLayout()
+        ResumeLayout(False)
+        PerformLayout()
 
     End Sub
     Friend WithEvents bPdf As Button
@@ -667,7 +665,6 @@ Partial Class Form1
     Friend WithEvents Panel2 As Panel
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents lZoom As ToolStripStatusLabel
-    Friend WithEvents tPages As TextBox
     Friend WithEvents bLast As Button
     Friend WithEvents bNext As Button
     Friend WithEvents bPrev As Button
@@ -704,4 +701,5 @@ Partial Class Form1
     Friend WithEvents cMatching As CheckBox
     Friend WithEvents bView As Button
     Friend WithEvents tLog As ToolStripStatusLabel
+    Friend WithEvents cbPages As ComboBox
 End Class

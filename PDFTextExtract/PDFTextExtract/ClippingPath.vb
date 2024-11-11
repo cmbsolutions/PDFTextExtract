@@ -9,7 +9,7 @@ Public Class ClippingPath
     Sub New(left As Integer, top As Integer, right As Integer, bottom As Integer)
         _idx = NextIdx
         NextIdx += 1
-        _region = New MagickGeometry(left, top, right, bottom)
+        _region = New MagickGeometry(left, top, CUInt(right), CUInt(bottom))
     End Sub
 End Class
 

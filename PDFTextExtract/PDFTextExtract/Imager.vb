@@ -43,7 +43,7 @@ Public Class Imager
 
             Using bm As New PDFiumBitmap(width, height, Enums.BitmapFormats.BGRA, IntPtr.Zero, 0)
                 bm.Fill(New FPDF_COLOR(255, 255, 255))
-                pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+                pdfPage.Render(bm, (0, 0, width, height), GetOrientation(width, height), Enums.RenderingFlags.None)
 
                 Dim renderedPage As New IO.MemoryStream
                 bm.Save(renderedPage, DPI, DPI)
@@ -65,7 +65,7 @@ Public Class Imager
 
                 bm.Fill(New FPDF_COLOR(255, 255, 255))
 
-                pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+                pdfPage.Render(bm, (0, 0, width, height), GetOrientation(width, height), Enums.RenderingFlags.None)
 
                 Using ms1 As New IO.MemoryStream
                     bm.Save(ms1, DPI, DPI)
@@ -144,7 +144,7 @@ Public Class Imager
                 'If pdfPage.HasTransparency Then
                 bm.Fill(New FPDF_COLOR(255, 255, 255))
 
-                pdfPage.Render(bm, (0, 0, width, height), Enums.PageOrientations.Normal, Enums.RenderingFlags.None)
+                pdfPage.Render(bm, (0, 0, width, height), GetOrientation(width, height), Enums.RenderingFlags.None)
 
                 If RenderedPageMemoryStream IsNot Nothing Then
                     RenderedPageMemoryStream.Close()
@@ -159,6 +159,14 @@ Public Class Imager
             Helpers.dumpException(ex)
         End Try
         Return True
+    End Function
+
+    Private Function GetOrientation(width As Integer, height As Integer) As Enums.PageOrientations
+        'If width <= height Then ' Portrait
+        Return Enums.PageOrientations.Normal
+        'Else ' Landscape
+        'Return Enums.PageOrientations.Rotated90CCW
+        'End If
     End Function
 
 #Region "Dispose"
