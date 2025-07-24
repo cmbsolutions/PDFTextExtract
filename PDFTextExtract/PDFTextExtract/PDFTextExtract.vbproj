@@ -7,15 +7,15 @@
     <Authors>Maurice</Authors>
     <Company>CMBSolutions</Company>
     <Description>Extract text from a region on a PDF page</Description>
-    <Copyright>CMBSolutions 2022</Copyright>
+    <Copyright>CMBSolutions 2022-2025</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/cmbsolutions/PDFTextExtract</PackageProjectUrl>
     <RepositoryUrl>https://github.com/cmbsolutions/PDFTextExtract</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Platforms>x64</Platforms>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -37,14 +37,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-x64" Version="14.0.0" />
-    <PackageReference Include="Magick.NET.Core" Version="14.0.0" />
+    <PackageReference Include="Magick.NET-Q16-x64" Version="14.7.0" />
+    <PackageReference Include="Magick.NET.Core" Version="14.7.0" />
     <PackageReference Include="PDFium.Linux.x64" Version="1.0.0" />
     <PackageReference Include="PDFium.Windows" Version="1.0.0" />
     <PackageReference Include="PDFiumSharpV2" Version="1.1.4" />
-    <PackageReference Include="TesseractOCR" Version="5.4.2" />
-    <PackageReference Include="ZXing.Net" Version="0.16.9" />
-    <PackageReference Include="ZXing.Net.Bindings.Magick" Version="0.16.15" />
+    <PackageReference Include="TesseractOCR" Version="5.5.1" />
+    <PackageReference Include="ZXing.Net" Version="0.16.10" />
+    <PackageReference Include="ZXing.Net.Bindings.Magick" Version="0.16.16" />
   </ItemGroup>
 
   <ItemGroup>

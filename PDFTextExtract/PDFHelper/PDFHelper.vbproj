@@ -8,11 +8,11 @@
     <MyType>WindowsForms</MyType>
     <OptionStrict>On</OptionStrict>
     <Platforms>x64</Platforms>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Maurice</Authors>
     <Company>CMBSolutions</Company>
     <Description>A GUI for the PDFTextExtract library</Description>
-    <Copyright>CMBSolutions 2022</Copyright>
+    <Copyright>CMBSolutions 2022-2025</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

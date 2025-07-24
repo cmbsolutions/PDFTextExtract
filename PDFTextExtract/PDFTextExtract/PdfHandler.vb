@@ -163,7 +163,9 @@ Public Class PdfHandler
 
             Dim bresult = BarcodeEngine.Decode(New MagickImage(ImageHandler.ConvertPage(CurrentDocument.Pages(CurrentPageIdx)).BarcodeImage))
 
-            Return New ExtractedData(100, bresult.Text, CurrentPageIdx, path.idx)
+            If bresult IsNot Nothing Then
+                Return New ExtractedData(100, bresult.Text, CurrentPageIdx, path.idx)
+            End If
 
             Using page = Engine.Process(ImageHandler.ConvertPage(CurrentDocument.Pages(CurrentPageIdx)).OcrImage)
                 Return New ExtractedData(page.MeanConfidence, page.Text.Trim, CurrentPageIdx, path.idx)
